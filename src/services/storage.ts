@@ -1,8 +1,7 @@
 import { 
   User, Level, Course, Topic, Lesson, Word, Question, Quiz, QuizAttempt,
   SpeakingAttempt, ConversationMessage, XPTransaction, Achievement, UserAchievement,
-  StreakData, LocationItem, DailyChallenge, EmailVerification, XPSource, LanguageCode,
-  DoctorProfile, DoctorNote
+  StreakData, LocationItem, DailyChallenge, EmailVerification, XPSource, LanguageCode
 } from '../types';
 import { 
   INITIAL_LEVELS, INITIAL_COURSES, INITIAL_TOPICS, INITIAL_LESSONS, 
@@ -420,54 +419,6 @@ export class OsonStorageService {
     list.push(newMsg);
     setStorage(KEYS.CONVERSATIONS, list);
     return newMsg;
-  }
-
-  // Doctor Profiles & Notes
-  static getDoctorProfile(doctorId?: string): DoctorProfile | null {
-    const profiles = getStorage<DoctorProfile[]>('oson_doctor_profiles', [
-      {
-        id: 'doc-1',
-        user_id: doctorId || 'user-doc',
-        specialization: 'Educational Psychologist & Language Development Specialist',
-        bio: 'O‘smirlarda til o‘rganishdagi psixologik to‘siqlarni yengish, motivatsiyani mustahkamlash bo‘yicha mutaxassis.',
-        assigned_student_ids: ['user-1', 'user-2', 'user-3', 'user-4']
-      }
-    ]);
-    if (!doctorId) return profiles[0] || null;
-    return profiles.find(p => p.id === doctorId || p.user_id === doctorId) || profiles[0] || null;
-  }
-
-  static getDoctorNotes(doctorId?: string, studentId?: string): DoctorNote[] {
-    const notes = getStorage<DoctorNote[]>('oson_doctor_notes', [
-      {
-        id: 'dn-1',
-        doctor_id: 'doc-1',
-        doctor_name: 'Dr. Nilufar Karimova',
-        student_id: 'user-1',
-        student_name: 'Jasur Aliyev',
-        category: 'speech_barrier',
-        note: 'Speaking mashg‘ulotlarida biroz xijolat bo‘lish kuzatilmoqda, ammo so‘z boyligi juda yaxshi.',
-        recommendation: 'Kuniga 5 daqiqa AI Tutor bilan audio rejimida muloqot qilish tavsiya etildi.',
-        created_at: new Date(Date.now() - 86400000).toISOString()
-      }
-    ]);
-    return notes.filter(n => {
-      if (doctorId && n.doctor_id !== doctorId) return false;
-      if (studentId && n.student_id !== studentId) return false;
-      return true;
-    });
-  }
-
-  static addDoctorNote(note: Omit<DoctorNote, 'id' | 'created_at'>): DoctorNote {
-    const notes = getStorage<DoctorNote[]>('oson_doctor_notes', []);
-    const newNote: DoctorNote = {
-      ...note,
-      id: 'dn-' + Date.now(),
-      created_at: new Date().toISOString()
-    };
-    notes.unshift(newNote);
-    setStorage('oson_doctor_notes', notes);
-    return newNote;
   }
 
   // Gamification: XP & Ledger

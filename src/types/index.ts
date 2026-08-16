@@ -1,4 +1,4 @@
-export type UserRole = 'USER' | 'ADMIN' | 'DOCTOR';
+export type UserRole = 'USER' | 'ADMIN';
 
 export type LanguageCode = 'en' | 'ru' | 'fr' | 'uz';
 
@@ -262,26 +262,6 @@ export interface LocationItem {
   contact: string;
   available_courses: string[];
   image: string;
-}
-
-export interface DoctorProfile {
-  id: string;
-  user_id: string;
-  specialization: string;
-  bio: string;
-  assigned_student_ids: string[];
-}
-
-export interface DoctorNote {
-  id: string;
-  doctor_id: string;
-  doctor_name: string;
-  student_id: string;
-  student_name: string;
-  note: string;
-  recommendation: string;
-  category: 'motivation' | 'study_habit' | 'exam_stress' | 'speech_barrier';
-  created_at: string;
 }
 
 export interface DailyChallenge {

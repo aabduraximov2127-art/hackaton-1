@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Flame, Sparkles, User as UserIcon, Shield, Stethoscope, 
+  Flame, Sparkles, User as UserIcon, Shield, 
   Menu, MessageCircle, ChevronDown, PanelLeftOpen, PanelLeftClose
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
@@ -54,7 +54,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       case 'leaderboard': return t.leaderboard;
       case 'map': return t.map;
       case 'profile': return t.profile;
-      case 'doctor': return t.doctorPanel;
       case 'admin': return t.adminPanel;
       default: return 'OSON';
     }
@@ -126,8 +125,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 {currentUser?.role === 'ADMIN' ? (
                   <Shield className="w-3.5 h-3.5 text-rose-400" />
-                ) : currentUser?.role === 'DOCTOR' ? (
-                  <Stethoscope className="w-3.5 h-3.5 text-cyan-400" />
                 ) : (
                   <UserIcon className="w-3.5 h-3.5 text-emerald-400" />
                 )}
@@ -148,15 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       currentUser?.role === 'USER' ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'text-slate-300 hover:bg-slate-800'
                     }`}
                   >
-                    <UserIcon className="w-4 h-4 text-emerald-400" /> USER
-                  </button>
-                  <button
-                    onClick={() => { onSwitchRole('DOCTOR'); setRoleDropdownOpen(false); }}
-                    className={`w-full px-3 py-2 rounded-xl flex items-center gap-2 text-left transition ${
-                      currentUser?.role === 'DOCTOR' ? 'bg-cyan-500/20 text-cyan-400 font-bold' : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <Stethoscope className="w-4 h-4 text-cyan-400" /> DOCTOR
+                    <UserIcon className="w-4 h-4 text-emerald-400" /> USER (O‘quvchi)
                   </button>
                   <button
                     onClick={() => { onSwitchRole('ADMIN'); setRoleDropdownOpen(false); }}
@@ -164,7 +153,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       currentUser?.role === 'ADMIN' ? 'bg-rose-500/20 text-rose-400 font-bold' : 'text-slate-300 hover:bg-slate-800'
                     }`}
                   >
-                    <Shield className="w-4 h-4 text-rose-400" /> ADMIN
+                    <Shield className="w-4 h-4 text-rose-400" /> ADMIN (Boshqaruv)
                   </button>
                 </div>
               )}

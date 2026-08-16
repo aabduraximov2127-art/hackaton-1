@@ -27,7 +27,6 @@ import { StreakModal } from './components/gamification/StreakModal';
 import { LevelTestModal } from './components/levelTest/LevelTestModal';
 import { OsonMap } from './components/map/OsonMap';
 import { UserProfile } from './components/profile/UserProfile';
-import { DoctorDashboard } from './components/doctor/DoctorDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AuthModal } from './components/auth/AuthModal';
 
@@ -73,8 +72,6 @@ export const App: React.FC = () => {
 
     if (role === 'ADMIN') {
       setActiveTab('admin');
-    } else if (role === 'DOCTOR') {
-      setActiveTab('doctor');
     } else {
       setActiveTab('dashboard');
     }
@@ -278,11 +275,6 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* DOCTOR PANEL */}
-          {currentUser && activeTab === 'doctor' && (
-            <DoctorDashboard currentUser={currentUser} />
-          )}
-
           {/* ADMIN PANEL */}
           {currentUser && activeTab === 'admin' && (
             <AdminDashboard currentUser={currentUser} />
@@ -306,8 +298,6 @@ export const App: React.FC = () => {
           setCurrentUser(user);
           if (user.role === 'ADMIN') {
             setActiveTab('admin');
-          } else if (user.role === 'DOCTOR') {
-            setActiveTab('doctor');
           } else {
             setActiveTab('dashboard');
           }

@@ -1,6 +1,6 @@
 import { 
   Level, Course, Topic, Lesson, Word, Question, Quiz, 
-  ConversationScenario, Achievement, LocationItem, User, DoctorProfile, DoctorNote, DailyChallenge 
+  ConversationScenario, Achievement, LocationItem, User, DailyChallenge 
 } from '../types';
 
 export const INITIAL_LEVELS: Level[] = [
@@ -1312,23 +1312,6 @@ export const INITIAL_USERS: User[] = [
     created_at: '2026-08-01T10:00:00Z'
   },
   {
-    id: 'doctor-1',
-    first_name: 'Dr. Nilufar',
-    last_name: 'Qodirova',
-    age: 34,
-    phone: '+998 97 765 43 21',
-    email: 'doctor@oson.uz',
-    password: 'password123',
-    role: 'DOCTOR',
-    is_verified: true,
-    is_active: true,
-    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80',
-    current_level: 'C2',
-    total_xp: 3200,
-    streak: 21,
-    created_at: '2026-07-15T09:00:00Z'
-  },
-  {
     id: 'admin-1',
     first_name: 'Admin',
     last_name: 'OSON',
@@ -1430,39 +1413,6 @@ export const INITIAL_USERS: User[] = [
     total_xp: 1640,
     streak: 8,
     created_at: '2026-08-02T16:00:00Z'
-  }
-];
-
-export const INITIAL_DOCTOR_PROFILE: DoctorProfile = {
-  id: 'doc-prof-1',
-  user_id: 'doctor-1',
-  specialization: 'Educational Psychologist & Language Development Specialist',
-  bio: 'O‘smirlarda til o‘rganishdagi psixologik to‘siqlarni yengish, motivatsiyani mustahkamlash va kundalik intizomni shakllantirish bo‘yicha 9 yillik tajribaga ega mutaxassis.',
-  assigned_student_ids: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6']
-};
-
-export const INITIAL_DOCTOR_NOTES: DoctorNote[] = [
-  {
-    id: 'note-1',
-    doctor_id: 'doctor-1',
-    doctor_name: 'Dr. Nilufar Qodirova',
-    student_id: 'user-1',
-    student_name: 'Jasur Aliyev',
-    category: 'speech_barrier',
-    note: 'Jasur speaking mashqlarida biroz tortinchoqlik ko‘rsatmoqda, lekin grammatik bilimi A2 ga juda mos.',
-    recommendation: 'AI Tutor bilan kuniga 10 daqiqa erkin audio suhbat rejimida mashq qilish va ovozni balandroq chiqarib takrorlash tavsiya etiladi.',
-    created_at: '2026-08-14T14:20:00Z'
-  },
-  {
-    id: 'note-2',
-    doctor_id: 'doctor-1',
-    doctor_name: 'Dr. Nilufar Qodirova',
-    student_id: 'user-5',
-    student_name: 'Sardor Ikromov',
-    category: 'study_habit',
-    note: 'Sardor kunlik streakni ajoyib ushlamoqda. 9 kunlik uzluksiz o‘qish orqali yuqori progress qayd etmoqda.',
-    recommendation: 'Interval takrorlash tizimidagi so‘zlarni kechki soat 20:00 da 5 daqiqa ko‘rib chiqish unumdorlikni yanada oshiradi.',
-    created_at: '2026-08-15T16:45:00Z'
   }
 ];
 

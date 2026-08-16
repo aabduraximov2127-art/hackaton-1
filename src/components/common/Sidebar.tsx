@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Flame, BookOpen, Mic, Bot, BrainCircuit, Trophy, MapPin, 
-  User as UserIcon, Shield, Stethoscope, LogOut, ChevronLeft, ChevronRight, 
+  User as UserIcon, Shield, LogOut, ChevronLeft, ChevronRight, 
   Sparkles, Home, HelpCircle, X
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
@@ -270,30 +270,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {t.rolesGroup}
                 </div>
               )}
-
-              {/* Doctor Panel */}
-              <button
-                onClick={() => {
-                  onSwitchRole('DOCTOR');
-                  handleNavClick('doctor');
-                }}
-                title={isCollapsed ? t.doctorPanel : undefined}
-                className={`w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl text-xs font-bold transition ${
-                  activeTab === 'doctor'
-                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
-                    : 'text-cyan-400/90 hover:text-cyan-300 hover:bg-cyan-500/10'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-xl text-cyan-400">
-                    <Stethoscope className="w-4 h-4" />
-                  </div>
-                  {(!isCollapsed || isOpen) && <span>{t.doctorPanel}</span>}
-                </div>
-                {(!isCollapsed || isOpen) && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">Doctor</span>
-                )}
-              </button>
 
               {/* Admin Panel */}
               <button

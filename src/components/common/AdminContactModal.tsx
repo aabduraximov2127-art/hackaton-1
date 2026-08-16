@@ -103,7 +103,7 @@ export const AdminContactModal: React.FC<AdminContactModalProps> = ({ isOpen, on
                 <option value="">Tanlang...</option>
                 <option value="course_question">Kurs darslari bo‘yicha savol</option>
                 <option value="speaking_ai">Speaking yoki AI Tutor ishlashi</option>
-                <option value="doctor_consultation">Psixolog/Doctor konsultatsiyasi</option>
+                <option value="quiz_test">Testlar va imtihonlar bo‘yicha</option>
                 <option value="bug_report">Texnik xatolik haqida xabar</option>
                 <option value="offline_branch">Offline markazlarga tashrif buyurish</option>
               </select>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, MessageSquare, MapPin, Shield, Stethoscope, Bot, UserCheck } from 'lucide-react';
+import { Send, MessageSquare, MapPin, Shield, Bot, UserCheck } from 'lucide-react';
 import { useI18n } from '../../services/i18n';
 
 interface FooterProps {
@@ -128,20 +128,20 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact, onSelectTab }) =>
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4">{t.rolesGroup}</h4>
             <div className="space-y-3 text-xs">
               <div className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800">
-                <div className="flex items-center gap-2 text-cyan-400 font-bold mb-1">
-                  <Stethoscope className="w-4 h-4" /> {t.doctorPanel}
-                </div>
-                <p className="text-[11px] text-slate-400">
-                  O‘smirlarning o‘rganish psixologiyasi va nutq to‘siqlarini tahlil qilish moduli.
-                </p>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800">
                 <div className="flex items-center gap-2 text-rose-400 font-bold mb-1">
                   <Shield className="w-4 h-4" /> {t.adminPanel}
                 </div>
                 <p className="text-[11px] text-slate-400">
                   Foydalanuvchilar, kurslar, savollar va xaritani boshqarish paneli.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800">
+                <div className="flex items-center gap-2 text-indigo-400 font-bold mb-1">
+                  🚀 OSON AI Platform
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Zamonaviy nutq tahlili, Spaced Repetition va interaktiv kurslar.
                 </p>
               </div>
             </div>
