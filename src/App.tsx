@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { User, Course, Topic, LevelCode, UserRole } from './types';
+import { User, Course, Topic, LevelCode, UserRole, LanguageCode } from './types';
 import { OsonStorageService } from './services/storage';
 import { soundFX } from './services/audio';
 
 // Common Components
-import { Navbar } from './components/common/Navbar';
+import { Sidebar } from './components/common/Sidebar';
 import { Footer } from './components/common/Footer';
 import { AdminContactModal } from './components/common/AdminContactModal';
 
@@ -26,7 +26,6 @@ import { StreakModal } from './components/gamification/StreakModal';
 import { LevelTestModal } from './components/levelTest/LevelTestModal';
 import { OsonMap } from './components/map/OsonMap';
 import { UserProfile } from './components/profile/UserProfile';
-import { DoctorDashboard } from './components/doctor/DoctorDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AuthModal } from './components/auth/AuthModal';
 
@@ -42,6 +41,7 @@ export const App: React.FC = () => {
   });
 
   const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeLanguage, setActiveLanguage] = useState<LanguageCode>('en');
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [activeQuizId, setActiveQuizId] = useState<string>('quiz-a1-1');
@@ -53,26 +53,6 @@ export const App: React.FC = () => {
   const [isXPOpen, setIsXPOpen] = useState(false);
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [levelTestCode, setLevelTestCode] = useState<LevelCode | null>(null);
-
-  // Auto-switch tabs if role changes to DOCTOR or ADMIN
-  const handleSwitchRole = (role: UserRole) => {
-    const allUsers = OsonStorageService.getAllUsers();
-    let target = allUsers.find(u => u.role === role);
-    if (!target) {
-      target = { ...allUsers[0], role: role };
-    }
-    OsonStorageService.setCurrentUser(target);
-    setCurrentUser(target);
-    soundFX.playCorrect();
-
-    if (role === 'ADMIN') {
-      setActiveTab('admin');
-    } else if (role === 'DOCTOR') {
-      setActiveTab('doctor');
-    } else {
-      setActiveTab('dashboard');
-    }
-  };
 
   const handleSelectTab = (tab: string, extraData?: unknown) => {
     soundFX.playClick();
@@ -86,6 +66,11 @@ export const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSelectLanguage = (lang: LanguageCode) => {
+    setActiveLanguage(lang);
+    soundFX.playXP();
+  };
+
   const handleLogout = () => {
     OsonStorageService.setCurrentUser(null);
     setCurrentUser(null);
@@ -93,183 +78,182 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-slate-100 font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-[#0b0c10] text-[#f1f0ee] font-['Manrope',sans-serif] selection:bg-[#ff6b4a] selection:text-[#0c0e14]">
       
-      {/* Top Navbar */}
-      <Navbar
+      {/* SIDEBAR (YON MENYU / SITE BAR) */}
+      <Sidebar
         currentUser={currentUser}
         activeTab={activeTab}
+        activeLanguage={activeLanguage}
         onSelectTab={handleSelectTab}
+        onSelectLanguage={handleSelectLanguage}
         onOpenAuth={() => setIsAuthOpen(true)}
-        onOpenContact={() => setIsContactOpen(true)}
-        onOpenXPModal={() => setIsXPOpen(true)}
         onOpenStreakModal={() => setIsStreakOpen(true)}
-        onSwitchRole={handleSwitchRole}
+        onOpenXPModal={() => setIsXPOpen(true)}
         onLogout={handleLogout}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+      {/* MAIN APP CONTENT CONTAINER (Margin left for desktop sidebar) */}
+      <div className="lg:pl-72 flex flex-col min-h-screen">
         
-        {/* LANDING PAGE */}
-        {(!currentUser || activeTab === 'landing') && (
-          <LandingPage
-            onStart={() => {
-              if (currentUser) {
-                setActiveTab('dashboard');
-              } else {
-                setIsAuthOpen(true);
-              }
-            }}
-            onOpenAuth={() => setIsAuthOpen(true)}
-            onTrySpeaking={() => {
-              if (currentUser) {
-                setActiveTab('speaking');
-              } else {
-                setIsAuthOpen(true);
-              }
-            }}
-            onTryAI={() => {
-              if (currentUser) {
-                setActiveTab('ai-tutor');
-              } else {
-                setIsAuthOpen(true);
-              }
-            }}
-          />
-        )}
+        {/* Main Content View */}
+        <main className="flex-1 w-full max-w-[1140px] mx-auto px-4 sm:px-8 pt-20 lg:pt-8 pb-12">
+          
+          {/* LANDING PAGE (If not logged in or activeTab === 'landing') */}
+          {(!currentUser || activeTab === 'landing') && (
+            <LandingPage
+              onStart={() => {
+                if (currentUser) {
+                  setActiveTab('dashboard');
+                } else {
+                  setIsAuthOpen(true);
+                }
+              }}
+              onOpenAuth={() => setIsAuthOpen(true)}
+              onTrySpeaking={() => {
+                if (currentUser) {
+                  setActiveTab('speaking');
+                } else {
+                  setIsAuthOpen(true);
+                }
+              }}
+              onTryAI={() => {
+                if (currentUser) {
+                  setActiveTab('ai-tutor');
+                } else {
+                  setIsAuthOpen(true);
+                }
+              }}
+            />
+          )}
 
-        {/* DASHBOARD HOME */}
-        {currentUser && activeTab === 'dashboard' && (
-          <DashboardHome
-            currentUser={currentUser}
-            onSelectTab={handleSelectTab}
-            onOpenLevelTest={(lvl) => setLevelTestCode(lvl as LevelCode)}
-            onOpenXPModal={() => setIsXPOpen(true)}
-            onOpenStreakModal={() => setIsStreakOpen(true)}
-          />
-        )}
+          {/* DASHBOARD HOME */}
+          {currentUser && activeTab === 'dashboard' && (
+            <DashboardHome
+              currentUser={currentUser}
+              onSelectTab={handleSelectTab}
+              onOpenLevelTest={(lvl) => setLevelTestCode(lvl as LevelCode)}
+              onOpenXPModal={() => setIsXPOpen(true)}
+              onOpenStreakModal={() => setIsStreakOpen(true)}
+            />
+          )}
 
-        {/* COURSES CATALOG */}
-        {currentUser && activeTab === 'courses' && (
-          <CourseCatalog
-            onSelectCourse={(c) => {
-              setSelectedCourse(c);
-              setActiveTab('course-detail');
-            }}
-          />
-        )}
+          {/* COURSES CATALOG */}
+          {currentUser && activeTab === 'courses' && (
+            <CourseCatalog
+              onSelectCourse={(c) => {
+                setSelectedCourse(c);
+                setActiveTab('course-detail');
+              }}
+            />
+          )}
 
-        {/* QUIZZES ARENA */}
-        {currentUser && activeTab === 'quizzes' && (
-          <QuizArena
-            onStartQuiz={(qId) => {
-              setActiveQuizId(qId);
-              setActiveTab('quiz-player');
-            }}
-          />
-        )}
+          {/* QUIZZES ARENA */}
+          {currentUser && activeTab === 'quizzes' && (
+            <QuizArena
+              onStartQuiz={(qId) => {
+                setActiveQuizId(qId);
+                setActiveTab('quiz-player');
+              }}
+            />
+          )}
 
-        {/* COURSE DETAIL */}
-        {currentUser && activeTab === 'course-detail' && selectedCourse && (
-          <CourseDetail
-            course={selectedCourse}
-            onBack={() => setActiveTab('courses')}
-            onSelectTopic={(t) => {
-              setSelectedTopic(t);
-              setActiveTab('topic-view');
-            }}
-          />
-        )}
-
-        {/* TOPIC VIEW */}
-        {currentUser && activeTab === 'topic-view' && selectedTopic && (
-          <TopicView
-            topic={selectedTopic}
-            onBack={() => setActiveTab('course-detail')}
-            onOpenSpeakingStudio={(title) => {
-              setSpeakingTopicTitle(title);
-              setActiveTab('speaking');
-            }}
-            onOpenQuizPlayer={(qId) => {
-              setActiveQuizId(qId);
-              setActiveTab('quiz-player');
-            }}
-          />
-        )}
-
-        {/* QUIZ PLAYER */}
-        {currentUser && activeTab === 'quiz-player' && (
-          <QuizPlayer
-            quizId={activeQuizId}
-            currentUser={currentUser}
-            onBack={() => {
-              if (selectedTopic) {
+          {/* COURSE DETAIL */}
+          {currentUser && activeTab === 'course-detail' && selectedCourse && (
+            <CourseDetail
+              course={selectedCourse}
+              onBack={() => setActiveTab('courses')}
+              onSelectTopic={(t) => {
+                setSelectedTopic(t);
                 setActiveTab('topic-view');
-              } else {
-                setActiveTab('dashboard');
-              }
-            }}
-          />
-        )}
+              }}
+            />
+          )}
 
-        {/* SPEAKING STUDIO (WOW FEATURE) */}
-        {currentUser && activeTab === 'speaking' && (
-          <SpeakingStudio
-            currentUser={currentUser}
-            initialTopicTitle={speakingTopicTitle}
-            onBack={() => setActiveTab('dashboard')}
-          />
-        )}
+          {/* TOPIC VIEW */}
+          {currentUser && activeTab === 'topic-view' && selectedTopic && (
+            <TopicView
+              topic={selectedTopic}
+              onBack={() => setActiveTab('course-detail')}
+              onOpenSpeakingStudio={(title) => {
+                setSpeakingTopicTitle(title);
+                setActiveTab('speaking');
+              }}
+              onOpenQuizPlayer={(qId) => {
+                setActiveQuizId(qId);
+                setActiveTab('quiz-player');
+              }}
+            />
+          )}
 
-        {/* AI TUTOR CHAT */}
-        {currentUser && activeTab === 'ai-tutor' && (
-          <AITutorChat currentUser={currentUser} />
-        )}
+          {/* QUIZ PLAYER */}
+          {currentUser && activeTab === 'quiz-player' && (
+            <QuizPlayer
+              quizId={activeQuizId}
+              currentUser={currentUser}
+              onBack={() => {
+                if (selectedTopic) {
+                  setActiveTab('topic-view');
+                } else {
+                  setActiveTab('dashboard');
+                }
+              }}
+            />
+          )}
 
-        {/* VOCABULARY & FLASHCARDS */}
-        {currentUser && activeTab === 'vocabulary' && (
-          <FlashcardDeck />
-        )}
+          {/* SPEAKING STUDIO */}
+          {currentUser && activeTab === 'speaking' && (
+            <SpeakingStudio
+              currentUser={currentUser}
+              initialTopicTitle={speakingTopicTitle}
+              onBack={() => setActiveTab('dashboard')}
+            />
+          )}
 
-        {/* LEADERBOARD */}
-        {currentUser && activeTab === 'leaderboard' && (
-          <div className="space-y-12">
-            <LeaderboardView currentUser={currentUser} />
-            <AchievementsGrid currentUser={currentUser} />
-          </div>
-        )}
+          {/* AI TUTOR CHAT */}
+          {currentUser && activeTab === 'ai-tutor' && (
+            <AITutorChat currentUser={currentUser} />
+          )}
 
-        {/* MAP */}
-        {currentUser && activeTab === 'map' && (
-          <OsonMap />
-        )}
+          {/* VOCABULARY & FLASHCARDS */}
+          {currentUser && activeTab === 'vocabulary' && (
+            <FlashcardDeck />
+          )}
 
-        {/* USER PROFILE */}
-        {currentUser && activeTab === 'profile' && (
-          <UserProfile
-            currentUser={currentUser}
-            onUpdateUser={(updated) => setCurrentUser(updated)}
-          />
-        )}
+          {/* LEADERBOARD */}
+          {currentUser && activeTab === 'leaderboard' && (
+            <div className="space-y-8">
+              <LeaderboardView currentUser={currentUser} />
+              <AchievementsGrid currentUser={currentUser} />
+            </div>
+          )}
 
-        {/* DOCTOR PANEL */}
-        {currentUser && activeTab === 'doctor' && (
-          <DoctorDashboard currentUser={currentUser} />
-        )}
+          {/* MAP */}
+          {currentUser && activeTab === 'map' && (
+            <OsonMap />
+          )}
 
-        {/* ADMIN PANEL */}
-        {currentUser && activeTab === 'admin' && (
-          <AdminDashboard currentUser={currentUser} />
-        )}
+          {/* USER PROFILE */}
+          {currentUser && activeTab === 'profile' && (
+            <UserProfile
+              currentUser={currentUser}
+              onUpdateUser={(updated) => setCurrentUser(updated)}
+            />
+          )}
 
-      </main>
+          {/* ADMIN PANEL */}
+          {currentUser && activeTab === 'admin' && (
+            <AdminDashboard currentUser={currentUser} />
+          )}
 
-      {/* Footer */}
-      <Footer
-        onOpenContact={() => setIsContactOpen(true)}
-        onSelectTab={handleSelectTab}
-      />
+        </main>
+
+        {/* Footer */}
+        <Footer
+          onOpenContact={() => setIsContactOpen(true)}
+          onSelectTab={handleSelectTab}
+        />
+      </div>
 
       {/* MODALS */}
       <AuthModal
@@ -279,8 +263,6 @@ export const App: React.FC = () => {
           setCurrentUser(user);
           if (user.role === 'ADMIN') {
             setActiveTab('admin');
-          } else if (user.role === 'DOCTOR') {
-            setActiveTab('doctor');
           } else {
             setActiveTab('dashboard');
           }
@@ -313,7 +295,7 @@ export const App: React.FC = () => {
               onClose={() => setLevelTestCode(null)}
               levelCode={levelTestCode}
               currentUser={currentUser}
-              onLevelPassed={(newLevel) => {
+              onLevelPassed={() => {
                 const refreshed = OsonStorageService.getCurrentUser();
                 if (refreshed) setCurrentUser(refreshed);
               }}

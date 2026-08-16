@@ -1,38 +1,35 @@
 import { 
   User, Level, Course, Topic, Lesson, Word, Question, Quiz, QuizAttempt,
   SpeakingAttempt, ConversationMessage, XPTransaction, Achievement, UserAchievement,
-  StreakData, LocationItem, DoctorProfile, DoctorNote, DailyChallenge, EmailVerification, LevelCode, XPSource
+  StreakData, LocationItem, DailyChallenge, EmailVerification, LevelCode, XPSource
 } from '../types';
 import { 
   INITIAL_LEVELS, INITIAL_COURSES, INITIAL_TOPICS, INITIAL_LESSONS, 
   INITIAL_WORDS, INITIAL_QUESTIONS, INITIAL_QUIZZES, INITIAL_ACHIEVEMENTS, 
-  INITIAL_LOCATIONS, INITIAL_USERS, INITIAL_DOCTOR_PROFILE, INITIAL_DOCTOR_NOTES, 
-  INITIAL_DAILY_CHALLENGES 
+  INITIAL_LOCATIONS, INITIAL_USERS, INITIAL_DAILY_CHALLENGES 
 } from '../data/mockData';
 
 const KEYS = {
-  USERS: 'oson_users_v2',
-  CURRENT_USER: 'oson_current_user_v2',
-  VERIFICATIONS: 'oson_verifications_v2',
-  LEVELS: 'oson_levels_v2',
-  COURSES: 'oson_courses_v2',
-  TOPICS: 'oson_topics_v2',
-  LESSONS: 'oson_lessons_v2',
-  WORDS: 'oson_words_v2',
-  QUESTIONS: 'oson_questions_v2',
-  QUIZZES: 'oson_quizzes_v2',
-  QUIZ_ATTEMPTS: 'oson_quiz_attempts_v2',
-  SPEAKING_ATTEMPTS: 'oson_speaking_attempts_v2',
-  CONVERSATIONS: 'oson_conversations_v2',
-  XP_TRANSACTIONS: 'oson_xp_transactions_v2',
-  ACHIEVEMENTS: 'oson_achievements_v2',
-  USER_ACHIEVEMENTS: 'oson_user_achievements_v2',
-  STREAKS: 'oson_streaks_v2',
-  LOCATIONS: 'oson_locations_v2',
-  DOCTOR_PROFILES: 'oson_doctor_profiles_v2',
-  DOCTOR_NOTES: 'oson_doctor_notes_v2',
-  DAILY_CHALLENGES: 'oson_daily_challenges_v2',
-  SRS_PROGRESS: 'oson_srs_progress_v2',
+  USERS: 'oson_users_v3',
+  CURRENT_USER: 'oson_current_user_v3',
+  VERIFICATIONS: 'oson_verifications_v3',
+  LEVELS: 'oson_levels_v3',
+  COURSES: 'oson_courses_v3',
+  TOPICS: 'oson_topics_v3',
+  LESSONS: 'oson_lessons_v3',
+  WORDS: 'oson_words_v3',
+  QUESTIONS: 'oson_questions_v3',
+  QUIZZES: 'oson_quizzes_v3',
+  QUIZ_ATTEMPTS: 'oson_quiz_attempts_v3',
+  SPEAKING_ATTEMPTS: 'oson_speaking_attempts_v3',
+  CONVERSATIONS: 'oson_conversations_v3',
+  XP_TRANSACTIONS: 'oson_xp_transactions_v3',
+  ACHIEVEMENTS: 'oson_achievements_v3',
+  USER_ACHIEVEMENTS: 'oson_user_achievements_v3',
+  STREAKS: 'oson_streaks_v3',
+  LOCATIONS: 'oson_locations_v3',
+  DAILY_CHALLENGES: 'oson_daily_challenges_v3',
+  SRS_PROGRESS: 'oson_srs_progress_v3',
 };
 
 function getStorage<T>(key: string, defaultVal: T): T {
@@ -88,12 +85,6 @@ export class OsonStorageService {
     }
     if (!localStorage.getItem(KEYS.LOCATIONS)) {
       setStorage(KEYS.LOCATIONS, INITIAL_LOCATIONS);
-    }
-    if (!localStorage.getItem(KEYS.DOCTOR_PROFILES)) {
-      setStorage(KEYS.DOCTOR_PROFILES, [INITIAL_DOCTOR_PROFILE]);
-    }
-    if (!localStorage.getItem(KEYS.DOCTOR_NOTES)) {
-      setStorage(KEYS.DOCTOR_NOTES, INITIAL_DOCTOR_NOTES);
     }
     if (!localStorage.getItem(KEYS.DAILY_CHALLENGES)) {
       setStorage(KEYS.DAILY_CHALLENGES, INITIAL_DAILY_CHALLENGES);
@@ -449,33 +440,6 @@ export class OsonStorageService {
   static deleteLocation(id: string): void {
     const locs = this.getLocations().filter(l => l.id !== id);
     setStorage(KEYS.LOCATIONS, locs);
-  }
-
-  // Doctor Module
-  static getDoctorProfile(doctorId: string): DoctorProfile | null {
-    const profiles = getStorage<DoctorProfile[]>(KEYS.DOCTOR_PROFILES, [INITIAL_DOCTOR_PROFILE]);
-    return profiles.find(p => p.user_id === doctorId) || null;
-  }
-
-  static getDoctorNotes(doctorId?: string, studentId?: string): DoctorNote[] {
-    const notes = getStorage<DoctorNote[]>(KEYS.DOCTOR_NOTES, INITIAL_DOCTOR_NOTES);
-    return notes.filter(n => {
-      if (doctorId && n.doctor_id !== doctorId) return false;
-      if (studentId && n.student_id !== studentId) return false;
-      return true;
-    });
-  }
-
-  static addDoctorNote(note: Omit<DoctorNote, 'id' | 'created_at'>): DoctorNote {
-    const notes = getStorage<DoctorNote[]>(KEYS.DOCTOR_NOTES, INITIAL_DOCTOR_NOTES);
-    const newNote: DoctorNote = {
-      ...note,
-      id: 'note-' + Date.now(),
-      created_at: new Date().toISOString()
-    };
-    notes.unshift(newNote);
-    setStorage(KEYS.DOCTOR_NOTES, notes);
-    return newNote;
   }
 
   // Daily Challenges

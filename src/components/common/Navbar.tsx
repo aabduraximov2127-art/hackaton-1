@@ -205,7 +205,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#161920] text-xs font-bold text-[#f1f0ee] hover:border-[#ff6b4a] transition cursor-pointer"
                   >
                     {currentUser.role === 'ADMIN' && <Shield className="w-3.5 h-3.5 text-rose-400" />}
-                    {currentUser.role === 'DOCTOR' && <Stethoscope className="w-3.5 h-3.5 text-teal-400" />}
                     {currentUser.role === 'USER' && <UserIcon className="w-3.5 h-3.5 text-indigo-400" />}
                     <span className="hidden md:inline">{currentUser.role}</span>
                   </button>
@@ -221,13 +220,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       >
                         <UserIcon className="w-3.5 h-3.5 text-indigo-400" />
                         <span>O‘quvchi (USER)</span>
-                      </button>
-                      <button
-                        onClick={() => { onSwitchRole('DOCTOR'); setRoleDropdownOpen(false); }}
-                        className="w-full px-3 py-2 rounded-xl text-left hover:bg-white/5 flex items-center gap-2 text-teal-300 font-medium"
-                      >
-                        <Stethoscope className="w-3.5 h-3.5 text-teal-400" />
-                        <span>Psixolog (DOCTOR)</span>
                       </button>
                       <button
                         onClick={() => { onSwitchRole('ADMIN'); setRoleDropdownOpen(false); }}

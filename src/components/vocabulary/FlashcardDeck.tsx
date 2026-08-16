@@ -3,22 +3,24 @@ import {
   BrainCircuit, Volume2, RotateCcw, Check, Sparkles, 
   ArrowLeft, ArrowRight, Search, Layers, CheckCircle2, Bookmark 
 } from 'lucide-react';
-import { Word, LevelCode } from '../../types';
+import { Word, LevelCode, LanguageCode } from '../../types';
 import { OsonStorageService } from '../../services/storage';
-import { soundFX, speakEnglish } from '../../services/audio';
+import { soundFX, speakText } from '../../services/audio';
 import { fireConfetti } from '../common/ConfettiTrigger';
 
 export const FlashcardDeck: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>('ALL');
+  const [selectedLang, setSelectedLang] = useState<string>('ALL');
   const [viewMode, setViewMode] = useState<'flashcards' | 'list'>('flashcards');
   const [searchQuery, setSearchQuery] = useState('');
 
   const allWords = OsonStorageService.getWords();
   const filteredWords = allWords.filter(w => {
     const matchesLevel = selectedLevel === 'ALL' || w.level_code === selectedLevel;
+    const matchesLang = selectedLang === 'ALL' || w.language_code === selectedLang || (!w.language_code && selectedLang === 'en');
     const matchesSearch = w.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           w.translation.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesLevel && matchesSearch;
+    return matchesLevel && matchesLang && matchesSearch;
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -51,10 +53,10 @@ export const FlashcardDeck: React.FC = () => {
     }
   };
 
-  const handleSpeak = (text: string, e?: React.MouseEvent) => {
+  const handleSpeak = (text: string, langCode: string = 'en', e?: React.MouseEvent) => {
     e?.stopPropagation();
     soundFX.playClick();
-    speakEnglish(text);
+    speakText(text, langCode);
   };
 
   return (
@@ -158,7 +160,7 @@ export const FlashcardDeck: React.FC = () => {
                     {currentWord.level_code} • {currentWord.part_of_speech}
                   </span>
                   <button
-                    onClick={(e) => handleSpeak(currentWord.word, e)}
+                    onClick={(e) => handleSpeak(currentWord.word, currentWord.language_code || 'en', e)}
                     className="p-3 rounded-2xl bg-teal-500/20 text-teal-300 hover:bg-teal-500 hover:text-white transition shadow-lg"
                     title="Talaffuzni eshitish"
                   >
@@ -187,7 +189,7 @@ export const FlashcardDeck: React.FC = () => {
                     O‘zbekcha Ma’nosi:
                   </span>
                   <button
-                    onClick={(e) => handleSpeak(currentWord.example, e)}
+                    onClick={(e) => handleSpeak(currentWord.example, currentWord.language_code || 'en', e)}
                     className="p-2.5 rounded-xl bg-teal-500/20 text-teal-300 hover:bg-teal-500 hover:text-white transition"
                     title="Misolni eshitish"
                   >

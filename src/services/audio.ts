@@ -1,4 +1,4 @@
-// Audio Service: Sound Synthesis, TTS Speech, and Web Speech Recognition
+// Audio Service: Sound Synthesis, TTS Speech for multiple languages, and Web Speech Recognition
 
 class SoundFX {
   private ctx: AudioContext | null = null;
@@ -126,25 +126,32 @@ class SoundFX {
 
 export const soundFX = new SoundFX();
 
-// Text-to-Speech
-export const speakEnglish = (text: string, rate: number = 0.95): Promise<void> => {
+// Multilingual Text-to-Speech (English, Russian, French, Uzbek)
+export const speakText = (text: string, lang: string = 'en-US', rate: number = 0.95): Promise<void> => {
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       resolve();
       return;
     }
 
-    window.speechSynthesis.cancel(); // Stop ongoing speech
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
+    
+    // Map short codes to full BCP-47 tags
+    let voiceLang = lang;
+    if (lang === 'en') voiceLang = 'en-US';
+    else if (lang === 'ru') voiceLang = 'ru-RU';
+    else if (lang === 'fr') voiceLang = 'fr-FR';
+    else if (lang === 'uz') voiceLang = 'uz-UZ';
+
+    utterance.lang = voiceLang;
     utterance.rate = rate;
     utterance.pitch = 1.0;
 
-    // Pick best English voice if available
     const voices = window.speechSynthesis.getVoices();
-    const englishVoice = voices.find(v => (v.lang.includes('en-US') || v.lang.includes('en-GB')) && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha')));
-    if (englishVoice) {
-      utterance.voice = englishVoice;
+    const matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(voiceLang.slice(0, 2).toLowerCase()));
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
     }
 
     utterance.onend = () => resolve();
@@ -152,6 +159,10 @@ export const speakEnglish = (text: string, rate: number = 0.95): Promise<void> =
 
     window.speechSynthesis.speak(utterance);
   });
+};
+
+export const speakEnglish = (text: string, rate: number = 0.95): Promise<void> => {
+  return speakText(text, 'en-US', rate);
 };
 
 // Web Speech Recognition wrapper
@@ -165,7 +176,7 @@ export class SpeechRecognizer {
   private recognition: any = null;
   private isListening: boolean = false;
 
-  constructor(onResult: (res: SpeechRecognitionResultType) => void, onError?: (err: string) => void) {
+  constructor(onResult: (res: SpeechRecognitionResultType) => void, onError?: (err: string) => void, lang: string = 'en-US') {
     if (typeof window !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -173,7 +184,7 @@ export class SpeechRecognizer {
         this.recognition = new SpeechRecognition();
         this.recognition.continuous = true;
         this.recognition.interimResults = true;
-        this.recognition.lang = 'en-US';
+        this.recognition.lang = lang;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.recognition.onresult = (event: any) => {

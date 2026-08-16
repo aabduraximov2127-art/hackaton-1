@@ -202,30 +202,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
               <div className="text-[11px] font-bold text-slate-400 mb-2.5 text-center uppercase tracking-wider">
                 ⚡ Hackathon Quick Demo Logins:
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => handleQuickLogin('USER')}
-                  className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition flex flex-col items-center gap-1"
+                  className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition flex flex-col items-center gap-1 cursor-pointer"
                 >
-                  <span>👦 O‘quvchi</span>
-                  <span className="text-[10px] text-slate-400">Jasur (A2)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickLogin('DOCTOR')}
-                  className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-400 text-xs font-bold transition flex flex-col items-center gap-1"
-                >
-                  <span>👩‍⚕️ Doctor</span>
-                  <span className="text-[10px] text-slate-400">Dr. Nilufar</span>
+                  <span>👦 O‘quvchi (13 yosh)</span>
+                  <span className="text-[10px] text-slate-400">Jasur (A2 Level)</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickLogin('ADMIN')}
-                  className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition flex flex-col items-center gap-1"
+                  className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-400 text-xs font-bold transition flex flex-col items-center gap-1 cursor-pointer"
                 >
-                  <span>🛡️ Admin</span>
-                  <span className="text-[10px] text-slate-400">OSON Admin</span>
+                  <span>🛡️ Administrator</span>
+                  <span className="text-[10px] text-slate-400">Boshqaruv</span>
                 </button>
               </div>
             </div>

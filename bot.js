@@ -307,7 +307,7 @@ const MAIN_KEYBOARD = {
         { text: '🗺️ OSON Filiallari (Xarita)' }
       ],
       [
-        { text: '👩‍⚕️ Psixolog Maslahati' },
+        { text: '💡 O‘rganish Tavsiyalari' },
         { text: '🌐 Web Platforma' }
       ]
     ],
@@ -568,21 +568,19 @@ function sendLocations(chatId) {
   bot.sendLocation(chatId, 41.311081, 69.279737);
 }
 
-// Function to send doctor advice
-function sendDoctorAdvice(chatId) {
-  const docMsg = 
-`👩‍⚕️ <b>OSON Psixologi & Til Rivojlanishi Mutaxassisi Maslahatlari:</b>
+// Function to send study advice for teens
+function sendStudyAdvice(chatId) {
+  const adviceMsg = 
+`💡 <b>13–18 yoshli o‘quvchilar uchun til o‘rganish sirlari:</b>
 
-💡 <b>Nutqdagi tortinchoqlikni (Speech Barrier) qanday yengish mumkin?</b>
+1. <b>O‘yin orqali o‘rganing:</b> Har kuni 10 daqiqa botimizda yoki platformada test yechib, streakni olovli ushlang! 🔥
+2. <b>Ovoz chiqarib gapiring:</b> AI do‘stimizga har kuni 1 ta ovozli xabar yuboring. AI xatolaringizni do‘stona to‘g‘rilaydi.
+3. <b>Sevimli o‘yinlaringizni ingliz tiliga o‘tkazing:</b> Roblox, Minecraft, PUBG va YouTube videolarni inglizcha tomosha qiling.
+4. <b>Xatodan qo‘rqmang:</b> Har bir xato — yangi bilim demakdir!
 
-1. <b>Mukammallikka intilmang:</b> Til o‘rganishda xato qilish — eng tabiiy va foydali jarayon. Xato qilishdan qo‘rqmang!
-2. <b>Ovozni baland chiqarib o‘qing:</b> Kuniga 5 daqiqa inglizcha matnni oynaga qarab baland ovozda o‘qing.
-3. <b>AI bilan mashq qiling:</b> Botimizga audio xabar yuborish orqali gapirishni boshlang. AI sizni hech qachon baholamaydi yoki jerkimaydi.
-4. <b>Uzluksizlik:</b> Haftada 1 marta 3 soat o‘qigandan ko‘ra, har kuni 10 daqiqa shug‘ullanish 5 baravar foydaliroq!
+✨ <i>Sen albatta tillarni a’lo darajada o‘rganasan! 🚀</i>`;
 
-✨ <i>Siz albatta ingliz tilida erkin so‘zlashasiz!</i>`;
-
-  bot.sendMessage(chatId, docMsg, { parse_mode: 'HTML' });
+  bot.sendMessage(chatId, adviceMsg, { parse_mode: 'HTML' });
 }
 
 // Handle All Text Messages & AI Tutor Integration
@@ -613,8 +611,8 @@ bot.on('message', (msg) => {
     sendLocations(chatId);
     return;
   }
-  if (text === '👩‍⚕️ Psixolog Maslahati' || text === '👩‍⚕️ Psixolog / Doctor Maslahati') {
-    sendDoctorAdvice(chatId);
+  if (text === '💡 O‘rganish Tavsiyalari' || text === '👩‍⚕️ Psixolog Maslahati') {
+    sendStudyAdvice(chatId);
     return;
   }
   if (text === '🌐 Web Platforma' || text === '🚀 Web Ilovaga O‘tish') {

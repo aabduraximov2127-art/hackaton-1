@@ -1,4 +1,15 @@
-export type UserRole = 'USER' | 'DOCTOR' | 'ADMIN';
+export type UserRole = 'USER' | 'ADMIN';
+
+export type LanguageCode = 'en' | 'ru' | 'fr' | 'uz';
+
+export interface Language {
+  code: LanguageCode;
+  name: string;
+  native_name: string;
+  flag: string;
+  voice_lang: string; // e.g. en-US, ru-RU, fr-FR
+  description: string;
+}
 
 export type LevelCode = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
@@ -40,6 +51,7 @@ export interface Level {
 export interface Course {
   id: string;
   level_code: LevelCode;
+  language_code?: LanguageCode;
   title: string;
   description: string;
   image: string;
@@ -53,6 +65,7 @@ export interface Topic {
   id: string;
   course_id: string;
   level_code: LevelCode;
+  language_code?: LanguageCode;
   title: string;
   description: string;
   order: number;
@@ -80,6 +93,7 @@ export interface Lesson {
 export interface Word {
   id: string;
   level_code: LevelCode;
+  language_code?: LanguageCode;
   topic_id: string;
   word: string;
   phonetic: string;
@@ -105,6 +119,7 @@ export type QuestionType = 'multiple_choice' | 'fill_blank' | 'listening' | 'sen
 export interface Question {
   id: string;
   level_code: LevelCode;
+  language_code?: LanguageCode;
   topic_id?: string;
   quiz_id?: string;
   question: string;
@@ -118,6 +133,7 @@ export interface Question {
 export interface Quiz {
   id: string;
   level_code: LevelCode;
+  language_code?: LanguageCode;
   topic_id?: string;
   title: string;
   description: string;
