@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  Shield, Users, BookOpen, BrainCircuit, HelpCircle, 
-  MapPin, Plus, Trash2, Edit2, CheckCircle2, XCircle, Search, Sparkles, BarChart2 
+  Users, BookOpen, BrainCircuit, HelpCircle, 
+  MapPin, Plus, Trash2, Search 
 } from 'lucide-react';
 import { User, Course, Word, Question, LocationItem, UserRole, LevelCode } from '../../types';
 import { OsonStorageService } from '../../services/storage';
@@ -11,14 +11,14 @@ interface AdminDashboardProps {
   currentUser: User;
 }
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser }) => {
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser: _currentUser }) => {
   const [activeTab, setActiveTab] = useState<'users' | 'courses' | 'words' | 'questions' | 'locations' | 'stats'>('users');
   
   const [users, setUsers] = useState<User[]>(OsonStorageService.getAllUsers());
-  const [courses, setCourses] = useState<Course[]>(OsonStorageService.getCourses());
+  const [courses] = useState<Course[]>(OsonStorageService.getCourses());
   const [words, setWords] = useState<Word[]>(OsonStorageService.getWords());
   const [questions, setQuestions] = useState<Question[]>(OsonStorageService.getQuestions());
-  const [locations, setLocations] = useState<LocationItem[]>(OsonStorageService.getLocations());
+  const [locations] = useState<LocationItem[]>(OsonStorageService.getLocations());
 
   const [searchUser, setSearchUser] = useState('');
 
@@ -325,11 +325,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser }) =
                 />
                 <input
                   type="text"
+                  placeholder="Transkripsiya (e.g. /ˈbreɪkθruː/)"
+                  value={newPhonetic}
+                  onChange={(e) => setNewPhonetic(e.target.value)}
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                />
+                <input
+                  type="text"
                   placeholder="O‘zbekcha tarjimasi"
                   value={newTranslation}
                   onChange={(e) => setNewTranslation(e.target.value)}
                   className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
                   required
+                />
+                <input
+                  type="text"
+                  placeholder="Misol gap (e.g. This is a scientific breakthrough)"
+                  value={newExample}
+                  onChange={(e) => setNewExample(e.target.value)}
+                  className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
                 />
                 <select
                   value={newLevel}
@@ -398,14 +412,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser }) =
                 <button type="button" onClick={() => setIsAddingQuestion(false)} className="text-xs text-slate-400">Bekor qilish</button>
               </div>
 
-              <textarea
-                placeholder="Savol matni..."
-                value={newQText}
-                onChange={(e) => setNewQText(e.target.value)}
-                rows={2}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
-                required
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <textarea
+                  placeholder="Savol matni..."
+                  value={newQText}
+                  onChange={(e) => setNewQText(e.target.value)}
+                  rows={2}
+                  className="sm:col-span-3 px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                  required
+                />
+                <select
+                  value={newQLevel}
+                  onChange={(e) => setNewQLevel(e.target.value as LevelCode)}
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white self-start"
+                >
+                  <option value="A1">A1</option>
+                  <option value="A2">A2</option>
+                  <option value="B1">B1</option>
+                  <option value="B2">B2</option>
+                  <option value="C1">C1</option>
+                </select>
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <input
@@ -433,11 +460,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentUser }) =
                 />
                 <input
                   type="text"
+                  placeholder="Variant D"
+                  value={newQOpt4}
+                  onChange={(e) => setNewQOpt4(e.target.value)}
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                />
+                <input
+                  type="text"
                   placeholder="To‘g‘ri javob matni"
                   value={newQCorrect}
                   onChange={(e) => setNewQCorrect(e.target.value)}
                   className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-emerald-500/40 text-xs text-emerald-300 font-bold"
                   required
+                />
+                <input
+                  type="text"
+                  placeholder="Izoh va tahlil (Explanation)"
+                  value={newQExplanation}
+                  onChange={(e) => setNewQExplanation(e.target.value)}
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
                 />
               </div>
 

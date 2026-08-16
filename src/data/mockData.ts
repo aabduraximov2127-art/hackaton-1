@@ -1,134 +1,72 @@
 import { 
   Level, Course, Topic, Lesson, Word, Question, Quiz, 
-  ConversationScenario, Achievement, LocationItem, User, DailyChallenge, Language 
+  ConversationScenario, Achievement, LocationItem, User, DoctorProfile, DoctorNote, DailyChallenge 
 } from '../types';
-
-export const AVAILABLE_LANGUAGES: Language[] = [
-  {
-    code: 'fr',
-    name: 'Fransuz tili',
-    native_name: 'Français',
-    flag: '🇫🇷',
-    voice_lang: 'fr-FR',
-    description: 'Parij sayohati, yoqimli talaffuz, san’at va qahvaxonalar tili.'
-  },
-  {
-    code: 'en',
-    name: 'Ingliz tili',
-    native_name: 'English',
-    flag: '🇬🇧',
-    voice_lang: 'en-US',
-    description: 'Xalqaro muloqot, IELTS, IT va video o‘yinlar tili.'
-  },
-  {
-    code: 'ru',
-    name: 'Rus tili',
-    native_name: 'Русский',
-    flag: '🇷🇺',
-    voice_lang: 'ru-RU',
-    description: 'Do‘stlar bilan suhbat, grammatika va boy adabiyot.'
-  },
-  {
-    code: 'uz',
-    name: 'O‘zbek tili',
-    native_name: 'O‘zbekcha',
-    flag: '🇺🇿',
-    voice_lang: 'uz-UZ',
-    description: 'Ona tili adabiyoti va so‘z boyligi.'
-  }
-];
 
 export const INITIAL_LEVELS: Level[] = [
   {
     code: 'A1',
-    name: 'Boshlang‘ich (Débutant / Starter)',
+    name: 'Beginner',
     order: 1,
     passing_score: 80,
-    description: 'Oddiy salomlashuv, tanishuv, kundalik so‘zlar va asosiy iboralar.',
+    description: 'Boshlang‘ich daraja — oddiy iboralar, tanishuv, kundalik so‘zlar va asosiy grammatika.',
     color: 'from-emerald-500 to-teal-700',
     badge_icon: '🌱'
   },
   {
     code: 'A2',
-    name: 'Elementar (Élémentaire / Elementary)',
+    name: 'Elementary',
     order: 2,
     passing_score: 80,
-    description: 'Sayohat, kafe, qiziqishlar va o‘tgan zamon hikoyalari.',
+    description: 'Boshlang‘ichdan yuqori — sayohat, xaridlar, qiziqishlar va o‘tmish zamon ifodalari.',
     color: 'from-blue-500 to-indigo-700',
     badge_icon: '🌿'
   },
   {
     code: 'B1',
-    name: 'O‘rta (Intermédiaire / Intermediate)',
+    name: 'Intermediate',
     order: 3,
     passing_score: 85,
-    description: 'Erkin suhbat, texnologiya, fikr bildirish va bahslar.',
+    description: 'O‘rta daraja — texnologiyalar, fikr bildirish, erkin muloqot va murakkabroq mavzular.',
     color: 'from-indigo-500 to-purple-700',
     badge_icon: '⚡'
   },
   {
     code: 'B2',
-    name: 'Yuqori O‘rta (Avancé débutant / Upper-Int)',
+    name: 'Upper-Intermediate',
     order: 4,
     passing_score: 85,
-    description: 'Tezkor nutq, maqolalar va boy so‘z zaxirasi.',
+    description: 'Yuqori o‘rta daraja — professional munozara, tezkor nutq va boy so‘z boyligi.',
     color: 'from-purple-500 to-pink-700',
     badge_icon: '🔥'
   },
   {
     code: 'C1',
-    name: 'Ilg‘or (Avancé / Advanced)',
+    name: 'Advanced',
     order: 5,
     passing_score: 90,
-    description: 'Akademik muloqot, insholar va professional bilim.',
+    description: 'Ilg‘or daraja — akademik ingliz tili, idiomalar, murakkab tahliliy fikrlar.',
     color: 'from-pink-500 to-rose-700',
     badge_icon: '💎'
   },
   {
     code: 'C2',
-    name: 'Mukammal (Maîtrise / Proficiency)',
+    name: 'Proficiency',
     order: 6,
     passing_score: 90,
-    description: 'Ona tilidek erkin va chuqur daraja.',
+    description: 'Mukammal daraja — ona tilidek erkin muloqot, barcha nuanslarni tushunish.',
     color: 'from-amber-500 to-yellow-700',
     badge_icon: '👑'
   }
 ];
 
 export const INITIAL_COURSES: Course[] = [
-  // ================= FRENCH COURSES (🇫🇷) =================
+  // A1 Courses
   {
-    id: 'course-fr-1',
+    id: 'course-a1-1',
     level_code: 'A1',
-    language_code: 'fr',
-    title: '🇫🇷 Français Débutant: Bonjour Paris!',
-    description: 'Parijda tanishuv, salomlashish, sonlar va asosiy fransuzcha iboralar.',
-    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&auto=format&fit=crop&q=80',
-    duration: '3.5 soat (5 mavzu)',
-    is_active: true,
-    topics_count: 5,
-    color_gradient: 'from-purple-500/20 to-pink-500/10 border-purple-500/30'
-  },
-  {
-    id: 'course-fr-2',
-    level_code: 'A2',
-    language_code: 'fr',
-    title: '🇫🇷 Au Café Parisien & Voyages',
-    description: 'Fransuz kafesida kruassan buyurtma qilish, yo‘l so‘rash va sayohat.',
-    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&auto=format&fit=crop&q=80',
-    duration: '4 soat (4 mavzu)',
-    is_active: true,
-    topics_count: 4,
-    color_gradient: 'from-pink-500/20 to-rose-500/10 border-pink-500/30'
-  },
-
-  // ================= ENGLISH COURSES (🇬🇧) =================
-  {
-    id: 'course-en-1',
-    level_code: 'A1',
-    language_code: 'en',
-    title: '🇬🇧 English Starter: Self & Family',
-    description: 'O‘zingizni tanishtirish, oila a’zolari, yosh va sevimli mashg‘ulotlar.',
+    title: 'Introducing Yourself & Family',
+    description: 'O‘zingizni tanishtirish, oila a’zolari, yosh va kasblar haqida gapirishni o‘rganing.',
     image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=80',
     duration: '4 soat (6 mavzu)',
     is_active: true,
@@ -136,64 +74,94 @@ export const INITIAL_COURSES: Course[] = [
     color_gradient: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30'
   },
   {
-    id: 'course-en-2',
+    id: 'course-a1-2',
+    level_code: 'A1',
+    title: 'Food, Daily Routine & Numbers',
+    description: 'Kun tartibi, sevimli taomlar, sonlar va soatlar bilan ishlash bo‘yicha amaliy darslar.',
+    image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&auto=format&fit=crop&q=80',
+    duration: '3.5 soat (5 mavzu)',
+    is_active: true,
+    topics_count: 5,
+    color_gradient: 'from-teal-500/20 to-cyan-500/10 border-teal-500/30'
+  },
+  // A2 Courses
+  {
+    id: 'course-a2-1',
     level_code: 'A2',
-    language_code: 'en',
-    title: '🇬🇧 English Travel & City Navigation',
-    description: 'Aeroportda suhbat, mehmonxona va shaharda erkin yo‘l so‘rash.',
+    title: 'Travel, Airports & City Navigation',
+    description: 'Sayohat qilish, aeroportda suhbat, mehmonxonaga buyurtma berish va shaharda yo‘l so‘rash.',
     image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&auto=format&fit=crop&q=80',
     duration: '5 soat (6 mavzu)',
     is_active: true,
     topics_count: 6,
     color_gradient: 'from-blue-500/20 to-indigo-500/10 border-blue-500/30'
   },
-
-  // ================= RUSSIAN COURSES (🇷🇺) =================
   {
-    id: 'course-ru-1',
-    level_code: 'A1',
-    language_code: 'ru',
-    title: '🇷🇺 Русский язык: Привет и Знакомство',
-    description: 'Tanishuv, maktab hayoti, do‘stlar va kundalik so‘zlashuv.',
-    image: 'https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=600&auto=format&fit=crop&q=80',
+    id: 'course-a2-2',
+    level_code: 'A2',
+    title: 'Shopping, Hobbies & Teen Life',
+    description: 'Do‘konda savdolashish, kiyimlar, sevimli mashg‘ulotlar va do‘stlar bilan rejalashtirish.',
+    image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=600&auto=format&fit=crop&q=80',
     duration: '4 soat (5 mavzu)',
     is_active: true,
     topics_count: 5,
-    color_gradient: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30'
+    color_gradient: 'from-indigo-500/20 to-cyan-500/10 border-indigo-500/30'
+  },
+  // B1 Courses
+  {
+    id: 'course-b1-1',
+    level_code: 'B1',
+    title: 'Technology, AI & Social Media',
+    description: 'Zamonaviy texnologiyalar, sun’iy intellekt, ijtimoiy tarmoqlar va kelajak kasblari.',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80',
+    duration: '6 soat (6 mavzu)',
+    is_active: true,
+    topics_count: 6,
+    color_gradient: 'from-indigo-500/20 to-purple-500/10 border-indigo-500/30'
+  },
+  {
+    id: 'course-b1-2',
+    level_code: 'B1',
+    title: 'Environment, Climate & Modern World',
+    description: 'Ekologiya, atrof-muhitni muhofaza qilish, global o‘zgarishlar va yechimlar haqida bahslashish.',
+    image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=600&auto=format&fit=crop&q=80',
+    duration: '5 soat (5 mavzu)',
+    is_active: true,
+    topics_count: 5,
+    color_gradient: 'from-purple-500/20 to-violet-500/10 border-purple-500/30'
+  },
+  // B2 Courses
+  {
+    id: 'course-b2-1',
+    level_code: 'B2',
+    title: 'Critical Thinking & Global Debates',
+    description: 'Murakkab dalillar keltirish, bahslarda o‘z fikrini ishonarli himoya qilish va maqolalar tahlili.',
+    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&auto=format&fit=crop&q=80',
+    duration: '6 soat (6 mavzu)',
+    is_active: true,
+    topics_count: 6,
+    color_gradient: 'from-purple-500/20 to-pink-500/10 border-purple-500/30'
+  },
+  // C1 Courses
+  {
+    id: 'course-c1-1',
+    level_code: 'C1',
+    title: 'Academic Writing & IELTS Mastery',
+    description: 'Murakkab insholar, taqdimotlar, akademik leksika va xalqaro imtihonlarga tayyorgarlik.',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&auto=format&fit=crop&q=80',
+    duration: '8 soat (8 mavzu)',
+    is_active: true,
+    topics_count: 8,
+    color_gradient: 'from-pink-500/20 to-rose-500/10 border-pink-500/30'
   }
 ];
 
 export const INITIAL_TOPICS: Topic[] = [
-  // French Topics
+  // A1 Topics
   {
-    id: 'topic-fr-1',
-    course_id: 'course-fr-1',
+    id: 'topic-a1-1',
+    course_id: 'course-a1-1',
     level_code: 'A1',
-    language_code: 'fr',
-    title: 'Bonjour et Présentation (Fransuzcha tanishuv)',
-    description: 'Salomlashish (Bonjour, Salut), ism aytish va être fe’li.',
-    order: 1,
-    duration_minutes: 45,
-    icon: '🇫🇷'
-  },
-  {
-    id: 'topic-fr-2',
-    course_id: 'course-fr-2',
-    level_code: 'A2',
-    language_code: 'fr',
-    title: 'Au Café & Restaurant (Kafeda buyurtma)',
-    description: 'Un croissant, s\'il vous plaît va hisob so‘rash.',
-    order: 1,
-    duration_minutes: 45,
-    icon: '☕'
-  },
-
-  // English Topics
-  {
-    id: 'topic-en-1',
-    course_id: 'course-en-1',
-    level_code: 'A1',
-    language_code: 'en',
     title: 'Introducing Yourself & Greetings',
     description: 'Salomlashish, ism-familiyani aytish va to be fe’lini ishlatish.',
     order: 1,
@@ -201,187 +169,186 @@ export const INITIAL_TOPICS: Topic[] = [
     icon: '👋'
   },
   {
-    id: 'topic-en-2',
-    course_id: 'course-en-2',
+    id: 'topic-a1-2',
+    course_id: 'course-a1-1',
+    level_code: 'A1',
+    title: 'My Family & Relationships',
+    description: 'Oila a’zolari (parents, siblings) va egalik olmoshlari (my, your, his, her).',
+    order: 2,
+    duration_minutes: 50,
+    icon: '👨‍👩‍👧‍👦'
+  },
+  {
+    id: 'topic-a1-3',
+    course_id: 'course-a1-1',
+    level_code: 'A1',
+    title: 'Numbers, Age & Time',
+    description: '1 dan 100 gacha sonlar, yoshni aytish va soatni so‘rash.',
+    order: 3,
+    duration_minutes: 40,
+    icon: '🔢'
+  },
+  {
+    id: 'topic-a1-4',
+    course_id: 'course-a1-2',
+    level_code: 'A1',
+    title: 'Food, Drinks & Ordering in a Cafe',
+    description: 'Taom nomlari, yoqtirish/yoqtirmaslik (like/dislike) va buyurtma berish.',
+    order: 1,
+    duration_minutes: 50,
+    icon: '🍔'
+  },
+  {
+    id: 'topic-a1-5',
+    course_id: 'course-a1-2',
+    level_code: 'A1',
+    title: 'My Daily Routine & Habits',
+    description: 'Ertalabdan kechgacha qilinadigan ishlar va Present Simple zamoni.',
+    order: 2,
+    duration_minutes: 55,
+    icon: '⏰'
+  },
+  // A2 Topics
+  {
+    id: 'topic-a2-1',
+    course_id: 'course-a2-1',
     level_code: 'A2',
-    language_code: 'en',
     title: 'At the Airport & Checking In',
     description: 'Pasport nazorati, yuk topshirish va reys haqida ma’lumot olish.',
     order: 1,
     duration_minutes: 55,
     icon: '✈️'
   },
-
-  // Russian Topics
   {
-    id: 'topic-ru-1',
-    course_id: 'course-ru-1',
-    level_code: 'A1',
-    language_code: 'ru',
-    title: 'Приветствие и Знакомство',
-    description: 'Как тебя зовут, сколько тебе лет va oddiy gaplar.',
-    order: 1,
+    id: 'topic-a2-2',
+    course_id: 'course-a2-1',
+    level_code: 'A2',
+    title: 'Asking for Directions in a New City',
+    description: 'Shaharda xaritadan foydalanish, yo‘l so‘rash (turn left, go straight).',
+    order: 2,
     duration_minutes: 45,
-    icon: '🇷🇺'
+    icon: '🗺️'
+  },
+  {
+    id: 'topic-a2-3',
+    course_id: 'course-a2-2',
+    level_code: 'A2',
+    title: 'Shopping for Clothes & Gadgets',
+    description: 'Razmerlar, narxlar, chegirmalar va to‘lov turlari.',
+    order: 1,
+    duration_minutes: 50,
+    icon: '🛍️'
+  },
+  // B1 Topics
+  {
+    id: 'topic-b1-1',
+    course_id: 'course-b1-1',
+    level_code: 'B1',
+    title: 'Artificial Intelligence & Future Tech',
+    description: 'AI vositalari, robototexnika va ularning hayotimizdagi o‘rni.',
+    order: 1,
+    duration_minutes: 60,
+    icon: '🤖'
+  },
+  {
+    id: 'topic-b1-2',
+    course_id: 'course-b1-1',
+    level_code: 'B1',
+    title: 'Social Media & Digital Well-being',
+    description: 'Ijtimoiy tarmoqlarning ijobiy va salbiy tomonlari haqida erkin munozara.',
+    order: 2,
+    duration_minutes: 55,
+    icon: '📱'
   }
 ];
 
 export const INITIAL_LESSONS: Lesson[] = [
   {
-    id: 'lesson-fr-1-vocab',
-    topic_id: 'topic-fr-1',
-    title: 'Mots essentiels: Bonjour & Salutations',
+    id: 'lesson-a1-1-vocab',
+    topic_id: 'topic-a1-1',
+    title: 'Essential Greetings & Introductions',
     type: 'vocabulary',
     order: 1,
     xp_reward: 10,
     content: {
-      summary: 'Fransuz tilida ilk tanishuvda kerak bo‘ladigan asosiy so‘zlar.'
+      summary: 'Ingliz tilida ilk bor tanishganda eng ko‘p ishlatiladigan so‘z va iboralar.'
     }
   },
   {
-    id: 'lesson-fr-1-grammar',
-    topic_id: 'topic-fr-1',
-    title: 'Le verbe Être (Je suis, Tu es, Il est)',
+    id: 'lesson-a1-1-grammar',
+    topic_id: 'topic-a1-1',
+    title: 'Verb "To Be" (am, is, are)',
     type: 'grammar',
     order: 2,
     xp_reward: 15,
     content: {
-      summary: 'Être fe’li fransuz tilining asosi (bo‘lmoq).',
+      summary: 'To be fe’li ingliz tilining eng muhim fundamenti hisoblanadi.',
       rules: [
         {
-          title: 'Je suis / Tu es / Il, Elle est',
-          explanation: 'Egalarga qarab être fe’lining to‘g‘ri shakli qo‘yiladi.',
-          example: 'Je suis Jasur. Tu es étudiant. Il est ami.'
+          title: 'I am / You are / He, She, It is',
+          explanation: 'Egalarga qarab to be fe’lining to‘g‘ri shakli qo‘llaniladi.',
+          example: 'I am a student. She is a doctor. We are ready.'
+        },
+        {
+          title: 'Inkor shakli (Negative)',
+          explanation: 'To be dan keyin "not" yuklamasi qo‘shiladi.',
+          example: 'I am not tired. They are not at home.'
+        },
+        {
+          title: 'Savol shakli (Questions)',
+          explanation: 'To be egadan oldinga o‘tadi.',
+          example: 'Are you 16 years old? Is he from Tashkent?'
         }
       ]
     }
   },
   {
-    id: 'lesson-fr-1-listening',
-    topic_id: 'topic-fr-1',
-    title: 'Dialogue à Paris: Rencontre',
+    id: 'lesson-a1-1-listening',
+    topic_id: 'topic-a1-1',
+    title: 'Meeting at School — Audio Dialogue',
     type: 'listening',
     order: 3,
     xp_reward: 20,
     content: {
-      listening_audio_text: "Bonjour! Je m'appelle Lucas. J'ai 14 ans et j'habite à Paris. Enchanté de faire votre connaissance!",
+      listening_audio_text: "Hello! My name is Alex. I am 15 years old and I am from London. Nice to meet you!",
       dialogue: [
-        { speaker: 'Lucas', text: 'Bonjour! Comment tu t\'appelles?', translation: 'Salom! Isming nima?' },
-        { speaker: 'Jasur', text: 'Bonjour! Je m\'appelle Jasur. Enchanté!', translation: 'Salom! Mening ismim Jasur. Tanishganimdan xursandman!' }
+        { speaker: 'Alex', text: 'Hello! I am Alex. What is your name?', translation: 'Salom! Men Alexman. Ismingiz nima?' },
+        { speaker: 'Aziz', text: 'Hi Alex! My name is Aziz. Nice to meet you.', translation: 'Salom Alex! Mening ismim Aziz. Tanishganimdan xursandman.' },
+        { speaker: 'Alex', text: 'Where are you from, Aziz?', translation: 'Qayerdansan, Aziz?' },
+        { speaker: 'Aziz', text: 'I am from Uzbekistan, Tashkent.', translation: 'Men O‘zbekistondanman, Toshkentdan.' }
       ]
     }
   },
   {
-    id: 'lesson-fr-1-quiz',
-    topic_id: 'topic-fr-1',
-    title: 'Quiz Rapide: Français Débutant',
+    id: 'lesson-a1-1-quiz',
+    topic_id: 'topic-a1-1',
+    title: 'A1 Greetings & Grammar Check',
     type: 'quiz',
     order: 4,
     xp_reward: 30,
     content: {
-      summary: 'O‘rgangan fransuzcha so‘zlaringizni test orqali sinang!'
+      summary: 'O‘rgangan bilimlaringizni tezkor interaktiv test orqali sinab ko‘ring!'
     }
   },
   {
-    id: 'lesson-fr-1-speaking',
-    topic_id: 'topic-fr-1',
-    title: 'Pratique Orale: Parlez en Français',
+    id: 'lesson-a1-1-speaking',
+    topic_id: 'topic-a1-1',
+    title: 'Speaking Challenge: Self Introduction',
     type: 'speaking',
     order: 5,
     xp_reward: 40,
     content: {
-      summary: 'Mikrofonda fransuzcha gapiring va AI bahosini oling.'
+      summary: 'Mikrofonni yoqing va 30 soniya davomida o‘zingizni ingliz tilida tanishtiring.'
     }
   }
 ];
 
 export const INITIAL_WORDS: Word[] = [
-  // ================= FRENCH WORDS (🇫🇷) =================
+  // A1 Words
   {
-    id: 'w-fr-1',
+    id: 'w-1',
     level_code: 'A1',
-    language_code: 'fr',
-    topic_id: 'topic-fr-1',
-    word: 'Bonjour',
-    phonetic: '/bɔ̃.ʒuʁ/',
-    translation: 'Salom / Xayrli kun',
-    example: 'Bonjour, comment allez-vous aujourd\'hui?',
-    example_uz: 'Salom, bugun ahvollaringiz qanday?',
-    difficulty: 'easy',
-    part_of_speech: 'salutation'
-  },
-  {
-    id: 'w-fr-2',
-    level_code: 'A1',
-    language_code: 'fr',
-    topic_id: 'topic-fr-1',
-    word: 'Merci',
-    phonetic: '/mɛʁ.si/',
-    translation: 'Rahmat',
-    example: 'Merci beaucoup pour votre gentillesse!',
-    example_uz: 'Mehribonligingiz uchun katta rahmat!',
-    difficulty: 'easy',
-    part_of_speech: 'interjection'
-  },
-  {
-    id: 'w-fr-3',
-    level_code: 'A1',
-    language_code: 'fr',
-    topic_id: 'topic-fr-1',
-    word: 'S\'il vous plaît',
-    phonetic: '/sil vu plɛ/',
-    translation: 'Iltimos',
-    example: 'Un croissant chaud, s\'il vous plaît!',
-    example_uz: 'Bitta issiq kruassan bering, iltimos!',
-    difficulty: 'easy',
-    part_of_speech: 'phrase'
-  },
-  {
-    id: 'w-fr-4',
-    level_code: 'A1',
-    language_code: 'fr',
-    topic_id: 'topic-fr-1',
-    word: 'Ami',
-    phonetic: '/a.mi/',
-    translation: 'Do‘st, o‘rtoq',
-    example: 'Lucas est mon meilleur ami à l\'école.',
-    example_uz: 'Lucas maktabdagi eng yaxshi do‘stim.',
-    difficulty: 'easy',
-    part_of_speech: 'noun'
-  },
-  {
-    id: 'w-fr-5',
-    level_code: 'A2',
-    language_code: 'fr',
-    topic_id: 'topic-fr-2',
-    word: 'Voyage',
-    phonetic: '/vwa.jaʒ/',
-    translation: 'Sayohat',
-    example: 'Nous préparons un voyage formidable à Paris.',
-    example_uz: 'Biz Parijga ajoyib sayohat tayyorlayapmiz.',
-    difficulty: 'medium',
-    part_of_speech: 'noun'
-  },
-  {
-    id: 'w-fr-6',
-    level_code: 'A2',
-    language_code: 'fr',
-    topic_id: 'topic-fr-2',
-    word: 'Délicieux',
-    phonetic: '/de.li.sjø/',
-    translation: 'Juda mazali',
-    example: 'Ce chocolat chaud français est délicieux!',
-    example_uz: 'Bu fransuzcha issiq shokolad juda mazali!',
-    difficulty: 'easy',
-    part_of_speech: 'adjective'
-  },
-
-  // ================= ENGLISH WORDS (🇬🇧) =================
-  {
-    id: 'w-en-1',
-    level_code: 'A1',
-    language_code: 'en',
-    topic_id: 'topic-en-1',
+    topic_id: 'topic-a1-1',
     word: 'Greeting',
     phonetic: '/ˈɡriːtɪŋ/',
     translation: 'Salomlashish',
@@ -391,23 +358,82 @@ export const INITIAL_WORDS: Word[] = [
     part_of_speech: 'noun'
   },
   {
-    id: 'w-en-2',
+    id: 'w-2',
     level_code: 'A1',
-    language_code: 'en',
-    topic_id: 'topic-en-1',
+    topic_id: 'topic-a1-1',
+    word: 'Introduce',
+    phonetic: '/ˌɪntrəˈdjuːs/',
+    translation: 'Tanishtirmoq',
+    example: 'Let me introduce my best friend, Alex.',
+    example_uz: 'Ruxsat bering, eng yaxshi do‘stim Alexni tanishtiray.',
+    difficulty: 'easy',
+    part_of_speech: 'verb'
+  },
+  {
+    id: 'w-3',
+    level_code: 'A1',
+    topic_id: 'topic-a1-1',
+    word: 'Hometown',
+    phonetic: '/ˈhəʊmtaʊn/',
+    translation: 'Tug‘ilib o‘sgan shahar',
+    example: 'Tashkent is my beloved hometown.',
+    example_uz: 'Toshkent — mening sevimli ona shahrim.',
+    difficulty: 'easy',
+    part_of_speech: 'noun'
+  },
+  {
+    id: 'w-4',
+    level_code: 'A1',
+    topic_id: 'topic-a1-2',
+    word: 'Sibling',
+    phonetic: '/ˈsɪblɪŋ/',
+    translation: 'Aka-uka yoki opa-singil',
+    example: 'I have two siblings: an older brother and a younger sister.',
+    example_uz: 'Mening ikkita aka-singlim bor: akam va singlim.',
+    difficulty: 'medium',
+    part_of_speech: 'noun'
+  },
+  {
+    id: 'w-5',
+    level_code: 'A1',
+    topic_id: 'topic-a1-4',
     word: 'Delicious',
     phonetic: '/dɪˈlɪʃəs/',
-    translation: 'Juda mazali',
+    translation: 'Juda mazali, totli',
     example: 'Traditional Uzbek plov is absolutely delicious.',
-    example_uz: 'Milliy o‘zbek palovi juda mazali.',
+    example_uz: 'Milliy o‘zbek palovi juda ham mazali.',
     difficulty: 'easy',
     part_of_speech: 'adjective'
   },
   {
-    id: 'w-en-3',
+    id: 'w-6',
+    level_code: 'A1',
+    topic_id: 'topic-a1-5',
+    word: 'Routine',
+    phonetic: '/ruːˈtiːn/',
+    translation: 'Kun tartibi, odat',
+    example: 'Morning exercise is part of my daily routine.',
+    example_uz: 'Ertalabki badantarbiya mening kun tartibimning bir qismi.',
+    difficulty: 'easy',
+    part_of_speech: 'noun'
+  },
+  // A2 Words
+  {
+    id: 'w-7',
     level_code: 'A2',
-    language_code: 'en',
-    topic_id: 'topic-en-2',
+    topic_id: 'topic-a2-1',
+    word: 'Boarding pass',
+    phonetic: '/ˈbɔːdɪŋ pɑːs/',
+    translation: 'Samolyotga chiqish taloni',
+    example: 'Please show your passport and boarding pass at gate 4.',
+    example_uz: 'Iltimos, 4-darvozada pasport va chiqish talonini ko‘rsating.',
+    difficulty: 'medium',
+    part_of_speech: 'noun'
+  },
+  {
+    id: 'w-8',
+    level_code: 'A2',
+    topic_id: 'topic-a2-1',
     word: 'Destination',
     phonetic: '/ˌdestɪˈneɪʃn/',
     translation: 'Boriladigan manzil',
@@ -417,368 +443,690 @@ export const INITIAL_WORDS: Word[] = [
     part_of_speech: 'noun'
   },
   {
-    id: 'w-en-4',
+    id: 'w-9',
+    level_code: 'A2',
+    topic_id: 'topic-a2-2',
+    word: 'Intersection',
+    phonetic: '/ˌɪntəˈsekʃn/',
+    translation: 'Chorraha',
+    example: 'Turn right at the second intersection.',
+    example_uz: 'Ikkinchi chorrahadan o‘ngga buriling.',
+    difficulty: 'medium',
+    part_of_speech: 'noun'
+  },
+  {
+    id: 'w-10',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    word: 'Discount',
+    phonetic: '/ˈdɪskaʊnt/',
+    translation: 'Chegirma',
+    example: 'Students get a 20% discount on all books.',
+    example_uz: 'Talabalar barcha kitoblarga 20% chegirma olishadi.',
+    difficulty: 'easy',
+    part_of_speech: 'noun'
+  },
+  // B1 Words
+  {
+    id: 'w-11',
     level_code: 'B1',
-    language_code: 'en',
-    topic_id: 'topic-en-1',
+    topic_id: 'topic-b1-1',
     word: 'Artificial',
     phonetic: '/ˌɑːtɪˈfɪʃl/',
     translation: 'Sun’iy',
-    example: 'Artificial intelligence helps teens learn languages faster.',
-    example_uz: 'Sun’iy intellekt o‘smirlarga tilni tezroq o‘rganishga yordam beradi.',
+    example: 'Artificial intelligence is changing the way we learn languages.',
+    example_uz: 'Sun’iy intellekt bizning til o‘rganish uslubimizni o‘zgartirmoqda.',
     difficulty: 'medium',
     part_of_speech: 'adjective'
   },
-
-  // ================= RUSSIAN WORDS (🇷🇺) =================
   {
-    id: 'w-ru-1',
-    level_code: 'A1',
-    language_code: 'ru',
-    topic_id: 'topic-ru-1',
-    word: 'Приветствие',
-    phonetic: '[Privetstviye]',
-    translation: 'Salomlashish',
-    example: 'Приветствие с улыбкой всегда приятно.',
-    example_uz: 'Tabassum bilan salomlashish doim yoqimli.',
-    difficulty: 'easy',
+    id: 'w-12',
+    level_code: 'B1',
+    topic_id: 'topic-b1-1',
+    word: 'Algorithm',
+    phonetic: '/ˈælɡərɪðəm/',
+    translation: 'Algoritm',
+    example: 'The recommendation algorithm suggests lessons based on your level.',
+    example_uz: 'Tavsiya algoritmi darajangizga qarab darslarni taklif qiladi.',
+    difficulty: 'hard',
     part_of_speech: 'noun'
   },
   {
-    id: 'w-ru-2',
-    level_code: 'A1',
-    language_code: 'ru',
-    topic_id: 'topic-ru-1',
-    word: 'Дружба',
-    phonetic: '[Druzhba]',
-    translation: 'Do‘stlik',
-    example: 'Крепкая дружба помогает в учебе.',
-    example_uz: 'Mustahkam do‘stlik o‘qishda yordam beradi.',
-    difficulty: 'easy',
-    part_of_speech: 'noun'
-  },
-  {
-    id: 'w-ru-3',
-    level_code: 'A2',
-    language_code: 'ru',
-    topic_id: 'topic-ru-1',
-    word: 'Путешествие',
-    phonetic: '[Puteshestviye]',
-    translation: 'Sayohat',
-    example: 'Летнее путешествие в горы было прекрасным.',
-    example_uz: 'Tog‘larga yozgi sayohat ajoyib o‘tdi.',
+    id: 'w-13',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    word: 'Productivity',
+    phonetic: '/ˌprɒdʌkˈtɪvəti/',
+    translation: 'Samaradorlik, unumdorlik',
+    example: 'Setting daily goals boosts your study productivity.',
+    example_uz: 'Kunlik maqsadlar qo‘yish o‘qish samaradorligingizni oshiradi.',
     difficulty: 'medium',
     part_of_speech: 'noun'
+  },
+  {
+    id: 'w-14',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    word: 'Influence',
+    phonetic: '/ˈɪnfluəns/',
+    translation: 'Ta’sir ko‘rsatmoq / Ta’sir',
+    example: 'Social media can strongly influence teen behavior.',
+    example_uz: 'Ijtimoiy tarmoqlar o‘smirlar xatti-harakatiga kuchli ta’sir qilishi mumkin.',
+    difficulty: 'medium',
+    part_of_speech: 'verb'
+  },
+  // B2/C1 Words
+  {
+    id: 'w-15',
+    level_code: 'B2',
+    topic_id: 'topic-b1-1',
+    word: 'Comprehensive',
+    phonetic: '/ˌkɒmprɪˈhensɪv/',
+    translation: 'Har tomonlama to‘liq, mukammal',
+    example: 'The OSON platform offers a comprehensive English syllabus.',
+    example_uz: 'OSON platformasi har tomonlama to‘liq ingliz tili dasturini taqdim etadi.',
+    difficulty: 'hard',
+    part_of_speech: 'adjective'
+  },
+  {
+    id: 'w-16',
+    level_code: 'C1',
+    topic_id: 'topic-b1-1',
+    word: 'Eloquent',
+    phonetic: '/ˈeləkwənt/',
+    translation: 'Fasohatchi, chiroyli va ta’sirchan gapiruvchi',
+    example: 'She gave an eloquent presentation about youth education.',
+    example_uz: 'U yoshlar ta’limi haqida ta’sirchan va go‘zal taqdimot qildi.',
+    difficulty: 'hard',
+    part_of_speech: 'adjective'
   }
 ];
 
 export const INITIAL_QUESTIONS: Question[] = [
-  // ================= FRENCH QUESTIONS (🇫🇷) =================
+  // ================= A1 QUESTIONS =================
   {
-    id: 'q-fr-1',
+    id: 'q-a1-1',
     level_code: 'A1',
-    language_code: 'fr',
-    quiz_id: 'quiz-fr-1',
-    question: 'Comment dit-on "Salom / Xayrli kun" en français?',
-    question_type: 'multiple_choice',
-    options: ['Bonjour', 'Bonsoir', 'Merci', 'Au revoir'],
-    correct_answer: 'Bonjour',
-    explanation: '"Bonjour" — fransuz tilida kunduzgi eng mashhur salomlashuv.'
-  },
-  {
-    id: 'q-fr-2',
-    level_code: 'A1',
-    language_code: 'fr',
-    quiz_id: 'quiz-fr-1',
-    question: 'Complétez la phrase: "Je ______ un élève de 14 ans."',
-    question_type: 'multiple_choice',
-    options: ['suis', 'es', 'est', 'sommes'],
-    correct_answer: 'suis',
-    explanation: '"Je" (Men) uchun être fe’lining shakli "suis" (Je suis).'
-  },
-  {
-    id: 'q-fr-3',
-    level_code: 'A1',
-    language_code: 'fr',
-    quiz_id: 'quiz-fr-1',
-    question: 'Au café de Paris: "Un croissant et un jus, s\'il vous ______."',
-    question_type: 'multiple_choice',
-    options: ['plaît', 'merci', 'va', 'est'],
-    correct_answer: 'plaît',
-    explanation: '"S\'il vous plaît" — fransuzcha muloyim "iltimos" degani.'
-  },
-  {
-    id: 'q-fr-4',
-    level_code: 'A2',
-    language_code: 'fr',
-    quiz_id: 'quiz-fr-2',
-    question: 'Passé composé: "Hier, nous ______ visité la Tour Eiffel."',
-    question_type: 'multiple_choice',
-    options: ['avons', 'sommes', 'avez', 'sont'],
-    correct_answer: 'avons',
-    explanation: 'Visiter fe’li o‘tgan zamonda avoir bilan tuslanadi: "nous avons visité".'
-  },
-  {
-    id: 'q-fr-5',
-    level_code: 'A2',
-    language_code: 'fr',
-    quiz_id: 'quiz-fr-2',
-    question: 'Comment demande-t-on l\'heure? "Quelle ______ est-il?"',
-    question_type: 'multiple_choice',
-    options: ['heure', 'temps', 'minute', 'montre'],
-    correct_answer: 'heure',
-    explanation: 'Fransuzcha soatni so‘rash: "Quelle heure est-il?" (Soat necha bo‘ldi?).'
-  },
-
-  // ================= ENGLISH QUESTIONS (🇬🇧) =================
-  {
-    id: 'q-en-1',
-    level_code: 'A1',
-    language_code: 'en',
-    quiz_id: 'quiz-en-1',
-    question: 'Choose the correct form: "She ______ a 14-year-old student."',
+    topic_id: 'topic-a1-1',
+    quiz_id: 'quiz-a1-1',
+    question: 'Choose the correct form: "She ______ a 15-year-old high school student."',
     question_type: 'multiple_choice',
     options: ['am', 'is', 'are', 'be'],
     correct_answer: 'is',
-    explanation: '"She" uchun "is" yordamchi fe’li ishlatiladi.'
+    explanation: '"She" birlikdagi III shaxs bo‘lgani uchun "is" yordamchi fe’li ishlatiladi.'
   },
   {
-    id: 'q-en-2',
+    id: 'q-a1-2',
     level_code: 'A1',
-    language_code: 'en',
-    quiz_id: 'quiz-en-1',
+    topic_id: 'topic-a1-1',
+    quiz_id: 'quiz-a1-1',
     question: 'How do you respond politely to "Nice to meet you"?',
     question_type: 'multiple_choice',
-    options: ['Nice to meet you too!', 'Good bye!', 'I am fine.', 'No problem.'],
+    options: ['Nice to meet you too!', 'Good bye!', 'I am fine, thank you.', 'No problem, see ya.'],
     correct_answer: 'Nice to meet you too!',
-    explanation: '"Nice to meet you" ga javoban "Nice to meet you too!" deyiladi.'
+    explanation: '"Nice to meet you" ga javoban odatda "Nice to meet you too!" deyiladi.'
   },
   {
-    id: 'q-en-3',
+    id: 'q-a1-3',
+    level_code: 'A1',
+    topic_id: 'topic-a1-1',
+    quiz_id: 'quiz-a1-1',
+    question: 'Listen & complete: "They ______ from Tashkent."',
+    question_type: 'listening',
+    audio_phrase: 'They are from Tashkent.',
+    options: ['are', 'is', 'am', 'was'],
+    correct_answer: 'are',
+    explanation: '"They" (ular) ko‘plikdagi ega bo‘lgani uchun "are" to‘g‘ri variant.'
+  },
+  {
+    id: 'q-a1-4',
+    level_code: 'A1',
+    topic_id: 'topic-a1-1',
+    quiz_id: 'quiz-a1-1',
+    question: 'Fill in the blank: "What is ______ phone number?"',
+    question_type: 'fill_blank',
+    options: ['your', 'you', 'he', 'we'],
+    correct_answer: 'your',
+    explanation: 'Egalik olmoshi "your" (sizning / sening) ism yoki ot oldidan keladi.'
+  },
+  {
+    id: 'q-a1-5',
+    level_code: 'A1',
+    topic_id: 'topic-a1-1',
+    quiz_id: 'quiz-a1-1',
+    question: 'Arrange words into a correct sentence: "English / every / I / study / day"',
+    question_type: 'sentence_order',
+    options: ['I study English every day', 'Every day study I English', 'Study I English every day', 'English I study every day'],
+    correct_answer: 'I study English every day',
+    explanation: 'Ingliz tilida standart gap tartibi: Ega (I) + Kesim (study) + To‘ldiruvchi (English) + Hol (every day).'
+  },
+  {
+    id: 'q-a1-6',
+    level_code: 'A1',
+    topic_id: 'topic-a1-4',
+    quiz_id: 'quiz-a1-2',
+    question: 'In a restaurant: "I would like a cup of ______ tea, please."',
+    question_type: 'multiple_choice',
+    options: ['green', 'loud', 'slow', 'tall'],
+    correct_answer: 'green',
+    explanation: '"Green tea" (ko‘k choy) ichimlik sifatini ifodalaydi.'
+  },
+  {
+    id: 'q-a1-7',
+    level_code: 'A1',
+    topic_id: 'topic-a1-5',
+    quiz_id: 'quiz-a1-2',
+    question: 'Daily Routine: "He ______ up at 7:00 AM every morning."',
+    question_type: 'multiple_choice',
+    options: ['wakes', 'wake', 'waking', 'is wake'],
+    correct_answer: 'wakes',
+    explanation: 'Present Simple da He/She/It egalari uchun fe’lga "-s" qo‘shimchasi qo‘shiladi (wakes up).'
+  },
+  {
+    id: 'q-a1-8',
+    level_code: 'A1',
+    topic_id: 'topic-a1-5',
+    quiz_id: 'quiz-a1-2',
+    question: 'Time question: "Excuse me, what ______ is it?"',
+    question_type: 'fill_blank',
+    options: ['time', 'hour', 'clock', 'watch'],
+    correct_answer: 'time',
+    explanation: 'Vaqtni so‘rashda "What time is it?" iborasi qo‘llaniladi.'
+  },
+  {
+    id: 'q-a1-9',
+    level_code: 'A1',
+    topic_id: 'topic-a1-2',
+    quiz_id: 'quiz-a1-2',
+    question: 'Plural nouns: What is the plural form of "child"?',
+    question_type: 'multiple_choice',
+    options: ['children', 'childs', 'childes', 'childrens'],
+    correct_answer: 'children',
+    explanation: '"Child" so‘zining ko‘plik shakli noto‘g‘ri otlar qatorida "children" bo‘ladi.'
+  },
+
+  // ================= A2 QUESTIONS =================
+  {
+    id: 'q-a2-1',
     level_code: 'A2',
-    language_code: 'en',
-    quiz_id: 'quiz-en-2',
-    question: 'Past simple: "Yesterday we ______ to Samarkand by train."',
+    topic_id: 'topic-a2-1',
+    quiz_id: 'quiz-a2-1',
+    question: 'At the airport: "Where can I drop off my ______?"',
+    question_type: 'multiple_choice',
+    options: ['luggage', 'homework', 'kitchen', 'pencil'],
+    correct_answer: 'luggage',
+    explanation: 'Aeroportda yuk topshirish joyi "luggage drop-off" deyiladi.'
+  },
+  {
+    id: 'q-a2-2',
+    level_code: 'A2',
+    topic_id: 'topic-a2-1',
+    quiz_id: 'quiz-a2-1',
+    question: 'Past simple: "Yesterday we ______ to Samarkand by high-speed train."',
     question_type: 'multiple_choice',
     options: ['travelled', 'travels', 'travel', 'travelling'],
     correct_answer: 'travelled',
-    explanation: '"Yesterday" o‘tgan zamon bo‘lgani uchun "travelled" to‘g‘ri.'
+    explanation: '"Yesterday" o‘tgan zamon ko‘rsatkichi bo‘lib, fe’lning Past Simple (travelled) shakli qo‘yiladi.'
   },
   {
-    id: 'q-en-4',
+    id: 'q-a2-3',
+    level_code: 'A2',
+    topic_id: 'topic-a2-2',
+    quiz_id: 'quiz-a2-1',
+    question: 'Directions: "Go ______ ahead and turn right at the traffic lights."',
+    question_type: 'fill_blank',
+    options: ['straight', 'behind', 'under', 'between'],
+    correct_answer: 'straight',
+    explanation: '"Go straight ahead" — to‘g‘riga qarab to‘g‘ri boring degan ma’noni anglatadi.'
+  },
+  {
+    id: 'q-a2-4',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    quiz_id: 'quiz-a2-2',
+    question: 'Comparatives: "This laptop is ______ than my old one."',
+    question_type: 'multiple_choice',
+    options: ['faster', 'more fast', 'fastest', 'as fast'],
+    correct_answer: 'faster',
+    explanation: 'Bir bo‘g‘inli sifatlar qiyosiy darajada "-er" oladi (faster than).'
+  },
+  {
+    id: 'q-a2-5',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    quiz_id: 'quiz-a2-2',
+    question: 'Shopping: "How ______ does this hoodie cost?"',
+    question_type: 'fill_blank',
+    options: ['much', 'many', 'long', 'often'],
+    correct_answer: 'much',
+    explanation: 'Narx so‘rashda "How much does it cost?" deb so‘raladi.'
+  },
+  {
+    id: 'q-a2-6',
+    level_code: 'A2',
+    topic_id: 'topic-a2-1',
+    quiz_id: 'quiz-a2-2',
+    question: 'Listen: "The flight to London departs from Gate 14."',
+    question_type: 'listening',
+    audio_phrase: 'The flight to London departs from Gate 14.',
+    options: ['Gate 14', 'Gate 4', 'Gate 40', 'Gate 24'],
+    correct_answer: 'Gate 14',
+    explanation: 'Audio e’londa reys 14-darvozadan (Gate 14) uchishi aytildi.'
+  },
+
+  // ================= B1 QUESTIONS =================
+  {
+    id: 'q-b1-1',
     level_code: 'B1',
-    language_code: 'en',
-    quiz_id: 'quiz-en-2',
-    question: 'Conditionals: "If teenagers ______ more time reading, their vocabulary would expand."',
+    topic_id: 'topic-b1-1',
+    quiz_id: 'quiz-b1-1',
+    question: 'Choose the most suitable word: "Artificial intelligence has the potential to ______ education worldwide."',
+    question_type: 'multiple_choice',
+    options: ['revolutionize', 'delete', 'sleep', 'hesitate'],
+    correct_answer: 'revolutionize',
+    explanation: '"Revolutionize" — tubdan o‘zgartirmoq yoki yangi bosqichga olib chiqmoq.'
+  },
+  {
+    id: 'q-b1-2',
+    level_code: 'B1',
+    topic_id: 'topic-b1-1',
+    quiz_id: 'quiz-b1-1',
+    question: 'Conditionals: "If teenagers ______ more time reading, their vocabulary would expand rapidly."',
     question_type: 'multiple_choice',
     options: ['spent', 'spend', 'will spend', 'had spent'],
     correct_answer: 'spent',
-    explanation: 'Second Conditional: If + Past Simple (spent), would + V1.'
+    explanation: 'Second Conditional (nohaqiqiy hozirgi/kelasi zamon) formulasi: If + Past Simple, would + V1.'
+  },
+  {
+    id: 'q-b1-3',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    quiz_id: 'quiz-b1-1',
+    question: 'Present Perfect: "She ______ in Tashkent since 2018."',
+    question_type: 'multiple_choice',
+    options: ['has lived', 'lives', 'lived', 'is living'],
+    correct_answer: 'has lived',
+    explanation: '"Since 2018" davomiylikni bildiradi va Present Perfect (has lived) talab qiladi.'
+  },
+  {
+    id: 'q-b1-4',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    quiz_id: 'quiz-b1-2',
+    question: 'Passive voice: "The new mobile app ______ by a team of young Uzbek developers."',
+    question_type: 'multiple_choice',
+    options: ['was developed', 'developed', 'is develop', 'has developing'],
+    correct_answer: 'was developed',
+    explanation: 'Majhul nisbat (Passive Voice): was/were + V3 (was developed).'
+  },
+  {
+    id: 'q-b1-5',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    quiz_id: 'quiz-b1-2',
+    question: 'Modal verbs: "You ______ turn off your phone during the official exam."',
+    question_type: 'fill_blank',
+    options: ['must', 'might', 'could', 'prefer'],
+    correct_answer: 'must',
+    explanation: 'Qat’iy qoida va majburiyat uchun "must" modali qo‘llanadi.'
   },
 
-  // ================= RUSSIAN QUESTIONS (🇷🇺) =================
+  // ================= B2 QUESTIONS =================
   {
-    id: 'q-ru-1',
-    level_code: 'A1',
-    language_code: 'ru',
-    quiz_id: 'quiz-ru-1',
-    question: 'Выберите правильный ответ: "Меня ______ Тимур, мне 14 лет."',
+    id: 'q-b2-1',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Collocations: "The government took effective measures to ______ with the environmental crisis."',
     question_type: 'multiple_choice',
-    options: ['зовут', 'имя', 'называют', 'сказать'],
-    correct_answer: 'зовут',
-    explanation: 'Rus tilida ismni aytishda "Меня зовут..." iborasi qo‘llaniladi.'
+    options: ['cope', 'handle', 'solve', 'face'],
+    correct_answer: 'cope',
+    explanation: '"Cope with" iborasi qiyinchiliklarni yengib o‘tish yoki kurashish ma’nosida ishlatiladi.'
   },
   {
-    id: 'q-ru-2',
-    level_code: 'A1',
-    language_code: 'ru',
-    quiz_id: 'quiz-ru-1',
-    question: 'Как ответить на вежливое "Спасибо большое"?',
+    id: 'q-b2-2',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Third Conditional: "If they had prepared more thoroughly, they ______ the debate contest."',
     question_type: 'multiple_choice',
-    options: ['Пожалуйста!', 'До свидания.', 'Привет.', 'Ничего.'],
-    correct_answer: 'Пожалуйста!',
-    explanation: '"Спасибо" ga javoban "Пожалуйста!" (Arzimaydi) deyiladi.'
+    options: ['would have won', 'will win', 'would win', 'had won'],
+    correct_answer: 'would have won',
+    explanation: 'Third Conditional (o‘tmishdagi afsus): If + Past Perfect, would have + V3.'
   },
   {
-    id: 'q-ru-3',
-    level_code: 'A2',
-    language_code: 'ru',
-    quiz_id: 'quiz-ru-1',
-    question: 'Вставьте пропущенное слово: "Вчера мы ______ интересный фильм."',
+    id: 'q-b2-3',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Phrasal verbs: "The teacher asked the students to ______ up the unfamiliar words in the dictionary."',
+    question_type: 'fill_blank',
+    options: ['look', 'take', 'make', 'give'],
+    correct_answer: 'look',
+    explanation: '"Look up" — lug‘atdan yoki ma’lumotlar bazasidan qidirib topmoq.'
+  },
+  {
+    id: 'q-b2-4',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Inversion: "Seldom ______ such an inspiring presentation on artificial intelligence."',
     question_type: 'multiple_choice',
-    options: ['смотрели', 'смотрим', 'будем смотреть', 'посмотреть'],
-    correct_answer: 'смотрели',
-    explanation: '"Вчера" (kecha) o‘tgan zamon bo‘lgani uchun "смотрели" to‘g‘ri.'
+    options: ['have I witnessed', 'I have witnessed', 'I witnessed', 'witnessed I'],
+    correct_answer: 'have I witnessed',
+    explanation: 'Inkor so‘zlar (Seldom, Never, Rarely) gap boshida kelsa, inversiya (yordamchi fe’l egadan oldinga) yuz beradi.'
+  },
+
+  // ================= C1 & C2 QUESTIONS =================
+  {
+    id: 'q-c1-1',
+    level_code: 'C1',
+    quiz_id: 'quiz-c1-1',
+    question: 'Idiomatic expressions: "Passing the certification exam with flying colors means you passed ______."',
+    question_type: 'multiple_choice',
+    options: ['with exceptionally high scores', 'barely on the edge', 'by cheating', 'after several attempts'],
+    correct_answer: 'with exceptionally high scores',
+    explanation: '"With flying colors" — juda yuqori va yorqin natijalar bilan degan ma’noni anglatuvchi mashhur inglizcha idioma.'
+  },
+  {
+    id: 'q-c1-2',
+    level_code: 'C1',
+    quiz_id: 'quiz-c1-1',
+    question: 'Advanced lexis: "His argument was so ______ that no one in the committee could refute it."',
+    question_type: 'multiple_choice',
+    options: ['compelling', 'fragile', 'superficial', 'negligible'],
+    correct_answer: 'compelling',
+    explanation: '"Compelling argument" — inkor etib bo‘lmas, juda kuchli va ishonarli dalil.'
+  },
+  {
+    id: 'q-c1-3',
+    level_code: 'C1',
+    quiz_id: 'quiz-c1-1',
+    question: 'Subjunctive mood: "It is imperative that every student ______ present at the keynote lecture."',
+    question_type: 'multiple_choice',
+    options: ['be', 'is', 'was', 'are'],
+    correct_answer: 'be',
+    explanation: 'Subjunctive Mood (It is imperative that + S + base form V): "that every student be present".'
+  },
+  {
+    id: 'q-c2-1',
+    level_code: 'C2',
+    quiz_id: 'quiz-c2-1',
+    question: 'Nuance: "The novel’s subtle irony was lost on readers who took the narrative at ______ value."',
+    question_type: 'multiple_choice',
+    options: ['face', 'front', 'surface', 'sight'],
+    correct_answer: 'face',
+    explanation: '"At face value" — tashqi ko‘rinishiga qarab to‘g‘ridan-to‘g‘ri qabul qilmoq.'
+  },
+  {
+    id: 'q-c2-2',
+    level_code: 'C2',
+    quiz_id: 'quiz-c2-1',
+    question: 'C2 Vocabulary: "The speaker gave an impromptu and remarkably ______ discourse on modern linguistics."',
+    question_type: 'multiple_choice',
+    options: ['lucid', 'opaque', 'turgid', 'vacuous'],
+    correct_answer: 'lucid',
+    explanation: '"Lucid" — juda tiniq, ravshan va tushunarli ma’nosini anglatadi.'
   }
 ];
 
 export const INITIAL_QUIZZES: Quiz[] = [
-  // French Quizzes (🇫🇷)
   {
-    id: 'quiz-fr-1',
+    id: 'quiz-a1-1',
     level_code: 'A1',
-    language_code: 'fr',
-    title: '🇫🇷 Français A1: Bonjour Paris & Salutations',
-    description: 'Fransuzcha salomlashish, être fe’li va kafeda buyurtma berish.',
+    topic_id: 'topic-a1-1',
+    title: 'A1 Starter: Tanishuv va Asosiy Grammatika',
+    description: 'Salomlashish, to be fe’li va asosiy gap tuzilishidan 5 ta savol.',
+    question_count: 5,
+    xp_reward: 30,
+    passing_score: 80,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-a1-2',
+    level_code: 'A1',
+    topic_id: 'topic-a1-4',
+    title: 'A1 Daily Life: Taomlar, Vaqt va Odatlar',
+    description: 'Restoranda buyurtma berish, soatni so‘rash va Present Simple.',
+    question_count: 4,
+    xp_reward: 30,
+    passing_score: 80,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-a2-1',
+    level_code: 'A2',
+    topic_id: 'topic-a2-1',
+    title: 'A2 Explorer: Sayohat va Past Simple',
+    description: 'Aeroport, yo‘l so‘rash va o‘tgan zamon bo‘yicha interaktiv test.',
     question_count: 3,
     xp_reward: 35,
+    passing_score: 80,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-a2-2',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    title: 'A2 Lifestyle: Xaridlar va Sifat Darajalari',
+    description: 'Kiyimlar, narx so‘rash va sifatlarning qiyosiy darajalari.',
+    question_count: 3,
+    xp_reward: 35,
+    passing_score: 80,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-b1-1',
+    level_code: 'B1',
+    topic_id: 'topic-b1-1',
+    title: 'B1 Tech & Conditionals Quiz',
+    description: 'Sun’iy intellekt, 2-shart mayli va Present Perfect.',
+    question_count: 3,
+    xp_reward: 40,
     passing_score: 80,
     time_limit_seconds: 150
   },
   {
-    id: 'quiz-fr-2',
-    level_code: 'A2',
-    language_code: 'fr',
-    title: '🇫🇷 Français A2: Voyages & Passé Composé',
-    description: 'Eyfel minorasi sayohati, o‘tgan zamon va soatni aytish.',
+    id: 'quiz-b1-2',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    title: 'B1 Grammar: Passive Voice & Modals',
+    description: 'Majhul nisbat, majburiyat modallari va ijtimoiy tarmoqlar leksikasi.',
     question_count: 2,
     xp_reward: 40,
     passing_score: 80,
-    time_limit_seconds: 120
-  },
-
-  // English Quizzes (🇬🇧)
-  {
-    id: 'quiz-en-1',
-    level_code: 'A1',
-    language_code: 'en',
-    title: '🇬🇧 English A1: Starter Greetings & Basics',
-    description: 'Salomlashish, to be fe’li va asosiy gap tuzilishi.',
-    question_count: 2,
-    xp_reward: 30,
-    passing_score: 80,
-    time_limit_seconds: 120
-  },
-  {
-    id: 'quiz-en-2',
-    level_code: 'A2',
-    language_code: 'en',
-    title: '🇬🇧 English A2: Travel & Conditionals',
-    description: 'Aeroport, sayohat va o‘tgan zamon bo‘yicha test.',
-    question_count: 2,
-    xp_reward: 35,
-    passing_score: 80,
-    time_limit_seconds: 120
-  },
-
-  // Russian Quizzes (🇷🇺)
-  {
-    id: 'quiz-ru-1',
-    level_code: 'A1',
-    language_code: 'ru',
-    title: '🇷🇺 Русский язык A1: Тест для начинающих',
-    description: 'Знакомство, вежливые фразы и прошедшее время.',
-    question_count: 3,
-    xp_reward: 35,
-    passing_score: 80,
     time_limit_seconds: 150
+  },
+  {
+    id: 'quiz-b2-1',
+    level_code: 'B2',
+    title: 'B2 Upper-Intermediate Fluency Sprint',
+    description: 'Inversiya, phrasal verbs, uchinchi shart mayli va frazalar.',
+    question_count: 4,
+    xp_reward: 45,
+    passing_score: 85,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-c1-1',
+    level_code: 'C1',
+    title: 'C1 Advanced & Academic IELTS Challenge',
+    description: 'Akademik insho leksikasi, idiomalar va Subjunctive Mood.',
+    question_count: 3,
+    xp_reward: 50,
+    passing_score: 85,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-c2-1',
+    level_code: 'C2',
+    title: 'C2 Proficiency Master Test',
+    description: 'Ona tilidek nozik ma’nolar, ilg‘or ritorika va stilistika.',
+    question_count: 2,
+    xp_reward: 60,
+    passing_score: 90,
+    time_limit_seconds: 120
+  },
+  // Level Final Certification Exams
+  {
+    id: 'level-test-a1',
+    level_code: 'A1',
+    title: 'A1 Level Final Exam (Certification Test)',
+    description: 'A1 darajasini to‘liq yakunlash va A2 darajani ochish uchun yakuniy 5 ta savolli imtihon.',
+    question_count: 5,
+    xp_reward: 100,
+    passing_score: 80,
+    time_limit_seconds: 300,
+    is_level_test: true
+  },
+  {
+    id: 'level-test-a2',
+    level_code: 'A2',
+    title: 'A2 Level Final Exam (Certification Test)',
+    description: 'A2 darajasini muvaffaqiyatli topshirib B1 Intermediate ga o‘tish imtihoni.',
+    question_count: 5,
+    xp_reward: 120,
+    passing_score: 85,
+    time_limit_seconds: 300,
+    is_level_test: true
   }
 ];
 
 export const SPEAKING_TOPICS = [
-  // French Speaking
   {
-    id: 'spk-fr-1',
+    id: 'spk-1',
     level_code: 'A1',
-    language_code: 'fr',
-    title: '🇫🇷 Français: Présentez-vous à Paris',
-    prompt: 'Dites votre nom, votre âge et ce que vous aimez faire en français.',
-    prompt_uz: 'Fransuz tilida ismingiz, yoshingiz va sevimli mashg‘ulotingizni ayting.',
-    sample_text: 'Bonjour! Je m\'appelle Jasur. J\'ai 14 ans et j\'habite à Tachkent. J\'aime la musique et les voyages.',
-    keywords: ['bonjour', 'je m\'appelle', 'j\'ai', 'j\'aime'],
-    duration_suggested: '30 soniya'
-  },
-  {
-    id: 'spk-fr-2',
-    level_code: 'A2',
-    language_code: 'fr',
-    title: '🇫🇷 Au Café: Commander un Croissant et Café',
-    prompt: 'Commandez votre petit-déjeuner préféré dans un café parisien.',
-    prompt_uz: 'Parij kafesida kruassan va ichimlik buyurtma bering.',
-    sample_text: 'Bonjour monsieur! Je voudrais un croissant chaud et un chocolat s\'il vous plaît. Merci beaucoup!',
-    keywords: ['bonjour', 'je voudrais', 's\'il vous plaît', 'merci'],
-    duration_suggested: '30 soniya'
-  },
-
-  // English Speaking
-  {
-    id: 'spk-en-1',
-    level_code: 'A1',
-    language_code: 'en',
-    title: '🇬🇧 English: Introduce Yourself & Your Hobby',
+    title: 'Introduce Yourself & Your Hobby',
     prompt: 'Tell us your name, age, city, and what you love doing in your free time.',
-    prompt_uz: 'Ismingiz, yoshingiz, yashash shahringiz va sevimli mashg‘ulotingiz haqida gapiring.',
-    sample_text: 'Hello, my name is Jasur. I am 14 years old and I live in Tashkent. In my free time, I love playing football and learning languages.',
+    prompt_uz: 'Ismingiz, yoshingiz, yashash shahringiz va bo‘sh vaqtingizdagi sevimli mashg‘ulotingiz haqida gapiring.',
+    sample_text: 'Hello, my name is Jasur. I am 15 years old and I live in Tashkent. In my free time, I love playing football and learning English on OSON platform.',
     keywords: ['name', 'years old', 'live in', 'free time', 'hobby'],
-    duration_suggested: '30 soniya'
+    duration_suggested: '30-45 seconds'
   },
-
-  // Russian Speaking
   {
-    id: 'spk-ru-1',
-    level_code: 'A1',
-    language_code: 'ru',
-    title: '🇷🇺 Русский: Расскажи о себе и друзьях',
-    prompt: 'Как тебя зовут, сколько тебе лет и чем ты любишь заниматься?',
-    prompt_uz: 'O‘zingiz, yoshingiz va qiziqishlaringiz haqida rus tilida gapiring.',
-    sample_text: 'Привет! Меня зовут Тимур. Мне 14 лет, я живу в Ташкенте. Я люблю играть в футбол и учить новые языки.',
-    keywords: ['меня зовут', 'мне лет', 'я живу', 'люблю'],
-    duration_suggested: '30 soniya'
+    id: 'spk-2',
+    level_code: 'A2',
+    title: 'Order Your Favorite Food at a Cafe',
+    prompt: 'Imagine you are at a cafe in London. Order a main dish, a drink, and ask for the bill.',
+    prompt_uz: 'Londondagi kafedasiz. Taom, ichimlik buyurtma bering va hisobni so‘rang.',
+    sample_text: 'Good afternoon! Could I please have a chicken burger and an iced tea? Also, could you bring the check when you have a moment? Thank you!',
+    keywords: ['could I have', 'iced tea', 'check', 'thank you', 'please'],
+    duration_suggested: '30-60 seconds'
+  },
+  {
+    id: 'spk-3',
+    level_code: 'B1',
+    title: 'How Artificial Intelligence Impacts Teen Life',
+    prompt: 'Discuss the benefits and challenges of AI tools like ChatGPT for modern school students.',
+    prompt_uz: 'Sun’iy intellekt vositalarining o‘quvchilar hayotidagi foydasi va xavflari haqida fikr bildiring.',
+    sample_text: 'In my opinion, artificial intelligence is an incredible tool that helps students learn faster and understand difficult topics. However, we should not rely entirely on AI for our homework.',
+    keywords: ['in my opinion', 'artificial intelligence', 'incredible tool', 'however', 'homework'],
+    duration_suggested: '45-90 seconds'
+  },
+  {
+    id: 'spk-4',
+    level_code: 'B2',
+    title: 'My Dream Career and University Goals',
+    prompt: 'Describe what profession you wish to pursue and which skills you are actively developing today.',
+    prompt_uz: 'Kelajakda qaysi kasb egasi bo‘lmoqchisiz va hozir qaysi ko‘nikmalarni rivojlantiryapsiz?',
+    sample_text: 'My aspiration is to become a software engineer specializing in artificial intelligence. To achieve this, I consistently practice programming, mathematics, and English communication.',
+    keywords: ['aspiration', 'software engineer', 'consistently', 'achieve', 'communication'],
+    duration_suggested: '60-120 seconds'
   }
 ];
 
 export const CONVERSATION_SCENARIOS: ConversationScenario[] = [
-  // French AI Scenario
-  {
-    id: 'sc-fr-chat',
-    title: 'Ami Parisien (Français Débutant)',
-    title_uz: 'Fransuz do‘st bilan suhbat (Parij)',
-    icon: '🇫🇷',
-    description: 'Pratiquez le français simplement: commander au café, salutations et école.',
-    level_min: 'A1',
-    ai_role: 'Ami Parisien (Lucas)',
-    user_role: 'Élève',
-    initial_message: "Bonjour mon ami! Je m'appelle Lucas, j'ai 15 ans et j'habite à Paris. Bienvenue en France! Comment vas-tu aujourd'hui?",
-    suggested_replies: [
-      "Bonjour Lucas! Je vais très bien, merci!",
-      "Je voudrais commander un croissant et un café, s'il vous plaît.",
-      "Quel est ton endroit préféré à Paris?"
-    ]
-  },
-
-  // English AI Scenario
   {
     id: 'sc-freechat',
-    title: 'Free Conversation AI Coach (English)',
-    title_uz: 'Erkin Suhbat (Ingliz tili)',
-    icon: '🇬🇧',
-    description: 'Istalgan mavzuda (o‘yinlar, film, darslar) erkin gaplashing.',
+    title: 'Free Conversation & IELTS Coach',
+    title_uz: 'Erkin Suhbat & IELTS Murabbiy',
+    icon: '🌟',
+    description: 'Istalgan mavzuda (o‘yinlar, film, texnologiya, darslar) erkin suhbat quring yoki IELTS Speaking savollariga tayyorlaning.',
     level_min: 'A1',
-    ai_role: 'Friendly English Buddy (Alex)',
-    user_role: 'Teen Student',
-    initial_message: "Hey! I'm Alex, your AI study buddy. You can chat with me about games, school, movies, or daily life. What's on your mind today?",
+    ai_role: 'Friendly Native English Mentor (Alex)',
+    user_role: 'Curious English Learner',
+    initial_message: "Hey there! I am Alex, your 24/7 AI English coach. We can chat about absolutely anything — your favorite video games, movies, coding, IELTS speaking, or daily life. What's on your mind today?",
     suggested_replies: [
       "Tell me a fun joke in English!",
-      "What are your favorite video games?",
-      "How can I practice speaking every day?"
+      "How can I improve my English speaking fast?",
+      "Let's practice for an IELTS Speaking Part 1 topic.",
+      "What are your favorite hobbies and video games?"
     ]
   },
-
-  // Russian AI Scenario
   {
-    id: 'sc-ru-chat',
-    title: 'Русский собеседник (Дружеский чат)',
-    title_uz: 'Rus tilida jonli muloqot',
-    icon: '🇷🇺',
-    description: 'Поговори на русском языке на любую тему: школа, хобби, спорт.',
+    id: 'sc-restaurant',
+    title: 'Cozy London Cafe',
+    title_uz: 'London Kafesida Buyurtma',
+    icon: '☕',
+    description: 'Kafeda ofitsiant bilan suhbat: menyu so‘rash, taom tanlash va hisob-kitob.',
     level_min: 'A1',
-    ai_role: 'Друг-помощник (Максим)',
-    user_role: 'Ученик',
-    initial_message: "Привет! Меня зовут Максим. Мы можем поговорить о твоих любимых играх, фильмах или уроках. Как у тебя дела?",
+    ai_role: 'Polite London Cafe Waiter (James)',
+    user_role: 'Teen Customer',
+    initial_message: "Welcome to Big Ben Cafe! Take a seat please. What can I get started for you today?",
     suggested_replies: [
-      "Привет, Максим! У меня всё отлично!",
-      "Расскажи интересную историю или шутку.",
-      "В какие игры ты любишь играть?"
+      "Hi! Could I see the menu, please?",
+      "Hello! I'd like a hot chocolate and a croissant.",
+      "What do you recommend for lunch today?"
+    ]
+  },
+  {
+    id: 'sc-airport',
+    title: 'International Airport Check-in',
+    title_uz: 'Aeroportda Ro‘yxatdan O‘tish',
+    icon: '🛫',
+    description: 'Pasport nazorati, reys ma’lumoti va samolyot o‘rnini tanlash.',
+    level_min: 'A2',
+    ai_role: 'Airlines Check-in Officer (Sarah)',
+    user_role: 'International Traveler',
+    initial_message: "Good day! Welcome to British Airways check-in desk. May I have your passport and ticket please?",
+    suggested_replies: [
+      "Here is my passport and booking confirmation.",
+      "Can I please get a window seat?",
+      "How much baggage weight is allowed?"
+    ]
+  },
+  {
+    id: 'sc-hotel',
+    title: 'Hotel Reception in New York',
+    title_uz: 'Nyu-York Mehmonxonasida',
+    icon: '🏨',
+    description: 'Mehmonxonaga joylashish, Wi-Fi paroli va nonushta vaqtini bilish.',
+    level_min: 'A2',
+    ai_role: 'Hotel Concierge (Michael)',
+    user_role: 'Hotel Guest',
+    initial_message: "Welcome to The Manhattan Star Hotel! Are you checking in today?",
+    suggested_replies: [
+      "Yes, I have a reservation under the name Jasur.",
+      "What time is breakfast served tomorrow morning?",
+      "Could you tell me the Wi-Fi password, please?"
+    ]
+  },
+  {
+    id: 'sc-interview',
+    title: 'Tech Internship Interview',
+    title_uz: 'IT Amaliyot Suhbatida',
+    icon: '💼',
+    description: 'Yosh dasturchi yoki dizayner amaliyoti bo‘yicha ish suhbati mashqi.',
+    level_min: 'B1',
+    ai_role: 'Tech Lead Interviewer (David)',
+    user_role: 'Junior Tech Applicant',
+    initial_message: "Hello! Thank you for applying for our youth internship program. Could you tell me a little bit about yourself and why you enjoy technology?",
+    suggested_replies: [
+      "Hello David! I love creating web apps and solving problems using code.",
+      "I have been learning web development and building small projects for school.",
+      "My strongest skill is fast learning and collaborating with a team."
+    ]
+  },
+  {
+    id: 'sc-school',
+    title: 'First Day at an International School',
+    title_uz: 'Xalqaro Maktabda Ilk Kun',
+    icon: '🎓',
+    description: 'Yangi sinfdoshlar bilan tanishuv, dars jadvali va maktab to‘garaklari.',
+    level_min: 'A1',
+    ai_role: 'Friendly Classmate (Emma)',
+    user_role: 'New International Student',
+    initial_message: "Hey! Are you the new student joining our class today? I'm Emma, nice to meet you!",
+    suggested_replies: [
+      "Hi Emma! Yes, I am new here. My name is Jasur, nice to meet you too!",
+      "Which classroom is for English class?",
+      "What clubs or sports are popular at this school?"
     ]
   }
 ];
@@ -788,8 +1136,8 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
     id: 'ach-1',
     title: 'First Step',
     title_uz: 'Ilk Qadam',
-    description: 'Complete your first lesson or quiz.',
-    description_uz: 'Birinchi dars yoki testni yakunlang.',
+    description: 'Complete your very first English lesson or quiz on OSON.',
+    description_uz: 'OSON platformasida birinchi dars yoki testni muvaffaqiyatli yakunlang.',
     icon: '🎯',
     xp_reward: 50,
     category: 'general',
@@ -799,9 +1147,9 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
   {
     id: 'ach-2',
     title: '7 Day Warrior',
-    title_uz: '7 Kunlik Olov (Streak)',
+    title_uz: '7 Kunlik Qahramon',
     description: 'Maintain a 7-day daily study streak.',
-    description_uz: 'Ketma-ket 7 kun davomida o‘qing.',
+    description_uz: 'Ketma-ket 7 kun davomida har kuni platformaga kirib o‘qing.',
     icon: '🔥',
     xp_reward: 150,
     category: 'streak',
@@ -812,40 +1160,136 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
     id: 'ach-3',
     title: 'Confident Speaker',
     title_uz: 'Ishonchli Notiq',
-    description: 'Complete 3 speaking challenges.',
-    description_uz: '3 ta speaking mashqini muvaffaqiyatli bajaring.',
+    description: 'Complete 5 AI-powered speaking challenges with 80%+ score.',
+    description_uz: '5 ta speaking topshirig‘ini 80% dan yuqori ball bilan bajaring.',
     icon: '🎙️',
     xp_reward: 200,
     category: 'speaking',
     condition_type: 'speaking_count',
+    condition_target: 5
+  },
+  {
+    id: 'ach-4',
+    title: 'Speed Master',
+    title_uz: 'Tezkor Bilimdon',
+    description: 'Score 100% on any quiz in under 60 seconds.',
+    description_uz: 'Istalgan testda 60 soniyadan kam vaqtda 100% natija ko‘rsating.',
+    icon: '⚡',
+    xp_reward: 100,
+    category: 'quiz',
+    condition_type: 'fast_quiz',
+    condition_target: 1
+  },
+  {
+    id: 'ach-5',
+    title: 'Vocabulary King',
+    title_uz: 'So‘z Boyligi Qiroli',
+    description: 'Master 30 new words with spaced repetition.',
+    description_uz: 'Interval takrorlash orqali 30 ta yangi so‘zni to‘liq o‘zlashtiring.',
+    icon: '📚',
+    xp_reward: 120,
+    category: 'vocab',
+    condition_type: 'words_mastered',
+    condition_target: 30
+  },
+  {
+    id: 'ach-6',
+    title: 'AI Companion',
+    title_uz: 'AI Hamroh',
+    description: 'Complete 3 full dialogue scenarios with AI Tutor.',
+    description_uz: 'AI Tutor bilan 3 ta to‘liq suhbat stsenariysini bajaring.',
+    icon: '🤖',
+    xp_reward: 100,
+    category: 'general',
+    condition_type: 'ai_chats_completed',
     condition_target: 3
+  },
+  {
+    id: 'ach-7',
+    title: 'Top 10 Champion',
+    title_uz: 'Top 10 Peshqadam',
+    description: 'Reach the Top 10 on the Global Leaderboard.',
+    description_uz: 'Umumiy reytingda eng kuchli top 10 talikka kiring.',
+    icon: '🏆',
+    xp_reward: 300,
+    category: 'general',
+    condition_type: 'leaderboard_rank',
+    condition_target: 10
+  },
+  {
+    id: 'ach-8',
+    title: 'Level Conqueror',
+    title_uz: 'Daraja Zafari',
+    description: 'Pass any Level Certification Exam with 85%+ score.',
+    description_uz: 'Daraja yakuniy imtihonidan 85% dan yuqori ball bilan o‘ting.',
+    icon: '👑',
+    xp_reward: 250,
+    category: 'level',
+    condition_type: 'level_test_passed',
+    condition_target: 1
   }
 ];
 
 export const INITIAL_LOCATIONS: LocationItem[] = [
   {
     id: 'loc-1',
-    name: 'OSON Central Campus',
-    address: 'Toshkent sh., Amir Temur shoh ko‘chasi, 107A',
+    name: 'OSON Central Flagship Campus',
+    address: 'Toshkent sh., Amir Temur shoh ko‘chasi, 107A (IT Park binosi yaqinida)',
     latitude: 41.311081,
     longitude: 69.279737,
-    description: 'Speaking Club, interaktiv kompyuter xonasi va o‘smirlar coworking maydoni.',
-    working_hours: '08:30 – 21:00',
+    description: 'OSON ning bosh o‘quv markazi. Zamonaviy VR Speaking Lab, Coworking va Teen Hub mavjud.',
+    working_hours: 'Dushanba – Shanba: 08:30 – 21:00',
     contact: '+998 71 200 45 45',
-    available_courses: ['Fransuz tili (Français)', 'Ingliz tili (English)', 'Rus tili (Русский)'],
+    available_courses: ['A1-C2 English Courses', 'IELTS Teen Intensive', 'AI Speaking Club', 'Offline Hackathons'],
     image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80'
   },
   {
     id: 'loc-2',
-    name: 'OSON Youth Hub (Oybek)',
+    name: 'OSON Youth Innovation Hub (Oybek)',
     address: 'Toshkent sh., Mirobod tumani, Oybek ko‘chasi, 24',
     latitude: 41.295289,
     longitude: 69.271512,
-    description: 'O‘smirlar uchun robototexnika va til o‘rganish markazi.',
-    working_hours: '09:00 – 20:00',
+    description: '13-18 yoshdagi o‘smirlar uchun interaktiv til va texnologiya markazi.',
+    working_hours: 'Har kuni: 09:00 – 20:00',
     contact: '+998 71 200 45 46',
-    available_courses: ['French Speaking Lab', 'English Lab', 'Coders Club'],
+    available_courses: ['Interactive Speaking Labs', 'Grammar Bootcamp', 'English for Coders'],
     image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'loc-3',
+    name: 'OSON Chilonzor Smart Branch',
+    address: 'Toshkent sh., Chilonzor tumani, Qatortol ko‘chasi, 60',
+    latitude: 41.282711,
+    longitude: 69.204318,
+    description: 'Qulay joylashuv, audio studiya va haftalik bepul Native Speaker uchrashuvlari.',
+    working_hours: 'Dushanba – Shanba: 09:00 – 20:30',
+    contact: '+998 71 200 45 47',
+    available_courses: ['General English (A1-B2)', 'Speaking Club with Foreigners', 'Quiz Nights'],
+    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'loc-4',
+    name: 'OSON Mirzo Ulug‘bek Hub',
+    address: 'Toshkent sh., Mirzo Ulug‘bek tumani, Buyuk Ipak Yo‘li ko‘chasi, 112',
+    latitude: 41.326829,
+    longitude: 69.336712,
+    description: 'Maktab o‘quvchilari uchun maxsus guruhlar, robototexnika va ingliz tili integratsiyasi.',
+    working_hours: 'Dushanba – Shanba: 08:30 – 19:30',
+    contact: '+998 71 200 45 48',
+    available_courses: ['Teen Starter (A1)', 'Exam Prep', 'Debate Society'],
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'loc-5',
+    name: 'OSON Samarkand Regional Center',
+    address: 'Samarqand sh., Registon ko‘chasi, 45B',
+    latitude: 39.654876,
+    longitude: 66.975765,
+    description: 'Samarqanddagi ilk zamonaviy AI qo‘llab-quvvatlangan til laboratoriyasi.',
+    working_hours: 'Dushanba – Shanba: 09:00 – 20:00',
+    contact: '+998 66 230 11 22',
+    available_courses: ['A1-C1 General English', 'Tourist English & Cultural Exchange', 'IELTS Express'],
+    image: 'https://images.unsplash.com/photo-1568792923760-d70635a89fa1?w=600&auto=format&fit=crop&q=80'
   }
 ];
 
@@ -854,9 +1298,10 @@ export const INITIAL_USERS: User[] = [
     id: 'user-1',
     first_name: 'Jasur',
     last_name: 'Aliyev',
-    age: 13,
+    age: 16,
     phone: '+998 90 123 45 67',
     email: 'jasur@oson.uz',
+    password: 'password123',
     role: 'USER',
     is_verified: true,
     is_active: true,
@@ -867,12 +1312,30 @@ export const INITIAL_USERS: User[] = [
     created_at: '2026-08-01T10:00:00Z'
   },
   {
+    id: 'doctor-1',
+    first_name: 'Dr. Nilufar',
+    last_name: 'Qodirova',
+    age: 34,
+    phone: '+998 97 765 43 21',
+    email: 'doctor@oson.uz',
+    password: 'password123',
+    role: 'DOCTOR',
+    is_verified: true,
+    is_active: true,
+    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80',
+    current_level: 'C2',
+    total_xp: 3200,
+    streak: 21,
+    created_at: '2026-07-15T09:00:00Z'
+  },
+  {
     id: 'admin-1',
     first_name: 'Admin',
     last_name: 'OSON',
     age: 28,
     phone: '+998 99 999 88 77',
     email: 'admin@oson.uz',
+    password: 'password123',
     role: 'ADMIN',
     is_verified: true,
     is_active: true,
@@ -882,30 +1345,133 @@ export const INITIAL_USERS: User[] = [
     streak: 30,
     created_at: '2026-06-01T08:00:00Z'
   },
+  // Sample leaderboard students
   {
     id: 'user-2',
     first_name: 'Azizbek',
     last_name: 'Nazarov',
-    age: 14,
+    age: 17,
     phone: '+998 91 111 22 33',
     email: 'aziz@oson.uz',
+    password: 'password123',
     role: 'USER',
     is_verified: true,
     is_active: true,
     avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&auto=format&fit=crop&q=80',
-    current_level: 'B1',
+    current_level: 'B2',
     total_xp: 2450,
     streak: 18,
     created_at: '2026-07-10T12:00:00Z'
+  },
+  {
+    id: 'user-3',
+    first_name: 'Anvar',
+    last_name: 'Karimov',
+    age: 15,
+    phone: '+998 93 444 55 66',
+    email: 'anvar@oson.uz',
+    password: 'password123',
+    role: 'USER',
+    is_verified: true,
+    is_active: true,
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
+    current_level: 'B1',
+    total_xp: 2320,
+    streak: 14,
+    created_at: '2026-07-12T15:00:00Z'
+  },
+  {
+    id: 'user-4',
+    first_name: 'Malika',
+    last_name: 'Rustamova',
+    age: 16,
+    phone: '+998 94 777 88 99',
+    email: 'malika@oson.uz',
+    password: 'password123',
+    role: 'USER',
+    is_verified: true,
+    is_active: true,
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
+    current_level: 'B2',
+    total_xp: 2100,
+    streak: 12,
+    created_at: '2026-07-20T11:00:00Z'
+  },
+  {
+    id: 'user-5',
+    first_name: 'Sardor',
+    last_name: 'Ikromov',
+    age: 14,
+    phone: '+998 90 999 11 22',
+    email: 'sardor@oson.uz',
+    password: 'password123',
+    role: 'USER',
+    is_verified: true,
+    is_active: true,
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
+    current_level: 'A2',
+    total_xp: 1870,
+    streak: 9,
+    created_at: '2026-07-25T14:00:00Z'
+  },
+  {
+    id: 'user-6',
+    first_name: 'Madina',
+    last_name: 'Yusupova',
+    age: 17,
+    phone: '+998 98 333 22 11',
+    email: 'madina@oson.uz',
+    password: 'password123',
+    role: 'USER',
+    is_verified: true,
+    is_active: true,
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80',
+    current_level: 'B1',
+    total_xp: 1640,
+    streak: 8,
+    created_at: '2026-08-02T16:00:00Z'
+  }
+];
+
+export const INITIAL_DOCTOR_PROFILE: DoctorProfile = {
+  id: 'doc-prof-1',
+  user_id: 'doctor-1',
+  specialization: 'Educational Psychologist & Language Development Specialist',
+  bio: 'O‘smirlarda til o‘rganishdagi psixologik to‘siqlarni yengish, motivatsiyani mustahkamlash va kundalik intizomni shakllantirish bo‘yicha 9 yillik tajribaga ega mutaxassis.',
+  assigned_student_ids: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6']
+};
+
+export const INITIAL_DOCTOR_NOTES: DoctorNote[] = [
+  {
+    id: 'note-1',
+    doctor_id: 'doctor-1',
+    doctor_name: 'Dr. Nilufar Qodirova',
+    student_id: 'user-1',
+    student_name: 'Jasur Aliyev',
+    category: 'speech_barrier',
+    note: 'Jasur speaking mashqlarida biroz tortinchoqlik ko‘rsatmoqda, lekin grammatik bilimi A2 ga juda mos.',
+    recommendation: 'AI Tutor bilan kuniga 10 daqiqa erkin audio suhbat rejimida mashq qilish va ovozni balandroq chiqarib takrorlash tavsiya etiladi.',
+    created_at: '2026-08-14T14:20:00Z'
+  },
+  {
+    id: 'note-2',
+    doctor_id: 'doctor-1',
+    doctor_name: 'Dr. Nilufar Qodirova',
+    student_id: 'user-5',
+    student_name: 'Sardor Ikromov',
+    category: 'study_habit',
+    note: 'Sardor kunlik streakni ajoyib ushlamoqda. 9 kunlik uzluksiz o‘qish orqali yuqori progress qayd etmoqda.',
+    recommendation: 'Interval takrorlash tizimidagi so‘zlarni kechki soat 20:00 da 5 daqiqa ko‘rib chiqish unumdorlikni yanada oshiradi.',
+    created_at: '2026-08-15T16:45:00Z'
   }
 ];
 
 export const INITIAL_DAILY_CHALLENGES: DailyChallenge[] = [
   {
     id: 'dc-1',
-    title: 'Kunlik 5 ta yangi so‘z',
-    title_uz: '5 ta yangi so‘zni kartochkalarda takrorlang',
-    description: 'Review 5 flashcards today.',
+    title: 'Daily Vocabulary Sprint',
+    title_uz: 'Kunlik So‘z Boyligi Maroqli',
+    description: 'Review 5 flashcards using spaced repetition today.',
     xp_reward: 50,
     target_type: 'vocab',
     target_count: 5,
@@ -914,9 +1480,9 @@ export const INITIAL_DAILY_CHALLENGES: DailyChallenge[] = [
   },
   {
     id: 'dc-2',
-    title: 'Ovozli suhbat',
-    title_uz: 'AI Do‘stimiz bilan 1 ta audio suhbat',
-    description: 'Complete 1 Speaking session.',
+    title: 'Voice Explorer',
+    title_uz: 'Ovozli Sinov',
+    description: 'Complete 1 Speaking Challenge or AI Conversation session.',
     xp_reward: 50,
     target_type: 'speaking',
     target_count: 1,

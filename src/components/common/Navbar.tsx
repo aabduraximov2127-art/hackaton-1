@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { 
-  Flame, BookOpen, Mic, Bot, BrainCircuit, Trophy, MapPin, 
-  User as UserIcon, Shield, Stethoscope, LogOut, Menu, X, Sparkles, MessageCircle 
+  Flame, Sparkles, User as UserIcon, Shield, Stethoscope, 
+  Menu, MessageCircle, ChevronDown, PanelLeftOpen, PanelLeftClose
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
 import { soundFX } from '../../services/audio';
+import { useI18n } from '../../services/i18n';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavbarProps {
   currentUser: User | null;
   activeTab: string;
+  isSidebarCollapsed: boolean;
+  onToggleDesktopSidebar: () => void;
+  onToggleMobileSidebar: () => void;
   onSelectTab: (tab: string) => void;
   onOpenAuth: () => void;
   onOpenContact: () => void;
@@ -21,305 +26,212 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   currentUser,
   activeTab,
+  isSidebarCollapsed,
+  onToggleDesktopSidebar,
+  onToggleMobileSidebar,
   onSelectTab,
   onOpenAuth,
   onOpenContact,
   onOpenXPModal,
   onOpenStreakModal,
   onSwitchRole,
-  onLogout
+  onLogout: _onLogout
 }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-  const [isLight, setIsLight] = useState(false);
+  const { t } = useI18n();
 
-  const handleTabClick = (tab: string) => {
-    soundFX.playClick();
-    onSelectTab(tab);
-    setMobileMenuOpen(false);
-  };
-
-  const toggleTheme = () => {
-    const next = !isLight;
-    setIsLight(next);
-    document.documentElement.setAttribute('data-theme', next ? 'light' : 'dark');
+  const getTabTitle = (tab: string) => {
+    switch (tab) {
+      case 'dashboard': return t.dashboard;
+      case 'courses':
+      case 'course-detail':
+      case 'topic-view': return t.courses;
+      case 'quizzes':
+      case 'quiz-player': return t.quizzes;
+      case 'speaking': return t.speaking;
+      case 'ai-tutor': return t.aiTutor;
+      case 'vocabulary': return t.vocabulary;
+      case 'leaderboard': return t.leaderboard;
+      case 'map': return t.map;
+      case 'profile': return t.profile;
+      case 'doctor': return t.doctorPanel;
+      case 'admin': return t.adminPanel;
+      default: return 'OSON';
+    }
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-[#0b0c10]/80 backdrop-blur-xl transition-all">
-      <div className="max-w-[1140px] mx-auto px-4 sm:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-18">
+    <header className="sticky top-0 z-30 w-full border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur-xl transition-all">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           
-          {/* Logo & Brand matching message.txt */}
-          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => handleTabClick('dashboard')}>
-            <div className="w-7 h-7 rounded-lg bg-[#ff6b4a] flex items-center justify-center font-bold text-sm text-[#170d08] shadow-md shadow-[#ff6b4a]/20">
-              語
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold font-['Space_Grotesk'] text-[#f1f0ee] tracking-tight">
-                OSON
-              </span>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full border border-white/10 font-mono text-[10px] text-[#8f8f96]">
-                v2.0
-              </span>
+          {/* Left: Sidebar Toggle & Page Title */}
+          <div className="flex items-center gap-3">
+            
+            {/* Mobile Sidebar Toggle Button */}
+            <button
+              onClick={() => {
+                soundFX.playClick();
+                onToggleMobileSidebar();
+              }}
+              className="lg:hidden p-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition"
+              title={t.menu}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Desktop Sidebar Toggle Button */}
+            <button
+              onClick={() => {
+                soundFX.playClick();
+                onToggleDesktopSidebar();
+              }}
+              className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition text-xs font-bold"
+              title={isSidebarCollapsed ? t.menu : t.close}
+            >
+              {isSidebarCollapsed ? (
+                <>
+                  <PanelLeftOpen className="w-4 h-4 text-indigo-400" />
+                  <span>{t.menu}</span>
+                </>
+              ) : (
+                <>
+                  <PanelLeftClose className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-400">{t.close}</span>
+                </>
+              )}
+            </button>
+
+            {/* Current Section Title */}
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-slate-700">/</span>
+              <h2 className="text-sm font-extrabold text-white font-['Outfit'] tracking-wide">
+                {getTabTitle(activeTab)}
+              </h2>
             </div>
           </div>
 
-          {/* Desktop Nav Links */}
-          {currentUser && (
-            <nav className="hidden lg:flex items-center gap-1 bg-[#111318] p-1 rounded-full border border-white/5">
-              <button
-                onClick={() => handleTabClick('dashboard')}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'dashboard'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                Dashboard
-              </button>
-
-              <button
-                onClick={() => handleTabClick('courses')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'courses' || activeTab === 'course-detail' || activeTab === 'topic-view'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Kurslar</span>
-              </button>
-
-              <button
-                onClick={() => handleTabClick('quizzes')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'quizzes' || activeTab === 'quiz-player'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Testlar</span>
-              </button>
-
-              <button
-                onClick={() => handleTabClick('speaking')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'speaking'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <Mic className="w-3.5 h-3.5" />
-                <span>Speaking</span>
-              </button>
-
-              <button
-                onClick={() => handleTabClick('ai-tutor')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'ai-tutor'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <Bot className="w-3.5 h-3.5" />
-                <span>AI Tutor</span>
-              </button>
-
-              <button
-                onClick={() => handleTabClick('vocabulary')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'vocabulary'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <BrainCircuit className="w-3.5 h-3.5" />
-                <span>So‘zlar</span>
-              </button>
-
-              <button
-                onClick={() => handleTabClick('leaderboard')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'leaderboard'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <Trophy className="w-3.5 h-3.5" />
-                <span>Reyting</span>
-              </button>
-
-              <button
-                onClick={() => handleTabClick('map')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                  activeTab === 'map'
-                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
-                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
-                }`}
-              >
-                <MapPin className="w-3.5 h-3.5" />
-                <span>Xarita</span>
-              </button>
-            </nav>
-          )}
-
-          {/* Right Header Controls */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Action Bar: Stats, Language & Profile */}
+          <div className="flex items-center gap-2 sm:gap-3">
             
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-xs hover:border-[#ff6b4a] hover:bg-[#ff6b4a]/10 transition cursor-pointer"
-              title="Mavzuni almashtirish (Dark / Light)"
-            >
-              {isLight ? '🌙' : '☀️'}
-            </button>
+            {/* 4-Language Switcher with flags */}
+            <LanguageSwitcher />
+
+            {/* Quick Role Switcher for Hackathon Demo */}
+            <div className="relative">
+              <button
+                onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-300 transition"
+                title={t.switchRole}
+              >
+                {currentUser?.role === 'ADMIN' ? (
+                  <Shield className="w-3.5 h-3.5 text-rose-400" />
+                ) : currentUser?.role === 'DOCTOR' ? (
+                  <Stethoscope className="w-3.5 h-3.5 text-cyan-400" />
+                ) : (
+                  <UserIcon className="w-3.5 h-3.5 text-emerald-400" />
+                )}
+                <span className="hidden sm:inline font-bold">
+                  {currentUser?.role || t.guest}
+                </span>
+                <ChevronDown className="w-3 h-3 text-slate-500" />
+              </button>
+
+              {roleDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-52 p-1.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl z-50 animate-fade-in text-xs space-y-1">
+                  <div className="px-3 py-1.5 text-[10px] uppercase font-extrabold text-slate-500">
+                    {t.switchRole} (Demo)
+                  </div>
+                  <button
+                    onClick={() => { onSwitchRole('USER'); setRoleDropdownOpen(false); }}
+                    className={`w-full px-3 py-2 rounded-xl flex items-center gap-2 text-left transition ${
+                      currentUser?.role === 'USER' ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <UserIcon className="w-4 h-4 text-emerald-400" /> USER
+                  </button>
+                  <button
+                    onClick={() => { onSwitchRole('DOCTOR'); setRoleDropdownOpen(false); }}
+                    className={`w-full px-3 py-2 rounded-xl flex items-center gap-2 text-left transition ${
+                      currentUser?.role === 'DOCTOR' ? 'bg-cyan-500/20 text-cyan-400 font-bold' : 'text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <Stethoscope className="w-4 h-4 text-cyan-400" /> DOCTOR
+                  </button>
+                  <button
+                    onClick={() => { onSwitchRole('ADMIN'); setRoleDropdownOpen(false); }}
+                    className={`w-full px-3 py-2 rounded-xl flex items-center gap-2 text-left transition ${
+                      currentUser?.role === 'ADMIN' ? 'bg-rose-500/20 text-rose-400 font-bold' : 'text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <Shield className="w-4 h-4 text-rose-400" /> ADMIN
+                  </button>
+                </div>
+              )}
+            </div>
 
             {currentUser ? (
               <>
-                {/* Gamification Stats (Streak & XP) */}
-                <div className="hidden sm:flex items-center gap-2">
-                  <button
-                    onClick={onOpenStreakModal}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#161920] border border-white/10 hover:border-[#ff6b4a] text-xs font-mono font-bold text-[#ff6b4a] transition cursor-pointer"
-                  >
-                    <Flame className="w-3.5 h-3.5 fill-[#ff6b4a]" />
-                    <span>{currentUser.streak} kun</span>
-                  </button>
-
-                  <button
-                    onClick={onOpenXPModal}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#161920] border border-white/10 hover:border-amber-500 text-xs font-mono font-bold text-amber-300 transition cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    <span>{currentUser.total_xp} XP</span>
-                  </button>
-                </div>
-
-                {/* Role Switcher Pill */}
-                <div className="relative">
-                  <button
-                    onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#161920] text-xs font-bold text-[#f1f0ee] hover:border-[#ff6b4a] transition cursor-pointer"
-                  >
-                    {currentUser.role === 'ADMIN' && <Shield className="w-3.5 h-3.5 text-rose-400" />}
-                    {currentUser.role === 'USER' && <UserIcon className="w-3.5 h-3.5 text-indigo-400" />}
-                    <span className="hidden md:inline">{currentUser.role}</span>
-                  </button>
-
-                  {roleDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[#161920] border border-white/10 shadow-2xl p-1.5 z-50 animate-fade-in text-xs">
-                      <div className="px-3 py-2 text-[10px] font-mono text-[#8f8f96] uppercase border-b border-white/5">
-                        Rolni tanlash
-                      </div>
-                      <button
-                        onClick={() => { onSwitchRole('USER'); setRoleDropdownOpen(false); }}
-                        className="w-full px-3 py-2 rounded-xl text-left hover:bg-white/5 flex items-center gap-2 text-white font-medium"
-                      >
-                        <UserIcon className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>O‘quvchi (USER)</span>
-                      </button>
-                      <button
-                        onClick={() => { onSwitchRole('ADMIN'); setRoleDropdownOpen(false); }}
-                        className="w-full px-3 py-2 rounded-xl text-left hover:bg-white/5 flex items-center gap-2 text-rose-300 font-medium"
-                      >
-                        <Shield className="w-3.5 h-3.5 text-rose-400" />
-                        <span>Boshqaruv (ADMIN)</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Profile Avatar / Logout */}
+                {/* Streak Badge */}
                 <button
-                  onClick={() => handleTabClick('profile')}
-                  className="w-8 h-8 rounded-full border border-white/10 overflow-hidden hover:border-[#ff6b4a] transition cursor-pointer"
+                  onClick={onOpenStreakModal}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/20 transition cursor-pointer"
+                  title={t.streakTracker}
                 >
-                  <img src={currentUser.avatar} alt={currentUser.first_name} className="w-full h-full object-cover" />
+                  <Flame className="w-4 h-4 fill-amber-400 text-amber-500 animate-pulse" />
+                  <span className="hidden sm:inline">{currentUser.streak} {t.streak}</span>
+                </button>
+
+                {/* XP Pill */}
+                <button
+                  onClick={onOpenXPModal}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold hover:bg-indigo-500/20 transition cursor-pointer"
+                  title="XP"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>{currentUser.total_xp} XP</span>
+                </button>
+
+                {/* Level Badge */}
+                <span className="hidden md:flex items-center justify-center px-3 py-1.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-black">
+                  {currentUser.current_level}
+                </span>
+
+                {/* Contact Modal Trigger */}
+                <button
+                  onClick={onOpenContact}
+                  className="hidden sm:flex p-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition"
+                  title={t.contactAdmin}
+                >
+                  <MessageCircle className="w-4 h-4 text-cyan-400" />
+                </button>
+
+                {/* Profile Avatar */}
+                <button
+                  onClick={() => onSelectTab('profile')}
+                  className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-indigo-500/40 hover:border-indigo-400 transition"
+                  title={t.profile}
+                >
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.first_name}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               </>
             ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={onOpenAuth}
-                  className="btn-accent px-4 py-2 text-xs font-bold"
-                >
-                  Kirish
-                </button>
-              </div>
+              <button
+                onClick={onOpenAuth}
+                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition"
+              >
+                {t.login} / {t.register}
+              </button>
             )}
 
-            {/* Mobile Hamburger */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl border border-white/10 text-[#8f8f96] hover:text-white"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
 
         </div>
       </div>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/5 bg-[#0b0c10] px-4 py-4 space-y-2 animate-fade-in">
-          {currentUser && (
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <button
-                onClick={() => handleTabClick('dashboard')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                Dashboard
-              </button>
-              <button
-                onClick={() => handleTabClick('courses')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                Kurslar
-              </button>
-              <button
-                onClick={() => handleTabClick('quizzes')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                Testlar (Quiz)
-              </button>
-              <button
-                onClick={() => handleTabClick('speaking')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                Speaking Studio
-              </button>
-              <button
-                onClick={() => handleTabClick('ai-tutor')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                AI Tutor
-              </button>
-              <button
-                onClick={() => handleTabClick('vocabulary')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                So‘zlar (SRS)
-              </button>
-              <button
-                onClick={() => handleTabClick('leaderboard')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                Reyting
-              </button>
-              <button
-                onClick={() => handleTabClick('map')}
-                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
-              >
-                Xarita
-              </button>
-            </div>
-          )}
-        </div>
-      )}
     </header>
   );
 };

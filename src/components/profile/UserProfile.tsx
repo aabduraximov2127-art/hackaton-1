@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  User as UserIcon, Mail, Phone, Calendar, Award, 
-  Sparkles, Flame, BookOpen, Mic, BrainCircuit, Check, Edit2, Save 
+  Edit2, Save 
 } from 'lucide-react';
 import { User } from '../../types';
 import { OsonStorageService } from '../../services/storage';

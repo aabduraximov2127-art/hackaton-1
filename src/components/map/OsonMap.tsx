@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Phone, Clock, BookOpen, Navigation, ExternalLink, Sparkles, Building2 } from 'lucide-react';
+import { MapPin, Phone, Clock, Navigation, Sparkles, Building2 } from 'lucide-react';
 import { LocationItem } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 import L from 'leaflet';

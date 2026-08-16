@@ -1,5 +1,4 @@
-import React from 'react';
-import { ArrowLeft, Clock, Layers, Play, CheckCircle2, Mic, Bot, BookOpen, BrainCircuit } from 'lucide-react';
+import { ArrowLeft, Clock, Layers, Play } from 'lucide-react';
 import { Course, Topic } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 

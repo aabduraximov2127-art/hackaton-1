@@ -1,37 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Bot, Send, Volume2, Sparkles, Mic, MicOff, RotateCcw, 
-  Lightbulb, CheckCircle2, User as UserIcon, MessageSquare, ArrowRight 
-} from 'lucide-react';
-import { ConversationScenario, ConversationMessage, User, LanguageCode } from '../../types';
+import { Bot, Send, Volume2, Mic, MicOff, Lightbulb, User as UserIcon, Wifi } from 'lucide-react';
+import { ConversationMessage, User } from '../../types';
 import { CONVERSATION_SCENARIOS } from '../../data/mockData';
 import { OsonStorageService } from '../../services/storage';
 import { generateAITutorResponse } from '../../services/aiTutor';
-import { soundFX, speakText, SpeechRecognizer } from '../../services/audio';
-import { fireConfetti } from '../common/ConfettiTrigger';
+import { soundFX, speakEnglish, SpeechRecognizer } from '../../services/audio';
+import { isGeminiConfigured } from '../../services/gemini';
 
 interface AITutorChatProps {
   currentUser: User;
-  activeLanguage?: LanguageCode;
+  onUserUpdate?: (user: User) => void;
 }
 
-export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLanguage = 'fr' }) => {
-  // Pick default scenario based on language
-  const getDefaultScenarioId = (lang: string) => {
-    if (lang === 'fr') return 'sc-fr-chat';
-    if (lang === 'ru') return 'sc-ru-chat';
-    return 'sc-freechat';
-  };
-
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(getDefaultScenarioId(activeLanguage));
-
-  // Sync scenario when parent language changes
-  useEffect(() => {
-    setSelectedScenarioId(getDefaultScenarioId(activeLanguage));
-  }, [activeLanguage]);
-
+export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, onUserUpdate }) => {
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(CONVERSATION_SCENARIOS[0].id);
   const scenario = CONVERSATION_SCENARIOS.find(s => s.id === selectedScenarioId) || CONVERSATION_SCENARIOS[0];
-
   const conversationId = `convo-${currentUser.id}-${scenario.id}`;
 
   const [messages, setMessages] = useState<ConversationMessage[]>([]);
@@ -39,93 +22,125 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [activeCorrection, setActiveCorrection] = useState<string | null>(null);
+  const [sessionBonusGiven, setSessionBonusGiven] = useState(false);
+  const [liveSuggestions, setLiveSuggestions] = useState<string[]>(() =>
+    CONVERSATION_SCENARIOS[0].suggested_replies
+  );
 
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
   const recognizerRef = useRef<SpeechRecognizer | null>(null);
+  const userMsgCountRef = useRef(0);
 
-  // Load existing or initialize conversation
   useEffect(() => {
-    const existing = OsonStorageService.getConversations(currentUser.id, scenario.id);
+    userMsgCountRef.current = 0;
+    setSessionBonusGiven(false);
+    setActiveCorrection(null);
+    setLiveSuggestions(scenario.suggested_replies);
+
+    const existing = OsonStorageService.getConversationMessages(conversationId);
     if (existing.length > 0) {
       setMessages(existing);
+      userMsgCountRef.current = existing.filter(m => m.sender === 'user').length;
     } else {
-      // Seed initial AI greeting
-      const initialAiMsg: ConversationMessage = {
-        id: 'msg-init-' + Date.now(),
-        scenario_id: scenario.id,
-        user_id: currentUser.id,
+      const initialAiMsg = OsonStorageService.saveConversationMessage(conversationId, {
+        conversation_id: conversationId,
         sender: 'ai',
         message: scenario.initial_message,
-        timestamp: new Date().toISOString()
-      };
+      });
       setMessages([initialAiMsg]);
     }
-  }, [selectedScenarioId, activeLanguage]);
+  }, [selectedScenarioId, conversationId, scenario.initial_message, scenario.suggested_replies]);
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   useEffect(() => {
-    const langTag = activeLanguage === 'fr' ? 'fr-FR' : (activeLanguage === 'ru' ? 'ru-RU' : 'en-US');
-    recognizerRef.current = new SpeechRecognizer(
-      (res) => {
-        if (res.transcript) {
-          setInputText(res.transcript);
-        }
-      },
-      undefined,
-      langTag
-    );
-  }, [activeLanguage]);
+    recognizerRef.current = new SpeechRecognizer((res) => {
+      if (res.transcript) setInputText(res.transcript);
+    });
+    return () => {
+      recognizerRef.current?.stop();
+    };
+  }, []);
 
-  const handleSendMessage = (textToSend?: string) => {
+  const syncUser = () => {
+    const refreshed = OsonStorageService.getCurrentUser();
+    if (refreshed && onUserUpdate) onUserUpdate(refreshed);
+  };
+
+  const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
-    if (!text) return;
+    if (!text || isTyping) return;
 
     soundFX.playClick();
     setInputText('');
+    if (isListening) {
+      recognizerRef.current?.stop();
+      setIsListening(false);
+    }
 
-    // Save user message
-    const userMsg: ConversationMessage = {
-      id: 'msg-u-' + Date.now(),
+    const userMsg = OsonStorageService.saveConversationMessage(conversationId, {
       conversation_id: conversationId,
       sender: 'user',
       message: text,
-      timestamp: new Date().toISOString()
-    };
-    OsonStorageService.addConversationMessage(userMsg);
-    setMessages(prev => [...prev, userMsg]);
+    });
+    const nextMessages = [...messages, userMsg];
+    setMessages(nextMessages);
+    userMsgCountRef.current += 1;
 
-    // AI typing & response
     setIsTyping(true);
-    setTimeout(() => {
-      const aiReply = generateAITutorResponse(text, scenario, currentUser.current_level);
-      
-      const aiMsg: ConversationMessage = {
-        id: 'msg-ai-' + Date.now(),
-        scenario_id: scenario.id,
-        user_id: currentUser.id,
+    try {
+      const aiReply = await generateAITutorResponse(
+        text,
+        scenario,
+        currentUser.current_level,
+        nextMessages.map(m => ({ sender: m.sender, message: m.message }))
+      );
+
+      const aiMsg = OsonStorageService.saveConversationMessage(conversationId, {
+        conversation_id: conversationId,
         sender: 'ai',
         message: aiReply.message,
         correction: aiReply.correction,
-        timestamp: new Date().toISOString()
-      };
+      });
 
-      OsonStorageService.addConversationMessage(aiMsg);
       setMessages(prev => [...prev, aiMsg]);
-      setIsTyping(false);
 
       if (aiReply.correction) {
         setActiveCorrection(aiReply.correction);
       }
 
-      // Play audio TTS for AI message in active language
-      speakText(aiReply.message, activeLanguage);
+      // Update quick replies from AI
+      if (aiReply.suggested_replies?.length) {
+        setLiveSuggestions(aiReply.suggested_replies);
+      }
 
-      // Award conversational XP
-      OsonStorageService.awardXP(currentUser.id, 15, 'speaking', `AI Do‘stimiz bilan muloqot: ${scenario.title}`);
-    }, 1000);
+      OsonStorageService.addXP(
+        currentUser.id,
+        15,
+        'ai_conversation',
+        `AI Tutor: ${scenario.title}`
+      );
+
+      if (!sessionBonusGiven && userMsgCountRef.current >= 3) {
+        OsonStorageService.addXP(
+          currentUser.id,
+          30,
+          'ai_conversation',
+          `AI Tutor sessiyasi: ${scenario.title}`
+        );
+        setSessionBonusGiven(true);
+        soundFX.playLevelUp();
+      }
+
+      syncUser();
+    } catch (err) {
+      console.error(err);
+      setActiveCorrection('AI vaqtincha javob bera olmadi. Qayta urinib ko‘ring.');
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleToggleVoice = () => {
@@ -138,46 +153,38 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
     }
   };
 
-  const handleFinishSession = () => {
-    soundFX.playLevelUp();
-    fireConfetti();
-    OsonStorageService.addXP(currentUser.id, 30, 'ai_conversation', `AI Tutor sessiyasi yakunlandi: ${scenario.title}`);
-  };
-
   return (
     <div className="space-y-6 animate-fade-in pb-16">
-      
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold">
-            <Bot className="w-3.5 h-3.5" />
-            <span>AI Tutor Live Dialogue</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
-            Sun’iy Intellekt bilan Jonli Suhbat
-          </h1>
+      <div className="space-y-1">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold">
+          <Bot className="w-3.5 h-3.5" />
+          <span>AI Tutor</span>
         </div>
-
-        <button
-          onClick={handleFinishSession}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition self-start sm:self-auto"
-        >
-          <Sparkles className="w-4 h-4" /> Suhbatni yakunlash (+30 XP)
-        </button>
+        {isGeminiConfigured() && (
+          <div className="inline-flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] font-bold">
+            <Wifi className="w-3 h-3" /> Gemini ulangan
+          </div>
+        )}
+        <h1 className="text-2xl sm:text-3xl font-black text-white font-['Outfit'] mt-2">
+          Sun’iy intellekt bilan jonli suhbat
+        </h1>
+        <p className="text-xs text-slate-400 max-w-2xl">
+          Stsenariy tanlang, inglizcha yozing yoki gapiring. Har javob +15 XP; 3 ta xabardan so‘ng +30 XP bonus avtomatik.
+        </p>
       </div>
 
-      {/* Scenario Selector Tabs */}
+      {/* Scenario tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
         {CONVERSATION_SCENARIOS.map((sc) => {
           const isSelected = sc.id === selectedScenarioId;
           return (
             <button
               key={sc.id}
+              type="button"
               onClick={() => setSelectedScenarioId(sc.id)}
               className={`px-4 py-2 rounded-2xl text-xs font-bold shrink-0 transition flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30 ring-2 ring-purple-400'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
                   : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
               }`}
             >
@@ -188,21 +195,24 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
         })}
       </div>
 
-      {/* Active Scenario Banner */}
       <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3">
           <span className="text-2xl">{scenario.icon}</span>
           <div>
-            <div className="font-bold text-white">{scenario.title} ({scenario.title_uz})</div>
-            <div className="text-slate-400">AI Roli: <strong className="text-purple-400">{scenario.ai_role}</strong> • Sizning rolingiz: <strong className="text-emerald-400">{scenario.user_role}</strong></div>
+            <div className="font-bold text-white">{scenario.title}</div>
+            <div className="text-slate-400">
+              AI: <strong className="text-purple-400">{scenario.ai_role}</strong>
+              {' · '}
+              Siz: <strong className="text-emerald-400">{scenario.user_role}</strong>
+            </div>
           </div>
         </div>
         <span className="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 font-bold self-start sm:self-auto">
-          {scenario.level_min}+ Daraja
+          {scenario.level_min}+
         </span>
       </div>
 
-      {/* Chat Stream Box */}
+      {/* Chat */}
       <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/90 border border-slate-800 h-[480px] overflow-y-auto space-y-4">
         {messages.map((msg) => {
           const isAi = msg.sender === 'ai';
@@ -212,14 +222,14 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
               className={`flex items-start gap-3 ${isAi ? '' : 'flex-row-reverse'}`}
             >
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-                isAi 
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' 
+                isAi
+                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
                   : 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
               }`}>
                 {isAi ? <Bot className="w-5 h-5" /> : <UserIcon className="w-5 h-5" />}
               </div>
 
-              <div className={`max-w-[80%] space-y-2`}>
+              <div className="max-w-[80%] space-y-1.5">
                 <div className={`p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                   isAi
                     ? 'bg-slate-950 border border-slate-800 text-slate-100 rounded-tl-sm'
@@ -227,14 +237,13 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
                 }`}>
                   <p>{msg.message}</p>
                 </div>
-
-                {/* Speaker button on AI responses */}
                 {isAi && (
                   <button
-                    onClick={() => speakText(msg.message, activeLanguage)}
-                    className="flex items-center gap-1 text-[11px] font-bold text-[#ff6b4a] hover:text-[#ff6b4a]/80 transition cursor-pointer"
+                    type="button"
+                    onClick={() => speakEnglish(msg.message)}
+                    className="flex items-center gap-1 text-[11px] font-bold text-purple-400 hover:text-purple-300 transition"
                   >
-                    <Volume2 className="w-3.5 h-3.5" /> Talaffuzni tinglash
+                    <Volume2 className="w-3.5 h-3.5" /> Tinglash
                   </button>
                 )}
               </div>
@@ -256,14 +265,14 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
         <div ref={chatBottomRef} />
       </div>
 
-      {/* Grammar Correction Tip Popup */}
       {activeCorrection && (
-        <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-xs animate-fade-in">
+        <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-amber-300">
             <Lightbulb className="w-4 h-4 text-amber-400 shrink-0" />
             <span>{activeCorrection}</span>
           </div>
           <button
+            type="button"
             onClick={() => setActiveCorrection(null)}
             className="text-[11px] text-amber-400 hover:underline shrink-0"
           >
@@ -272,32 +281,32 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
         </div>
       )}
 
-      {/* Suggested Quick Replies Chips */}
-      <div>
-        <div className="text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
-          💡 Tezkor javob variantlari:
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {scenario.suggested_replies.map((reply, i) => (
-            <button
-              key={i}
-              onClick={() => handleSendMessage(reply)}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 text-xs text-slate-300 hover:text-white transition active:scale-95"
-            >
-              "{reply}"
-            </button>
-          ))}
-        </div>
+      {/* Quick replies */}
+      <div className="flex flex-wrap gap-2">
+        {(liveSuggestions.length ? liveSuggestions : scenario.suggested_replies).map((reply, i) => (
+          <button
+            key={i}
+            type="button"
+            disabled={isTyping}
+            onClick={() => handleSendMessage(reply)}
+            className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 text-xs text-slate-300 hover:text-white transition disabled:opacity-50"
+          >
+            {reply}
+          </button>
+        ))}
       </div>
 
-      {/* Input Bar */}
-      <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center gap-2">
+      {/* Single input row: mic + text + send */}
+      <form
+        onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+        className="flex items-center gap-2"
+      >
         <button
           type="button"
           onClick={handleToggleVoice}
-          className={`p-3.5 rounded-2xl border transition shadow-lg ${
+          className={`p-3.5 rounded-2xl border transition ${
             isListening
-              ? 'bg-rose-600 text-white border-rose-500 animate-pulse shadow-rose-600/30'
+              ? 'bg-rose-600 text-white border-rose-500 animate-pulse'
               : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-purple-500'
           }`}
           title="Ovoz orqali kiritish"
@@ -309,23 +318,22 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLan
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Inglizcha xabaringizni yozing yoki mikrofondan foydalaning..."
+          placeholder="Inglizcha xabar yozing..."
           className="flex-1 px-4 py-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs sm:text-sm text-white focus:outline-none focus:border-purple-500"
         />
 
         <button
           type="submit"
-          disabled={!inputText.trim()}
-          className={`p-3.5 rounded-2xl font-bold transition shadow-lg ${
-            inputText.trim()
-              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-600/30 active:scale-95'
+          disabled={!inputText.trim() || isTyping}
+          className={`p-3.5 rounded-2xl font-bold transition ${
+            inputText.trim() && !isTyping
+              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
               : 'bg-slate-800 text-slate-500 cursor-not-allowed'
           }`}
         >
           <Send className="w-5 h-5" />
         </button>
       </form>
-
     </div>
   );
 };

@@ -3,14 +3,11 @@ import {
   Flame, Sparkles, BookOpen, Mic, Bot, BrainCircuit, Trophy, 
   MapPin, ArrowRight, CheckCircle2, Play, Star, Award, Zap, Compass 
 } from 'lucide-react';
-import { User, Course, Level, DailyChallenge, LanguageCode } from '../../types';
+import { User } from '../../types';
 import { OsonStorageService } from '../../services/storage';
-import { AVAILABLE_LANGUAGES } from '../../data/mockData';
-import { soundFX } from '../../services/audio';
 
 interface DashboardHomeProps {
   currentUser: User;
-  activeLanguage?: LanguageCode;
   onSelectTab: (tab: string, extraData?: unknown) => void;
   onOpenLevelTest: (levelCode: string) => void;
   onOpenXPModal: () => void;
@@ -19,23 +16,16 @@ interface DashboardHomeProps {
 
 export const DashboardHome: React.FC<DashboardHomeProps> = ({
   currentUser,
-  activeLanguage = 'fr',
   onSelectTab,
   onOpenLevelTest,
   onOpenXPModal,
-  onOpenStreakModal
+  onOpenStreakModal: _onOpenStreakModal
 }) => {
   const levels = OsonStorageService.getLevels();
-  const currentCourses = OsonStorageService.getCourses(currentUser.current_level, activeLanguage);
-  const allCourses = OsonStorageService.getCourses(undefined, activeLanguage);
-  const streakData = OsonStorageService.getStreakData(currentUser.id);
+  const currentCourses = OsonStorageService.getCourses(currentUser.current_level);
   const dailyChallenges = OsonStorageService.getDailyChallenges();
-  const quizAttempts = OsonStorageService.getQuizAttempts(currentUser.id);
-  const speakingAttempts = OsonStorageService.getSpeakingAttempts(currentUser.id);
   const allUsers = OsonStorageService.getAllUsers().sort((a, b) => b.total_xp - a.total_xp);
   const topUsers = allUsers.slice(0, 3);
-
-  const currentLangObj = AVAILABLE_LANGUAGES.find(l => l.code === activeLanguage) || AVAILABLE_LANGUAGES[0];
 
   const daysOfWeek = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'];
   const todayDayIndex = (new Date().getDay() + 6) % 7; // 0: Mon, 6: Sun
@@ -48,39 +38,45 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
     <div className="space-y-8 animate-fade-in pb-16">
       
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden rounded-3xl bg-[#161920] border border-white/10 p-6 sm:p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 rounded-full bg-[#ff6b4a]/10 blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border border-indigo-500/20 p-6 sm:p-8 shadow-2xl">
+        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 rounded-full bg-indigo-600/15 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 -mb-8 w-64 h-64 rounded-full bg-pink-600/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
             <div className="flex items-center gap-2">
-              <span className="eyebrow-pill">
-                <span className="dot" />
-                <span>Bugungi maqsad: 10 daqiqa {currentLangObj.name}</span>
+              <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Bugungi maqsad: 10 daqiqa ingliz tili</span>
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#ff6b4a]/10 text-[#ff6b4a] font-mono text-xs font-bold border border-[#ff6b4a]/20">
-                {currentLangObj.flag} {currentLevelObj.code} • {currentLevelObj.name}
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-black">
+                {currentLevelObj.code} • {currentLevelObj.name}
               </span>
             </div>
             
-            <h1 className="text-2xl sm:text-4xl font-bold text-white tracking-tight font-['Space_Grotesk']">
-              Xush kelibsiz, <span className="text-[#ff6b4a]">{currentUser.first_name}</span>!
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight font-['Outfit']">
+              Xush kelibsiz, <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">{currentUser.first_name}</span>! 🚀
             </h1>
-            <p className="text-xs sm:text-sm text-[#8f8f96] leading-relaxed">
+            <p className="text-sm text-slate-300 leading-relaxed">
               Bugun so‘z boyligingizni oshiring, AI Tutor bilan suhbatlashing va speaking balingizni ko‘taring.
             </p>
           </div>
 
           {/* User XP & Level Card */}
-          <div className="w-full md:w-auto min-w-[280px] p-5 rounded-2xl bg-[#111318] border border-white/10 space-y-3">
+          <div className="w-full md:w-auto min-w-[280px] p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md space-y-3">
             <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold text-[#8f8f96]">Joriy Daraja</div>
-                <div className="text-sm font-bold text-white">{currentLevelObj.code} {currentLevelObj.name}</div>
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 flex items-center justify-center text-lg">
+                  {currentLevelObj.badge_icon}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-slate-400">Joriy Daraja</div>
+                  <div className="text-sm font-black text-white">{currentLevelObj.code} {currentLevelObj.name}</div>
+                </div>
               </div>
               <button 
                 onClick={onOpenXPModal}
-                className="font-mono text-xs font-bold text-[#ff6b4a] hover:text-[#ff6b4a]/80 bg-[#ff6b4a]/10 px-2.5 py-1 rounded-lg border border-[#ff6b4a]/20 cursor-pointer"
+                className="text-xs font-black text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20"
               >
                 {currentUser.total_xp} XP
               </button>
@@ -88,13 +84,13 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
 
             {/* Progress bar to next level */}
             <div>
-              <div className="flex justify-between text-[11px] font-mono text-[#8f8f96] mb-1">
+              <div className="flex justify-between text-[11px] font-semibold text-slate-400 mb-1">
                 <span>Keyingi darajaga:</span>
-                <span className="text-[#ff6b4a] font-bold">{currentUser.total_xp} / {nextLevelXP} XP ({currentProgressXP}%)</span>
+                <span className="text-indigo-400">{currentUser.total_xp} / {nextLevelXP} XP ({currentProgressXP}%)</span>
               </div>
-              <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden">
+              <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden">
                 <div 
-                  className="h-full bg-[#ff6b4a] rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500"
                   style={{ width: `${currentProgressXP}%` }}
                 />
               </div>
@@ -102,9 +98,9 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
 
             <button
               onClick={() => onOpenLevelTest(currentUser.current_level)}
-              className="btn-accent w-full py-2 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-none"
+              className="w-full py-2 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 text-xs font-bold flex items-center justify-center gap-1.5 transition"
             >
-              <Award className="w-4 h-4" />
+              <Award className="w-4 h-4 text-amber-400" />
               <span>{currentUser.current_level} Imtihonini Topshirish</span>
             </button>
           </div>

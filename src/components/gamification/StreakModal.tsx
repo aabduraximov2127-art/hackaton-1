@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Flame, ShieldCheck, Sparkles, Award } from 'lucide-react';
+import { X, ShieldCheck } from 'lucide-react';
 import { User } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, MessageSquare, ExternalLink, HelpCircle, Phone, X } from 'lucide-react';
+import { Send, CheckCircle2, MessageSquare, ExternalLink, Phone, X } from 'lucide-react';
 import { soundFX } from '../../services/audio';
 
 interface AdminContactModalProps {
@@ -8,7 +8,7 @@ interface AdminContactModalProps {
   userEmail?: string;
 }
 
-export const AdminContactModal: React.FC<AdminContactModalProps> = ({ isOpen, onClose, userEmail }) => {
+export const AdminContactModal: React.FC<AdminContactModalProps> = ({ isOpen, onClose, userEmail: _userEmail }) => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);

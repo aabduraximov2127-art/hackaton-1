@@ -1,6 +1,6 @@
 import React from 'react';
-import { Award, Sparkles, CheckCircle2, Lock } from 'lucide-react';
-import { User, Achievement, UserAchievement } from '../../types';
+import { Award, CheckCircle2 } from 'lucide-react';
+import { User, Achievement } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 import { soundFX } from '../../services/audio';
 import { fireConfetti } from '../common/ConfettiTrigger';

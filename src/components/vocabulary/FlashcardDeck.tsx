@@ -1,39 +1,22 @@
 import React, { useState } from 'react';
 import { 
-  BrainCircuit, Volume2, RotateCcw, Check, Sparkles, 
-  ArrowLeft, ArrowRight, Search, Layers, CheckCircle2, Bookmark 
+  BrainCircuit, Volume2, Search 
 } from 'lucide-react';
-import { Word, LevelCode, LanguageCode } from '../../types';
 import { OsonStorageService } from '../../services/storage';
-import { soundFX, speakText } from '../../services/audio';
+import { soundFX, speakEnglish } from '../../services/audio';
 import { fireConfetti } from '../common/ConfettiTrigger';
 
-interface FlashcardDeckProps {
-  activeLanguage?: LanguageCode;
-}
-
-export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = 'fr' }) => {
+export const FlashcardDeck: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>('ALL');
-  const [selectedLang, setSelectedLang] = useState<string>(activeLanguage);
   const [viewMode, setViewMode] = useState<'flashcards' | 'list'>('flashcards');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Sync when parent language changes
-  React.useEffect(() => {
-    if (activeLanguage) {
-      setSelectedLang(activeLanguage);
-      setCurrentIndex(0);
-      setIsFlipped(false);
-    }
-  }, [activeLanguage]);
 
   const allWords = OsonStorageService.getWords();
   const filteredWords = allWords.filter(w => {
     const matchesLevel = selectedLevel === 'ALL' || w.level_code === selectedLevel;
-    const matchesLang = selectedLang === 'ALL' || w.language_code === selectedLang || (!w.language_code && selectedLang === 'en');
     const matchesSearch = w.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           w.translation.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesLevel && matchesLang && matchesSearch;
+    return matchesLevel && matchesSearch;
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -47,11 +30,16 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = '
     setIsFlipped(!isFlipped);
   };
 
-  const handleRate = (rating: 'again' | 'hard' | 'good' | 'easy') => {
+  const handleRate = (rating: 'again' | 'hard' | 'good' | 'easy' | 'master') => {
     soundFX.playXP();
     setIsFlipped(false);
 
-    if (rating === 'good' || rating === 'easy') {
+    const curUser = OsonStorageService.getCurrentUser();
+    if (curUser) {
+      OsonStorageService.addXP(curUser.id, 10, 'vocabulary', `So‘z takrorlandi: ${currentWord.word}`);
+    }
+
+    if (rating === 'good' || rating === 'easy' || rating === 'master') {
       if (!masteredWords.includes(currentWord.id)) {
         setMasteredWords(prev => [...prev, currentWord.id]);
       }
@@ -66,83 +54,46 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = '
     }
   };
 
-  const handleSpeak = (text: string, langCode: string = 'en', e?: React.MouseEvent) => {
+  const handleSpeak = (text: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
     soundFX.playClick();
-    speakText(text, langCode);
+    speakEnglish(text);
   };
 
   return (
-    <div className="space-y-6 animate-fade-in pb-16 max-w-4xl mx-auto">
+    <div className="space-y-8 animate-fade-in pb-16 max-w-4xl mx-auto">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="eyebrow-pill">
-            <span className="dot" />
-            <span>SPACED REPETITION (SRS LUG‘AT)</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-bold">
+            <BrainCircuit className="w-3.5 h-3.5" />
+            <span>Spaced Repetition (Interval Takrorlash)</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white font-['Space_Grotesk']">
-            3D So‘z Kartochkalari & Talaffuz
+          <h1 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
+            So‘z Boyligi & Flashcardlar
           </h1>
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex p-1 rounded-full bg-[#161920] border border-white/10 self-start sm:self-auto">
+        <div className="flex p-1 rounded-2xl bg-slate-900 border border-slate-800 self-start sm:self-auto">
           <button
             onClick={() => setViewMode('flashcards')}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
-              viewMode === 'flashcards' ? 'bg-[#ff6b4a] text-[#170d08]' : 'text-[#8f8f96] hover:text-white'
+            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition ${
+              viewMode === 'flashcards' ? 'bg-teal-600 text-white shadow' : 'text-slate-400 hover:text-white'
             }`}
           >
             3D Flashcard
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
-              viewMode === 'list' ? 'bg-[#ff6b4a] text-[#170d08]' : 'text-[#8f8f96] hover:text-white'
+            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition ${
+              viewMode === 'list' ? 'bg-teal-600 text-white shadow' : 'text-slate-400 hover:text-white'
             }`}
           >
             Lug‘at Ro‘yxati
           </button>
         </div>
-      </div>
-
-      {/* Language filter pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        <span className="text-xs font-bold text-[#8f8f96]">Til:</span>
-        <button
-          onClick={() => { setSelectedLang('fr'); setCurrentIndex(0); }}
-          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
-            selectedLang === 'fr' ? 'bg-[#ff6b4a] text-[#170d08]' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
-          }`}
-        >
-          <span>🇫🇷</span> <span>Français</span>
-        </button>
-        <button
-          onClick={() => { setSelectedLang('en'); setCurrentIndex(0); }}
-          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
-            selectedLang === 'en' ? 'bg-[#ff6b4a] text-[#170d08]' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
-          }`}
-        >
-          <span>🇬🇧</span> <span>English</span>
-        </button>
-        <button
-          onClick={() => { setSelectedLang('ru'); setCurrentIndex(0); }}
-          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
-            selectedLang === 'ru' ? 'bg-[#ff6b4a] text-[#170d08]' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
-          }`}
-        >
-          <span>🇷🇺</span> <span>Русский</span>
-        </button>
-        <button
-          onClick={() => { setSelectedLang('ALL'); setCurrentIndex(0); }}
-          className={`px-3 py-1 rounded-full text-xs font-bold cursor-pointer ${
-            selectedLang === 'ALL' ? 'bg-white text-black' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
-          }`}
-        >
-          Barchasi ({allWords.length})
-        </button>
       </div>
 
       {/* Filter & Search */}
@@ -156,26 +107,28 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = '
                 setCurrentIndex(0);
                 setIsFlipped(false);
               }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
                 selectedLevel === lvl
-                  ? 'bg-white text-black'
-                  : 'bg-[#161920] text-[#8f8f96] hover:text-white border border-white/5'
+                  ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
+                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
               }`}
             >
-              {lvl}
+              {lvl === 'ALL' ? 'Barcha so‘zlar' : `${lvl} Daraja`}
             </button>
           ))}
         </div>
 
-        {/* Search */}
         <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-[#8f8f96] absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentIndex(0);
+            }}
             placeholder="So‘zlarni qidirish..."
-            className="w-full pl-9 pr-4 py-2 rounded-full bg-[#161920] border border-white/10 text-xs text-white placeholder-[#8f8f96] focus:outline-none focus:border-[#ff6b4a]"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-teal-500"
           />
         </div>
       </div>
@@ -208,7 +161,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = '
                     {currentWord.level_code} • {currentWord.part_of_speech}
                   </span>
                   <button
-                    onClick={(e) => handleSpeak(currentWord.word, currentWord.language_code || 'en', e)}
+                    onClick={(e) => handleSpeak(currentWord.word, e)}
                     className="p-3 rounded-2xl bg-teal-500/20 text-teal-300 hover:bg-teal-500 hover:text-white transition shadow-lg"
                     title="Talaffuzni eshitish"
                   >
@@ -237,7 +190,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = '
                     O‘zbekcha Ma’nosi:
                   </span>
                   <button
-                    onClick={(e) => handleSpeak(currentWord.example, currentWord.language_code || 'en', e)}
+                    onClick={(e) => handleSpeak(currentWord.example, e)}
                     className="p-2.5 rounded-xl bg-teal-500/20 text-teal-300 hover:bg-teal-500 hover:text-white transition"
                     title="Misolni eshitish"
                   >
@@ -269,37 +222,45 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = '
           </div>
 
           {/* Leitner Rating Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2">
             <button
               onClick={() => handleRate('again')}
-              className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
+              className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 text-rose-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
             >
               <span>🔄 Qayta</span>
-              <span className="text-[10px] text-slate-500">10 daqiqadan so‘ng</span>
+              <span className="text-[10px] text-slate-500">10 daqiqa</span>
             </button>
 
             <button
               onClick={() => handleRate('hard')}
-              className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
+              className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
             >
               <span>⚡ Qiyin</span>
-              <span className="text-[10px] text-slate-500">1 kundan so‘ng</span>
+              <span className="text-[10px] text-slate-500">1 kun</span>
             </button>
 
             <button
               onClick={() => handleRate('good')}
-              className="p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/30 hover:bg-teal-500/20 text-teal-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
+              className="p-3 rounded-2xl bg-teal-500/10 border border-teal-500/30 hover:bg-teal-500/20 text-teal-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
             >
               <span>👍 Yaxshi</span>
-              <span className="text-[10px] text-slate-500">3 kundan so‘ng</span>
+              <span className="text-[10px] text-slate-500">3 kun</span>
             </button>
 
             <button
               onClick={() => handleRate('easy')}
-              className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
+              className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
             >
               <span>🌟 Oson</span>
-              <span className="text-[10px] text-slate-500">7 kundan so‘ng</span>
+              <span className="text-[10px] text-slate-500">7 kun</span>
+            </button>
+
+            <button
+              onClick={() => handleRate('master')}
+              className="col-span-2 sm:col-span-1 p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 hover:bg-indigo-500/20 text-indigo-300 text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95"
+            >
+              <span>🏆 Mukammal</span>
+              <span className="text-[10px] text-slate-500">14 kun</span>
             </button>
           </div>
 

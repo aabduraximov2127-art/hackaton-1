@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Medal, Crown, Sparkles, Flame, User as UserIcon, Award } from 'lucide-react';
+import { Trophy, Crown } from 'lucide-react';
 import { User } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 

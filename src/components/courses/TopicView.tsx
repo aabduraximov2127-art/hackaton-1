@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  ArrowLeft, Volume2, CheckCircle2, ChevronRight, BookOpen, 
-  HelpCircle, Mic, Play, Sparkles, Award, RotateCcw, AlertCircle 
+  ArrowLeft, Volume2, ChevronRight, BookOpen, 
+  Mic 
 } from 'lucide-react';
-import { Topic, Word, Lesson, Question, Quiz } from '../../types';
+import { Topic } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 import { speakEnglish, soundFX } from '../../services/audio';
-import { fireConfetti } from '../common/ConfettiTrigger';
 
 interface TopicViewProps {
   topic: Topic;

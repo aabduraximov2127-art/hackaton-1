@@ -1,312 +1,200 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
-  ArrowRight, Sparkles, Volume2, Mic, Bot, BrainCircuit, 
-  CheckCircle2, Compass, Zap, Flame, Heart 
+  Sparkles, ArrowRight, Mic, Bot, BrainCircuit, 
+  CheckCircle2, Volume2 
 } from 'lucide-react';
-import { GlobeHero } from '../common/GlobeHero';
 import { speakEnglish, soundFX } from '../../services/audio';
 
 interface LandingPageProps {
   onStart: () => void;
   onOpenAuth: () => void;
-  onTrySpeaking: () => void;
-  onTryAI: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onStart,
-  onOpenAuth,
-  onTrySpeaking,
-  onTryAI
+  onOpenAuth: _onOpenAuth
 }) => {
-  const [progressWidth, setProgressWidth] = useState<string>('0%');
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setProgressWidth('72%');
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
-
   const handleTestAudio = (text: string) => {
     soundFX.playClick();
     speakEnglish(text);
   };
 
   return (
-    <div className="space-y-16 animate-fade-in pb-20 overflow-hidden">
+    <div className="space-y-20 animate-fade-in pb-20 overflow-hidden">
       
-      {/* HERO SECTION WITH 3D PROCEDURAL GLOBE & STARFIELD */}
-      <section className="relative pt-12 sm:pt-20 pb-16 min-h-[640px] md:min-h-[720px] flex items-center">
-        
-        {/* Procedural Canvas Globe & Twinkling Starfield */}
-        <GlobeHero />
+      {/* HERO */}
+      <section className="relative pt-12 sm:pt-20 pb-12 text-center max-w-5xl mx-auto px-4">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/20 to-pink-600/10 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-8 w-full relative z-20">
-          <div className="max-w-2xl space-y-6">
-            
-            {/* Eyebrow Pill */}
-            <div className="eyebrow-pill">
-              <span className="dot" />
-              <span>HACKATHON 2026 · TIL O‘RGANISH PLATFORMASI</span>
-            </div>
+        <div className="relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-black shadow-lg shadow-indigo-500/10">
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span>13–18 Yoshli O‘smirlar Uchun Gamifikatsiya & AI Platformasi</span>
+          </div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#f1f0ee] tracking-tight leading-[1.12]">
-              Dunyoning har bir <em className="not-italic text-[#ff6b4a]">tilini</em> uyingizdan o‘rganing
-            </h1>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight font-['Outfit'] leading-[1.1]">
+            OSON
+            <span className="block mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-200">
+              Ingliz tilini o‘rganish endi zerikarli vazifa emas.
+            </span>
+            <span className="block mt-3 bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent text-3xl sm:text-5xl">
+              Learn. Play. Speak.
+            </span>
+          </h1>
 
-            {/* Lead text */}
-            <p className="text-sm sm:text-base text-[#8f8f96] max-w-lg leading-relaxed">
-              OSON sun’iy intellekt yordamida sizga mos tezlikda til o‘rgatadi: kunlik audio mashqlar, jonli AI suhbat va o‘yin kabi qiziqarli progress bilan.
-            </p>
+          <p className="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Har kuni 5–10 daqiqada AI bilan mashq qiling, talaffuzingizni tekshiring, XP to‘plang va yangi darajalarni oching.
+          </p>
 
-            {/* Hero CTAs */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
-              <button
-                onClick={onStart}
-                className="btn-accent px-7 py-3.5 text-xs sm:text-sm flex items-center gap-2 cursor-pointer shadow-lg shadow-[#ff6b4a]/20"
-              >
-                <span>Hoziroq Boshlash</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+          <div className="flex justify-center pt-4">
+            <button
+              onClick={onStart}
+              className="px-10 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-black text-sm shadow-xl shadow-indigo-600/30 transition transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+            >
+              <span>Bepul Boshlash</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
 
-              <button
-                onClick={onTryAI}
-                className="btn-ghost-pill px-6 py-3.5 text-xs sm:text-sm flex items-center gap-2 cursor-pointer"
-              >
-                <Bot className="w-4 h-4 text-[#ff6b4a]" />
-                <span>AI Tutor bilan Suhbat</span>
-              </button>
-            </div>
+          <div className="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-semibold">
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> CEFR A1–C2</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> AI Speaking & Tutor</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Spaced Repetition</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> 5 Offline Hub</span>
+          </div>
+        </div>
+      </section>
 
-            {/* Floating Live Preview Card */}
-            <div className="pt-4 max-w-sm">
-              <div className="p-5 rounded-2xl bg-[#161920]/95 border border-white/10 shadow-2xl space-y-3.5 backdrop-blur-md">
-                
-                {/* Card Top: Streak & Lives */}
+      {/* FEATURE PREVIEWS (info only — bitta asosiy CTA yuqorida) */}
+      <section className="max-w-6xl mx-auto px-4">
+        <div className="p-6 sm:p-10 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Asosiy imkoniyatlar</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
+              Bitta platformada — o‘rganish, gapirish, o‘sish
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center">
+                <BrainCircuit className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white font-['Outfit']">So‘zlar & Audio</h3>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-mono font-bold text-xs text-[#ff6b4a]">
-                    <Flame className="w-4 h-4 fill-[#ff6b4a]" />
-                    <span>14 kunlik seriya</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-rose-400">
-                    <span>❤️❤️❤️❤️❤️</span>
-                  </div>
+                  <span className="text-base font-black text-white font-['Outfit']">Eloquent</span>
+                  <button
+                    type="button"
+                    onClick={() => handleTestAudio('Eloquent')}
+                    className="p-1.5 rounded-lg bg-teal-500/20 text-teal-300 hover:bg-teal-500 hover:text-white transition"
+                    aria-label="Talaffuzni eshitish"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
                 </div>
-
-                {/* Word rows */}
-                <div className="divide-y divide-white/5 text-xs">
-                  <div className="py-2 flex items-center justify-between">
-                    <span className="font-medium text-[#f1f0ee]">Eloquent</span>
-                    <span className="px-2 py-0.5 rounded bg-[#ff6b4a]/10 text-[#ff6b4a] font-mono text-[10px] font-bold">
-                      C1 · ADVANCED
-                    </span>
-                  </div>
-                  <div className="py-2 flex items-center justify-between">
-                    <span className="font-medium text-[#f1f0ee]">Destination</span>
-                    <span className="px-2 py-0.5 rounded bg-[#ff6b4a]/10 text-[#ff6b4a] font-mono text-[10px] font-bold">
-                      A2 · TRAVEL
-                    </span>
-                  </div>
-                  <div className="py-2 flex items-center justify-between">
-                    <span className="font-medium text-[#f1f0ee]">Artificial Intelligence</span>
-                    <span className="px-2 py-0.5 rounded bg-[#ff6b4a]/10 text-[#ff6b4a] font-mono text-[10px] font-bold">
-                      B1 · TECH
-                    </span>
-                  </div>
-                </div>
-
-                {/* Progress Track */}
-                <div className="space-y-1.5 pt-1">
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#ff6b4a] rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: progressWidth }}
-                    />
-                  </div>
-                  <div className="flex justify-between items-center text-[10px] font-mono text-[#57575e]">
-                    <span>Bugungi maqsad</span>
-                    <span className="text-[#ff6b4a] font-bold">{progressWidth}</span>
-                  </div>
-                </div>
-
+                <span className="text-xs text-teal-400 font-mono">/ˈeləkwənt/</span>
+                <div className="text-xs text-slate-400 pt-1">Fasohatchi, chiroyli gapiruvchi</div>
               </div>
             </div>
 
+            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-300 flex items-center justify-center">
+                <Mic className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white font-['Outfit']">Speaking Studio</h3>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-300">Talaffuz natijasi</span>
+                  <span className="text-sm font-black text-pink-400">92 / 100</span>
+                </div>
+                <div className="space-y-1 text-[11px] text-slate-400">
+                  <div>• Pronunciation: <strong className="text-white">94%</strong></div>
+                  <div>• Fluency: <strong className="text-white">89%</strong></div>
+                  <div>• Grammar: <strong className="text-white">95%</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center">
+                <Bot className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white font-['Outfit']">AI Tutor</h3>
+              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5 text-xs">
+                <div className="text-purple-300 font-bold">James (London Cafe):</div>
+                <p className="text-slate-300 text-[11px]">"Welcome to Big Ben Cafe! What can I get started for you?"</p>
+                <div className="text-[10px] text-amber-300 bg-amber-500/10 p-1.5 rounded-lg border border-amber-500/20">
+                  Tip: "Could I have..." deb muloyim so‘rang
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* STATS STRIP */}
-      <section className="border-y border-white/5 bg-[#111318]">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="space-y-1">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-white">12,400+</div>
-            <div className="text-xs text-[#8f8f96]">Faol o‘quvchi</div>
-          </div>
-          <div className="space-y-1">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-white">6 ta</div>
-            <div className="text-xs text-[#8f8f96]">CEFR Darajasi (A1–C2)</div>
-          </div>
-          <div className="space-y-1">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-white">980,000+</div>
-            <div className="text-xs text-[#8f8f96]">Bajarilgan mashq</div>
-          </div>
-          <div className="space-y-1">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-[#ff6b4a]">98%</div>
-            <div className="text-xs text-[#8f8f96]">Mamnun foydalanuvchilar</div>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES GRID */}
-      <section className="max-w-[1140px] mx-auto px-4 sm:px-8 space-y-10">
-        <div className="max-w-xl space-y-2">
-          <span className="font-mono text-xs text-[#ff6b4a] font-bold tracking-wider uppercase">
-            IMKONIYATLAR
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">
-            Zerikarli darslik emas, jonli mashq
+      {/* WHY OSON */}
+      <section className="max-w-6xl mx-auto px-4 space-y-8">
+        <div className="text-center space-y-2">
+          <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Nega aynan OSON?</span>
+          <h2 className="text-3xl font-black text-white font-['Outfit']">
+            Oddiy kurslardan samaraliroq
           </h2>
-          <p className="text-xs sm:text-sm text-[#8f8f96]">
-            Har bir funksiya bitta maqsadga xizmat qiladi: sizni har kuni qaytarib kelishga va tilni haqiqatan eslab qolishga undash.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="panel-dark panel-dark-hover p-6 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-[#ff6b4a]/10 text-[#ff6b4a] flex items-center justify-center text-xl">
-              🧠
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { icon: '🎮', title: 'Gamifikatsiya', text: 'XP, streak, yutuqlar va leaderboard — motivatsiya har kuni.' },
+            { icon: '🤖', title: 'AI Ustoz', text: 'Real stsenariylar: kafe, aeroport, suhbat — xatolar darhol tuzatiladi.' },
+            { icon: '🧠', title: 'Spaced Repetition', text: 'So‘zlar 10 daqiqa, 1 kun, 3 kundan so‘ng eslatiladi.' },
+            { icon: '👩‍⚕️', title: 'Psixolog moduli', text: 'Nutq to‘sig‘i va stressni yengish uchun mutaxassis nazorati.' },
+          ].map((item) => (
+            <div key={item.title} className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
+              <div className="text-3xl">{item.icon}</div>
+              <h3 className="text-base font-bold text-white font-['Outfit']">{item.title}</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">{item.text}</p>
             </div>
-            <h3 className="text-base font-bold text-white">AI Repetitor & Tutor</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Xatolaringizni tahlil qilib, aynan sizga zarur bo‘lgan mavzularni real-time qayta taklif qiladi.
-            </p>
-          </div>
-
-          <div className="panel-dark panel-dark-hover p-6 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-[#ff6b4a]/10 text-[#ff6b4a] flex items-center justify-center text-xl">
-              🎮
-            </div>
-            <h3 className="text-base font-bold text-white">O‘yin Kabi Progress</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Streak, XP balansi, jonlar (lives) va yutuq medallari orqali o‘rganish kundalik odatga aylanadi.
-            </p>
-          </div>
-
-          <div className="panel-dark panel-dark-hover p-6 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-[#ff6b4a]/10 text-[#ff6b4a] flex items-center justify-center text-xl">
-              🗣️
-            </div>
-            <h3 className="text-base font-bold text-white">Jonli Suhbat Mashqi</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Ovozli xabarlar va Web Speech API orqali talaffuzingizni real vaqtda tekshiring.
-            </p>
-          </div>
-
-          <div className="panel-dark panel-dark-hover p-6 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-[#ff6b4a]/10 text-[#ff6b4a] flex items-center justify-center text-xl">
-              🗺️
-            </div>
-            <h3 className="text-base font-bold text-white">Xarita & Speaking Hub</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Toshkent va Samarqanddagi 5 ta OSON kampusida offline speaking uchrashuvlariga qatnashing.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* HOW IT WORKS (3 STEPS) */}
-      <section className="max-w-[1140px] mx-auto px-4 sm:px-8 space-y-10">
-        <div className="max-w-xl space-y-2">
-          <span className="font-mono text-xs text-[#ff6b4a] font-bold tracking-wider uppercase">
-            JARAYON
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">
-            Uch qadamda boshlang
-          </h2>
-          <p className="text-xs sm:text-sm text-[#8f8f96]">
-            Ro‘yxatdan o‘tishdan birinchi natijagacha — atigi bir necha daqiqa.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="p-6 rounded-2xl bg-[#111318] border border-white/5 space-y-3 relative">
-            <span className="font-mono text-xs font-bold text-[#ff6b4a]">01</span>
-            <h3 className="text-base font-bold text-white">Ro‘yxatdan o‘ting</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Email yoki 1-bosishda demo profillar orqali platformaga kiring.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#111318] border border-white/5 space-y-3 relative">
-            <span className="font-mono text-xs font-bold text-[#ff6b4a]">02</span>
-            <h3 className="text-base font-bold text-white">Darajangizni aniqlang</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Qisqa test yoki A1–C2 darslari orqali o‘zingizga mos boshlang‘ich darajani tanlang.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#111318] border border-white/5 space-y-3 relative">
-            <span className="font-mono text-xs font-bold text-[#ff6b4a]">03</span>
-            <h3 className="text-base font-bold text-white">Har kuni mashq qiling</h3>
-            <p className="text-xs text-[#8f8f96] leading-relaxed">
-              Kuniga 10 daqiqa — va bir oyda birinchi erkin suhbatingizni boshlaysiz.
-            </p>
-          </div>
-        </div>
-
-        {/* Level & Topic Chips */}
-        <div className="flex flex-wrap gap-2.5 justify-center pt-4">
-          <div className="px-4 py-2 rounded-full border border-white/10 bg-[#111318] font-mono text-xs text-[#8f8f96] hover:text-[#ff6b4a] hover:border-[#ff6b4a] transition cursor-pointer">
-            🌱 A1 Beginner
-          </div>
-          <div className="px-4 py-2 rounded-full border border-white/10 bg-[#111318] font-mono text-xs text-[#8f8f96] hover:text-[#ff6b4a] hover:border-[#ff6b4a] transition cursor-pointer">
-            🌿 A2 Elementary
-          </div>
-          <div className="px-4 py-2 rounded-full border border-white/10 bg-[#111318] font-mono text-xs text-[#8f8f96] hover:text-[#ff6b4a] hover:border-[#ff6b4a] transition cursor-pointer">
-            ⚡ B1 Intermediate
-          </div>
-          <div className="px-4 py-2 rounded-full border border-white/10 bg-[#111318] font-mono text-xs text-[#8f8f96] hover:text-[#ff6b4a] hover:border-[#ff6b4a] transition cursor-pointer">
-            🔥 B2 Upper-Int
-          </div>
-          <div className="px-4 py-2 rounded-full border border-white/10 bg-[#111318] font-mono text-xs text-[#8f8f96] hover:text-[#ff6b4a] hover:border-[#ff6b4a] transition cursor-pointer">
-            💎 C1 Academic IELTS
-          </div>
-          <div className="px-4 py-2 rounded-full border border-white/10 bg-[#111318] font-mono text-xs text-[#8f8f96] hover:text-[#ff6b4a] hover:border-[#ff6b4a] transition cursor-pointer">
-            👑 C2 Proficiency
-          </div>
+      {/* CEFR */}
+      <section className="max-w-6xl mx-auto px-4 p-8 sm:p-12 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-6">
+        <h2 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
+          A1 dan C2 gacha bosqichma-bosqich
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { code: 'A1', name: 'Beginner', icon: '🌱' },
+            { code: 'A2', name: 'Elementary', icon: '🌿' },
+            { code: 'B1', name: 'Intermediate', icon: '⚡' },
+            { code: 'B2', name: 'Upper-Int', icon: '🔥' },
+            { code: 'C1', name: 'Advanced', icon: '💎' },
+            { code: 'C2', name: 'Proficiency', icon: '👑' }
+          ].map(lvl => (
+            <div key={lvl.code} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
+              <div className="text-2xl">{lvl.icon}</div>
+              <div className="text-base font-black text-white">{lvl.code}</div>
+              <div className="text-[11px] text-slate-400">{lvl.name}</div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className="max-w-[1140px] mx-auto px-4 sm:px-8 pt-6">
-        <div className="p-10 sm:p-14 rounded-3xl bg-[#161920] border border-white/10 text-center relative overflow-hidden space-y-6">
-          <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#ff6b4a]/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <h2 className="text-2xl sm:text-4xl font-bold text-white relative z-10">
-            Bugun birinchi so‘zingizni o‘rganing
-          </h2>
-          <p className="text-xs sm:text-sm text-[#8f8f96] max-w-md mx-auto relative z-10">
-            Kredit karta shart emas. 60 soniyada boshlang va darajangizni oshiring.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 relative z-10">
-            <button
-              onClick={onStart}
-              className="btn-accent px-8 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-[#ff6b4a]/20"
-            >
-              Bepul Boshlash 🚀
-            </button>
-            <button
-              onClick={onOpenAuth}
-              className="btn-ghost-pill px-6 py-3.5 text-xs sm:text-sm font-bold"
-            >
-              Hisobga Kirish
-            </button>
-          </div>
-        </div>
+      {/* FINAL CTA — bitta tugma */}
+      <section className="max-w-4xl mx-auto px-4 text-center p-10 sm:p-14 rounded-3xl bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 border border-indigo-500/30 shadow-2xl space-y-6">
+        <h2 className="text-3xl sm:text-4xl font-black text-white font-['Outfit']">
+          Learn. Play. Speak. Level up.
+        </h2>
+        <p className="text-sm text-slate-200 max-w-xl mx-auto">
+          Ro‘yxatdan o‘ting va ingliz tilida erkin so‘zlashishni boshlang.
+        </p>
+        <button
+          onClick={onStart}
+          className="px-8 py-4 rounded-2xl bg-white text-slate-950 hover:bg-slate-100 font-black text-sm shadow-xl transition transform hover:scale-105"
+        >
+          Hoziroq Boshlash
+        </button>
       </section>
 
     </div>

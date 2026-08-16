@@ -69,19 +69,23 @@
 
 ## 💻 Loyihani Ishga Tushirish (Quick Start)
 
-Loyiha quyidagi manzilda joylashgan:
 ```bash
-C:\Users\student\Desktop\oson-platform
-```
-
-### 1. Ishga tushirish (Development Server):
-```bash
-cd C:\Users\student\Desktop\oson-platform
+git clone https://github.com/aabduraximov2127-art/hackaton-1.git
+cd hackaton-1
+npm install
 npm run dev
 ```
+
 Brauzerda oching: **`http://localhost:5173`**
 
-### 2. Ishlab chiqarish versiyasini yig‘ish (Production Build):
+### Telegram bot (ixtiyoriy):
+```bash
+cp .env.example .env
+# .env ichida TELEGRAM_BOT_TOKEN ni qo‘ying
+npm run bot
+```
+
+### Ishlab chiqarish versiyasini yig‘ish:
 ```bash
 npm run build
 ```

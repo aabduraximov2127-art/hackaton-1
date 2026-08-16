@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  X, Award, CheckCircle2, XCircle, Clock, 
-  Sparkles, ArrowRight, RotateCcw, Volume2 
-} from 'lucide-react';
+import { X, ArrowRight, RotateCcw, Volume2 } from 'lucide-react';
 import { User, LevelCode, Question } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 import { soundFX, speakEnglish } from '../../services/audio';
@@ -23,16 +20,33 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
   currentUser,
   onLevelPassed
 }) => {
-  if (!isOpen) return null;
-
-  const allQuestions = OsonStorageService.getQuestions(undefined, levelCode);
-  const questions: Question[] = allQuestions.length > 0 ? allQuestions : OsonStorageService.getQuestions();
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<{ [qId: string]: string }>({});
   const [isFinished, setIsFinished] = useState(false);
   const [scorePercentage, setScorePercentage] = useState(0);
+  const [unlockedLevel, setUnlockedLevel] = useState<LevelCode | null>(null);
+
+  if (!isOpen) return null;
+
+  const allQuestions = OsonStorageService.getQuestions(undefined, levelCode);
+  const questions: Question[] = allQuestions.length > 0 ? allQuestions : OsonStorageService.getQuestions();
+
+  if (questions.length === 0) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div className="relative w-full max-w-md p-6 rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-4">
+          <p className="text-sm text-slate-300">Bu daraja uchun savollar topilmadi.</p>
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold"
+          >
+            Yopish
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const currentQ = questions[currentIndex];
 
@@ -42,19 +56,10 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
     setSubmittedAnswers(prev => ({ ...prev, [currentQ.id]: opt }));
   };
 
-  const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-      setSelectedOption(submittedAnswers[questions[currentIndex + 1]?.id] || null);
-    } else {
-      finishTest();
-    }
-  };
-
-  const finishTest = () => {
+  const finishTest = (answers: { [qId: string]: string }) => {
     let correct = 0;
     questions.forEach(q => {
-      if (submittedAnswers[q.id]?.trim() === q.correct_answer.trim()) {
+      if (answers[q.id]?.trim() === q.correct_answer.trim()) {
         correct++;
       }
     });
@@ -67,17 +72,30 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
       soundFX.playLevelUp();
       fireLevelUpConfetti();
 
-      // Upgrade level in user profile
       const levelsOrder: LevelCode[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
       const curIdx = levelsOrder.indexOf(levelCode);
       const nextLevel = curIdx < levelsOrder.length - 1 ? levelsOrder[curIdx + 1] : levelCode;
 
-      currentUser.current_level = nextLevel;
+      const updatedUser = { ...currentUser, current_level: nextLevel };
       OsonStorageService.addXP(currentUser.id, 100, 'level_test', `${levelCode} Daraja Imtihonidan Muvaffaqiyatli O‘tildi!`);
-      OsonStorageService.updateUser(currentUser);
+      OsonStorageService.updateUser(updatedUser);
+      setUnlockedLevel(nextLevel);
       onLevelPassed(nextLevel);
     } else {
       soundFX.playWrong();
+    }
+  };
+
+  const handleNext = () => {
+    const answers = selectedOption
+      ? { ...submittedAnswers, [currentQ.id]: selectedOption }
+      : submittedAnswers;
+
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+      setSelectedOption(answers[questions[currentIndex + 1]?.id] || null);
+    } else {
+      finishTest(answers);
     }
   };
 
@@ -86,13 +104,14 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
     setSelectedOption(null);
     setSubmittedAnswers({});
     setIsFinished(false);
+    setScorePercentage(0);
+    setUnlockedLevel(null);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-2xl p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl text-slate-100 space-y-6">
         
-        {/* Close */}
         <button
           onClick={onClose}
           className="absolute top-5 right-5 p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition"
@@ -103,7 +122,6 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
         {!isFinished ? (
           <div className="space-y-6">
             
-            {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black">
@@ -122,7 +140,6 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
               </span>
             </div>
 
-            {/* Progress */}
             <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-300"
@@ -130,7 +147,6 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
               />
             </div>
 
-            {/* Question Box */}
             <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
               {currentQ.audio_phrase && (
                 <button
@@ -163,7 +179,6 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
               </div>
             </div>
 
-            {/* Action */}
             <div className="flex justify-end pt-2">
               <button
                 disabled={!selectedOption}
@@ -204,7 +219,7 @@ export const LevelTestModal: React.FC<LevelTestModalProps> = ({
 
             {scorePercentage >= 80 && (
               <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 max-w-md mx-auto space-y-1 text-xs text-amber-300 font-bold">
-                <div>🎖️ Yangi Sertifikatlangan Daraja: {currentUser.current_level}</div>
+                <div>🎖️ Yangi Sertifikatlangan Daraja: {unlockedLevel || currentUser.current_level}</div>
                 <div className="text-slate-300 font-normal text-[11px]">+100 XP balansingizga qo‘shildi!</div>
               </div>
             )}

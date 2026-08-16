@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, Phone, User as UserIcon, Calendar, ArrowRight, CheckCircle, Sparkles, KeyRound } from 'lucide-react';
+import { X, Lock, Mail, KeyRound } from 'lucide-react';
 import { User, UserRole } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 import { soundFX } from '../../services/audio';
+
+const DEMO_PASSWORD = 'password123';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -15,7 +17,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
   
   // Login fields
   const [loginIdentifier, setLoginIdentifier] = useState('jasur@oson.uz');
-  const [loginPassword, setLoginPassword] = useState('password123');
+  const [loginPassword, setLoginPassword] = useState(DEMO_PASSWORD);
   
   // Register fields
   const [firstName, setFirstName] = useState('');
@@ -37,18 +39,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
     setErrorMsg(null);
     const users = OsonStorageService.getAllUsers();
     const user = users.find(u => 
-      (u.email.toLowerCase() === loginIdentifier.toLowerCase() || u.phone === loginIdentifier)
+      u.email.toLowerCase() === loginIdentifier.toLowerCase() ||
+      u.phone.replace(/\s/g, '') === loginIdentifier.replace(/\s/g, '')
     );
 
-    if (user) {
-      soundFX.playCorrect();
-      OsonStorageService.setCurrentUser(user);
-      onLoginSuccess(user);
-      onClose();
-    } else {
+    if (!user) {
       soundFX.playWrong();
       setErrorMsg('Foydalanuvchi topilmadi. Iltimos tekshirib qaytadan urinib ko‘ring.');
+      return;
     }
+
+    if (!user.is_active) {
+      soundFX.playWrong();
+      setErrorMsg('Bu hisob bloklangan. Admin bilan bog‘laning.');
+      return;
+    }
+
+    const expectedPassword = user.password || DEMO_PASSWORD;
+    if (loginPassword !== expectedPassword) {
+      soundFX.playWrong();
+      setErrorMsg('Parol noto‘g‘ri. Demo hisoblar uchun: password123');
+      return;
+    }
+
+    soundFX.playCorrect();
+    OsonStorageService.setCurrentUser(user);
+    onLoginSuccess(user);
+    onClose();
   };
 
   const handleQuickLogin = (role: UserRole) => {
@@ -69,8 +86,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
       return;
     }
 
+    if (password.length < 6) {
+      setErrorMsg('Parol kamida 6 ta belgidan iborat bo‘lishi kerak.');
+      return;
+    }
+
+    if (age < 13 || age > 18) {
+      setErrorMsg('Platforma 13–18 yoshdagi o‘quvchilar uchun mo‘ljallangan.');
+      return;
+    }
+
+    const existing = OsonStorageService.getAllUsers().find(
+      u => u.email.toLowerCase() === email.toLowerCase()
+    );
+    if (existing) {
+      setErrorMsg('Bu email allaqachon ro‘yxatdan o‘tgan. Kirish bo‘limidan foydalaning.');
+      return;
+    }
+
     try {
-      const { user, verificationCode } = OsonStorageService.registerUser({
+      const { verificationCode: code } = OsonStorageService.registerUser({
         first_name: firstName,
         last_name: lastName,
         age: Number(age),
@@ -82,9 +117,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
         current_level: 'A1'
       });
 
-      setGeneratedCodeHint(verificationCode);
+      setGeneratedCodeHint(code);
       setMode('verify');
-    } catch (e) {
+    } catch {
       setErrorMsg('Ro‘yxatdan o‘tishda xatolik yuz berdi.');
     }
   };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Sparkles, Plus, Clock, ArrowDownRight } from 'lucide-react';
+import { X, Sparkles, Plus } from 'lucide-react';
 import { User } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 

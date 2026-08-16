@@ -1,47 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Mic, MicOff, Volume2, Sparkles, Award, RotateCcw, 
-  CheckCircle2, ArrowRight, Play, Square, Activity, HelpCircle, ChevronRight 
+  Mic, Volume2, Sparkles, 
+  Square, Activity 
 } from 'lucide-react';
-import { SpeakingAttempt, User, LanguageCode } from '../../types';
+import { User } from '../../types';
 import { SPEAKING_TOPICS } from '../../data/mockData';
 import { OsonStorageService } from '../../services/storage';
-import { soundFX, speakText, SpeechRecognizer } from '../../services/audio';
+import { soundFX, speakEnglish, SpeechRecognizer } from '../../services/audio';
 import { evaluateSpeech, EvaluationResult } from '../../services/speakingEvaluator';
 import { fireConfetti } from '../common/ConfettiTrigger';
 
 interface SpeakingStudioProps {
   currentUser: User;
-  activeLanguage?: LanguageCode;
   initialTopicTitle?: string;
   onBack?: () => void;
+  onUserUpdate?: (user: User) => void;
 }
 
 export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
   currentUser,
-  activeLanguage = 'fr',
   initialTopicTitle,
-  onBack
+  onBack: _onBack,
+  onUserUpdate
 }) => {
-  // Filter topics by language or fallback
-  const availableTopics = SPEAKING_TOPICS.filter(
-    t => t.language_code === activeLanguage || (!t.language_code && activeLanguage === 'en')
-  );
-  const matchedInitial = SPEAKING_TOPICS.find(t => t.title === initialTopicTitle);
-
   const [selectedTopicId, setSelectedTopicId] = useState<string>(
-    matchedInitial?.id || (availableTopics[0]?.id || SPEAKING_TOPICS[0].id)
+    SPEAKING_TOPICS.find(t => t.title === initialTopicTitle)?.id || SPEAKING_TOPICS[0].id
   );
 
-  // Sync topic when language changes
-  useEffect(() => {
-    const valid = SPEAKING_TOPICS.find(t => t.language_code === activeLanguage);
-    if (valid) {
-      setSelectedTopicId(valid.id);
-    }
-  }, [activeLanguage]);
-
-  const selectedTopic = SPEAKING_TOPICS.find(t => t.id === selectedTopicId) || availableTopics[0] || SPEAKING_TOPICS[0];
+  const selectedTopic = SPEAKING_TOPICS.find(t => t.id === selectedTopicId) || SPEAKING_TOPICS[0];
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordTimer, setRecordTimer] = useState(0);
@@ -55,8 +41,7 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
   const timerIntervalRef = useRef<any>(null);
 
   useEffect(() => {
-    // Initialize speech recognizer with topic language
-    const langTag = selectedTopic.language_code === 'fr' ? 'fr-FR' : (selectedTopic.language_code === 'ru' ? 'ru-RU' : 'en-US');
+    // Initialize speech recognizer
     recognizerRef.current = new SpeechRecognizer(
       (result) => {
         if (result.isFinal) {
@@ -68,8 +53,7 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
       },
       (error) => {
         console.warn('Speech error:', error);
-      },
-      langTag
+      }
     );
 
     return () => {
@@ -114,20 +98,19 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
     runEvaluation();
   };
 
-  const runEvaluation = (textToEvaluate?: string) => {
+  const runEvaluation = async (textToEvaluate?: string) => {
     setIsEvaluating(true);
-    
+
     const finalSpeechText = textToEvaluate || transcript || interimTranscript || selectedTopic.sample_text;
 
-    setTimeout(() => {
-      const result = evaluateSpeech(
+    try {
+      const result = await evaluateSpeech(
         finalSpeechText,
         selectedTopic.title,
         selectedTopic.keywords,
         selectedTopic.sample_text
       );
 
-      // Save speaking attempt to storage
       OsonStorageService.saveSpeakingAttempt({
         user_id: currentUser.id,
         topic_id: selectedTopic.id,
@@ -143,8 +126,10 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
         better_version: result.better_version
       });
 
+      const refreshed = OsonStorageService.getCurrentUser();
+      if (refreshed && onUserUpdate) onUserUpdate(refreshed);
+
       setEvaluationResult(result);
-      setIsEvaluating(false);
 
       if (result.overall_score >= 80) {
         soundFX.playLevelUp();
@@ -152,12 +137,11 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
       } else {
         soundFX.playCorrect();
       }
-    }, 1200);
-  };
-
-  const handleUseSampleAndEvaluate = () => {
-    setTranscript(selectedTopic.sample_text);
-    runEvaluation(selectedTopic.sample_text);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsEvaluating(false);
+    }
   };
 
   const formatTimer = (secs: number) => {
@@ -173,7 +157,7 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
       <div className="space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-300 text-xs font-bold">
           <Mic className="w-3.5 h-3.5" />
-          <span>AI Speaking Studio (WOW Feature)</span>
+          <span>AI Speaking Studio</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
           Inglizcha Nutq & Talaffuz Laboratoriyasi
@@ -261,8 +245,8 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
                 <p className="text-xs text-slate-300 mt-0.5 line-clamp-2">"{selectedTopic.sample_text}"</p>
               </div>
               <button
-                onClick={() => speakText(selectedTopic.sample_text, selectedTopic.language_code || 'fr')}
-                className="px-3.5 py-2 rounded-xl bg-[#ff6b4a] text-[#170d08] text-xs font-bold flex items-center gap-1.5 shrink-0 transition cursor-pointer"
+                onClick={() => speakEnglish(selectedTopic.sample_text)}
+                className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition"
               >
                 <Volume2 className="w-4 h-4" /> Namunani eshitish
               </button>
@@ -321,16 +305,6 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
                   </p>
                 </div>
               )}
-
-              {/* Demo Helper Button for testing without mic */}
-              <div className="pt-2">
-                <button
-                  onClick={handleUseSampleAndEvaluate}
-                  className="text-xs text-slate-500 hover:text-slate-300 underline transition"
-                >
-                  (Demo testi uchun namunaviy nutq matnini kiritish va baholash)
-                </button>
-              </div>
             </div>
 
           </div>
