@@ -14,6 +14,7 @@ import { DashboardHome } from './components/dashboard/DashboardHome';
 import { CourseCatalog } from './components/courses/CourseCatalog';
 import { CourseDetail } from './components/courses/CourseDetail';
 import { TopicView } from './components/courses/TopicView';
+import { QuizArena } from './components/quiz/QuizArena';
 import { QuizPlayer } from './components/quiz/QuizPlayer';
 import { SpeakingStudio } from './components/speaking/SpeakingStudio';
 import { AITutorChat } from './components/aiTutor/AITutorChat';
@@ -155,6 +156,16 @@ export const App: React.FC = () => {
             onSelectCourse={(c) => {
               setSelectedCourse(c);
               setActiveTab('course-detail');
+            }}
+          />
+        )}
+
+        {/* QUIZZES ARENA */}
+        {currentUser && activeTab === 'quizzes' && (
+          <QuizArena
+            onStartQuiz={(qId) => {
+              setActiveQuizId(qId);
+              setActiveTab('quiz-player');
             }}
           />
         )}

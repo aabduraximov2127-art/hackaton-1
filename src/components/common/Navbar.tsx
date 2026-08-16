@@ -88,6 +88,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               <button
+                onClick={() => handleTabClick('quizzes')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                  activeTab === 'quizzes' || activeTab === 'quiz-player'
+                    ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-600/30'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Testlar (Quiz)</span>
+              </button>
+
+              <button
                 onClick={() => handleTabClick('speaking')}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
                   activeTab === 'speaking'
@@ -278,6 +290,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
               >
                 <BookOpen className="w-4 h-4 text-indigo-400" /> Kurslar
+              </button>
+              <button
+                onClick={() => handleTabClick('quizzes')}
+                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4 text-amber-400" /> Testlar (Quiz)
               </button>
               <button
                 onClick={() => handleTabClick('speaking')}

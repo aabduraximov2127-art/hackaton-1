@@ -543,7 +543,7 @@ export const INITIAL_WORDS: Word[] = [
 ];
 
 export const INITIAL_QUESTIONS: Question[] = [
-  // A1 Questions
+  // ================= A1 QUESTIONS =================
   {
     id: 'q-a1-1',
     level_code: 'A1',
@@ -562,9 +562,9 @@ export const INITIAL_QUESTIONS: Question[] = [
     quiz_id: 'quiz-a1-1',
     question: 'How do you respond politely to "Nice to meet you"?',
     question_type: 'multiple_choice',
-    options: ['Nice to meet you too!', 'Good bye!', 'I am fine.', 'No problem.'],
+    options: ['Nice to meet you too!', 'Good bye!', 'I am fine, thank you.', 'No problem, see ya.'],
     correct_answer: 'Nice to meet you too!',
-    explanation: '"Nice to meet you" ga javoban odatda "Nice to meet you too!" (Siz bilan ham tanishganimdan xursandman) deyiladi.'
+    explanation: '"Nice to meet you" ga javoban odatda "Nice to meet you too!" deyiladi.'
   },
   {
     id: 'q-a1-3',
@@ -600,7 +600,52 @@ export const INITIAL_QUESTIONS: Question[] = [
     correct_answer: 'I study English every day',
     explanation: 'Ingliz tilida standart gap tartibi: Ega (I) + Kesim (study) + To‘ldiruvchi (English) + Hol (every day).'
   },
-  // A2 Questions
+  {
+    id: 'q-a1-6',
+    level_code: 'A1',
+    topic_id: 'topic-a1-4',
+    quiz_id: 'quiz-a1-2',
+    question: 'In a restaurant: "I would like a cup of ______ tea, please."',
+    question_type: 'multiple_choice',
+    options: ['green', 'loud', 'slow', 'tall'],
+    correct_answer: 'green',
+    explanation: '"Green tea" (ko‘k choy) ichimlik sifatini ifodalaydi.'
+  },
+  {
+    id: 'q-a1-7',
+    level_code: 'A1',
+    topic_id: 'topic-a1-5',
+    quiz_id: 'quiz-a1-2',
+    question: 'Daily Routine: "He ______ up at 7:00 AM every morning."',
+    question_type: 'multiple_choice',
+    options: ['wakes', 'wake', 'waking', 'is wake'],
+    correct_answer: 'wakes',
+    explanation: 'Present Simple da He/She/It egalari uchun fe’lga "-s" qo‘shimchasi qo‘shiladi (wakes up).'
+  },
+  {
+    id: 'q-a1-8',
+    level_code: 'A1',
+    topic_id: 'topic-a1-5',
+    quiz_id: 'quiz-a1-2',
+    question: 'Time question: "Excuse me, what ______ is it?"',
+    question_type: 'fill_blank',
+    options: ['time', 'hour', 'clock', 'watch'],
+    correct_answer: 'time',
+    explanation: 'Vaqtni so‘rashda "What time is it?" iborasi qo‘llaniladi.'
+  },
+  {
+    id: 'q-a1-9',
+    level_code: 'A1',
+    topic_id: 'topic-a1-2',
+    quiz_id: 'quiz-a1-2',
+    question: 'Plural nouns: What is the plural form of "child"?',
+    question_type: 'multiple_choice',
+    options: ['children', 'childs', 'childes', 'childrens'],
+    correct_answer: 'children',
+    explanation: '"Child" so‘zining ko‘plik shakli noto‘g‘ri otlar qatorida "children" bo‘ladi.'
+  },
+
+  // ================= A2 QUESTIONS =================
   {
     id: 'q-a2-1',
     level_code: 'A2',
@@ -610,7 +655,7 @@ export const INITIAL_QUESTIONS: Question[] = [
     question_type: 'multiple_choice',
     options: ['luggage', 'homework', 'kitchen', 'pencil'],
     correct_answer: 'luggage',
-    explanation: 'Aeroportda yuk topshirish joyi "luggage drop-off" yoki "baggage drop-off" deyiladi.'
+    explanation: 'Aeroportda yuk topshirish joyi "luggage drop-off" deyiladi.'
   },
   {
     id: 'q-a2-2',
@@ -634,7 +679,42 @@ export const INITIAL_QUESTIONS: Question[] = [
     correct_answer: 'straight',
     explanation: '"Go straight ahead" — to‘g‘riga qarab to‘g‘ri boring degan ma’noni anglatadi.'
   },
-  // B1 Questions
+  {
+    id: 'q-a2-4',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    quiz_id: 'quiz-a2-2',
+    question: 'Comparatives: "This laptop is ______ than my old one."',
+    question_type: 'multiple_choice',
+    options: ['faster', 'more fast', 'fastest', 'as fast'],
+    correct_answer: 'faster',
+    explanation: 'Bir bo‘g‘inli sifatlar qiyosiy darajada "-er" oladi (faster than).'
+  },
+  {
+    id: 'q-a2-5',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    quiz_id: 'quiz-a2-2',
+    question: 'Shopping: "How ______ does this hoodie cost?"',
+    question_type: 'fill_blank',
+    options: ['much', 'many', 'long', 'often'],
+    correct_answer: 'much',
+    explanation: 'Narx so‘rashda "How much does it cost?" deb so‘raladi.'
+  },
+  {
+    id: 'q-a2-6',
+    level_code: 'A2',
+    topic_id: 'topic-a2-1',
+    quiz_id: 'quiz-a2-2',
+    question: 'Listen: "The flight to London departs from Gate 14."',
+    question_type: 'listening',
+    audio_phrase: 'The flight to London departs from Gate 14.',
+    options: ['Gate 14', 'Gate 4', 'Gate 40', 'Gate 24'],
+    correct_answer: 'Gate 14',
+    explanation: 'Audio e’londa reys 14-darvozadan (Gate 14) uchishi aytildi.'
+  },
+
+  // ================= B1 QUESTIONS =================
   {
     id: 'q-b1-1',
     level_code: 'B1',
@@ -656,6 +736,133 @@ export const INITIAL_QUESTIONS: Question[] = [
     options: ['spent', 'spend', 'will spend', 'had spent'],
     correct_answer: 'spent',
     explanation: 'Second Conditional (nohaqiqiy hozirgi/kelasi zamon) formulasi: If + Past Simple, would + V1.'
+  },
+  {
+    id: 'q-b1-3',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    quiz_id: 'quiz-b1-1',
+    question: 'Present Perfect: "She ______ in Tashkent since 2018."',
+    question_type: 'multiple_choice',
+    options: ['has lived', 'lives', 'lived', 'is living'],
+    correct_answer: 'has lived',
+    explanation: '"Since 2018" davomiylikni bildiradi va Present Perfect (has lived) talab qiladi.'
+  },
+  {
+    id: 'q-b1-4',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    quiz_id: 'quiz-b1-2',
+    question: 'Passive voice: "The new mobile app ______ by a team of young Uzbek developers."',
+    question_type: 'multiple_choice',
+    options: ['was developed', 'developed', 'is develop', 'has developing'],
+    correct_answer: 'was developed',
+    explanation: 'Majhul nisbat (Passive Voice): was/were + V3 (was developed).'
+  },
+  {
+    id: 'q-b1-5',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    quiz_id: 'quiz-b1-2',
+    question: 'Modal verbs: "You ______ turn off your phone during the official exam."',
+    question_type: 'fill_blank',
+    options: ['must', 'might', 'could', 'prefer'],
+    correct_answer: 'must',
+    explanation: 'Qat’iy qoida va majburiyat uchun "must" modali qo‘llanadi.'
+  },
+
+  // ================= B2 QUESTIONS =================
+  {
+    id: 'q-b2-1',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Collocations: "The government took effective measures to ______ with the environmental crisis."',
+    question_type: 'multiple_choice',
+    options: ['cope', 'handle', 'solve', 'face'],
+    correct_answer: 'cope',
+    explanation: '"Cope with" iborasi qiyinchiliklarni yengib o‘tish yoki kurashish ma’nosida ishlatiladi.'
+  },
+  {
+    id: 'q-b2-2',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Third Conditional: "If they had prepared more thoroughly, they ______ the debate contest."',
+    question_type: 'multiple_choice',
+    options: ['would have won', 'will win', 'would win', 'had won'],
+    correct_answer: 'would have won',
+    explanation: 'Third Conditional (o‘tmishdagi afsus): If + Past Perfect, would have + V3.'
+  },
+  {
+    id: 'q-b2-3',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Phrasal verbs: "The teacher asked the students to ______ up the unfamiliar words in the dictionary."',
+    question_type: 'fill_blank',
+    options: ['look', 'take', 'make', 'give'],
+    correct_answer: 'look',
+    explanation: '"Look up" — lug‘atdan yoki ma’lumotlar bazasidan qidirib topmoq.'
+  },
+  {
+    id: 'q-b2-4',
+    level_code: 'B2',
+    quiz_id: 'quiz-b2-1',
+    question: 'Inversion: "Seldom ______ such an inspiring presentation on artificial intelligence."',
+    question_type: 'multiple_choice',
+    options: ['have I witnessed', 'I have witnessed', 'I witnessed', 'witnessed I'],
+    correct_answer: 'have I witnessed',
+    explanation: 'Inkor so‘zlar (Seldom, Never, Rarely) gap boshida kelsa, inversiya (yordamchi fe’l egadan oldinga) yuz beradi.'
+  },
+
+  // ================= C1 & C2 QUESTIONS =================
+  {
+    id: 'q-c1-1',
+    level_code: 'C1',
+    quiz_id: 'quiz-c1-1',
+    question: 'Idiomatic expressions: "Passing the certification exam with flying colors means you passed ______."',
+    question_type: 'multiple_choice',
+    options: ['with exceptionally high scores', 'barely on the edge', 'by cheating', 'after several attempts'],
+    correct_answer: 'with exceptionally high scores',
+    explanation: '"With flying colors" — juda yuqori va yorqin natijalar bilan degan ma’noni anglatuvchi mashhur inglizcha idioma.'
+  },
+  {
+    id: 'q-c1-2',
+    level_code: 'C1',
+    quiz_id: 'quiz-c1-1',
+    question: 'Advanced lexis: "His argument was so ______ that no one in the committee could refute it."',
+    question_type: 'multiple_choice',
+    options: ['compelling', 'fragile', 'superficial', 'negligible'],
+    correct_answer: 'compelling',
+    explanation: '"Compelling argument" — inkor etib bo‘lmas, juda kuchli va ishonarli dalil.'
+  },
+  {
+    id: 'q-c1-3',
+    level_code: 'C1',
+    quiz_id: 'quiz-c1-1',
+    question: 'Subjunctive mood: "It is imperative that every student ______ present at the keynote lecture."',
+    question_type: 'multiple_choice',
+    options: ['be', 'is', 'was', 'are'],
+    correct_answer: 'be',
+    explanation: 'Subjunctive Mood (It is imperative that + S + base form V): "that every student be present".'
+  },
+  {
+    id: 'q-c2-1',
+    level_code: 'C2',
+    quiz_id: 'quiz-c2-1',
+    question: 'Nuance: "The novel’s subtle irony was lost on readers who took the narrative at ______ value."',
+    question_type: 'multiple_choice',
+    options: ['face', 'front', 'surface', 'sight'],
+    correct_answer: 'face',
+    explanation: '"At face value" — tashqi ko‘rinishiga qarab to‘g‘ridan-to‘g‘ri qabul qilmoq.'
+  },
+  {
+    id: 'q-c2-2',
+    level_code: 'C2',
+    quiz_id: 'quiz-c2-1',
+    question: 'C2 Vocabulary: "The speaker gave an impromptu and remarkably ______ discourse on modern linguistics."',
+    question_type: 'multiple_choice',
+    options: ['lucid', 'opaque', 'turgid', 'vacuous'],
+    correct_answer: 'lucid',
+    explanation: '"Lucid" — juda tiniq, ravshan va tushunarli ma’nosini anglatadi.'
   }
 ];
 
@@ -664,9 +871,20 @@ export const INITIAL_QUIZZES: Quiz[] = [
     id: 'quiz-a1-1',
     level_code: 'A1',
     topic_id: 'topic-a1-1',
-    title: 'A1 Starter Quiz: Greetings & Basics',
-    description: 'Tanishuv, to be fe’li va asosiy iboralardan 5 ta savol.',
+    title: 'A1 Starter: Tanishuv va Asosiy Grammatika',
+    description: 'Salomlashish, to be fe’li va asosiy gap tuzilishidan 5 ta savol.',
     question_count: 5,
+    xp_reward: 30,
+    passing_score: 80,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-a1-2',
+    level_code: 'A1',
+    topic_id: 'topic-a1-4',
+    title: 'A1 Daily Life: Taomlar, Vaqt va Odatlar',
+    description: 'Restoranda buyurtma berish, soatni so‘rash va Present Simple.',
+    question_count: 4,
     xp_reward: 30,
     passing_score: 80,
     time_limit_seconds: 180
@@ -675,10 +893,21 @@ export const INITIAL_QUIZZES: Quiz[] = [
     id: 'quiz-a2-1',
     level_code: 'A2',
     topic_id: 'topic-a2-1',
-    title: 'A2 Explorer Quiz: Travel & Past Simple',
-    description: 'Sayohat leksikasi va o‘tgan zamon bo‘yicha test.',
+    title: 'A2 Explorer: Sayohat va Past Simple',
+    description: 'Aeroport, yo‘l so‘rash va o‘tgan zamon bo‘yicha interaktiv test.',
     question_count: 3,
-    xp_reward: 30,
+    xp_reward: 35,
+    passing_score: 80,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-a2-2',
+    level_code: 'A2',
+    topic_id: 'topic-a2-3',
+    title: 'A2 Lifestyle: Xaridlar va Sifat Darajalari',
+    description: 'Kiyimlar, narx so‘rash va sifatlarning qiyosiy darajalari.',
+    question_count: 3,
+    xp_reward: 35,
     passing_score: 80,
     time_limit_seconds: 180
   },
@@ -686,14 +915,55 @@ export const INITIAL_QUIZZES: Quiz[] = [
     id: 'quiz-b1-1',
     level_code: 'B1',
     topic_id: 'topic-b1-1',
-    title: 'B1 Tech & Grammar Quiz',
-    description: 'Texnologiyalar va murakkab grammatika bo‘yicha oraliq test.',
-    question_count: 2,
-    xp_reward: 35,
+    title: 'B1 Tech & Conditionals Quiz',
+    description: 'Sun’iy intellekt, 2-shart mayli va Present Perfect.',
+    question_count: 3,
+    xp_reward: 40,
     passing_score: 80,
     time_limit_seconds: 150
   },
-  // Level Final Exams
+  {
+    id: 'quiz-b1-2',
+    level_code: 'B1',
+    topic_id: 'topic-b1-2',
+    title: 'B1 Grammar: Passive Voice & Modals',
+    description: 'Majhul nisbat, majburiyat modallari va ijtimoiy tarmoqlar leksikasi.',
+    question_count: 2,
+    xp_reward: 40,
+    passing_score: 80,
+    time_limit_seconds: 150
+  },
+  {
+    id: 'quiz-b2-1',
+    level_code: 'B2',
+    title: 'B2 Upper-Intermediate Fluency Sprint',
+    description: 'Inversiya, phrasal verbs, uchinchi shart mayli va frazalar.',
+    question_count: 4,
+    xp_reward: 45,
+    passing_score: 85,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-c1-1',
+    level_code: 'C1',
+    title: 'C1 Advanced & Academic IELTS Challenge',
+    description: 'Akademik insho leksikasi, idiomalar va Subjunctive Mood.',
+    question_count: 3,
+    xp_reward: 50,
+    passing_score: 85,
+    time_limit_seconds: 180
+  },
+  {
+    id: 'quiz-c2-1',
+    level_code: 'C2',
+    title: 'C2 Proficiency Master Test',
+    description: 'Ona tilidek nozik ma’nolar, ilg‘or ritorika va stilistika.',
+    question_count: 2,
+    xp_reward: 60,
+    passing_score: 90,
+    time_limit_seconds: 120
+  },
+  // Level Final Certification Exams
   {
     id: 'level-test-a1',
     level_code: 'A1',
@@ -710,7 +980,7 @@ export const INITIAL_QUIZZES: Quiz[] = [
     level_code: 'A2',
     title: 'A2 Level Final Exam (Certification Test)',
     description: 'A2 darajasini muvaffaqiyatli topshirib B1 Intermediate ga o‘tish imtihoni.',
-    question_count: 3,
+    question_count: 5,
     xp_reward: 120,
     passing_score: 85,
     time_limit_seconds: 300,
@@ -762,6 +1032,23 @@ export const SPEAKING_TOPICS = [
 ];
 
 export const CONVERSATION_SCENARIOS: ConversationScenario[] = [
+  {
+    id: 'sc-freechat',
+    title: 'Free Conversation & IELTS Coach',
+    title_uz: 'Erkin Suhbat & IELTS Murabbiy',
+    icon: '🌟',
+    description: 'Istalgan mavzuda (o‘yinlar, film, texnologiya, darslar) erkin suhbat quring yoki IELTS Speaking savollariga tayyorlaning.',
+    level_min: 'A1',
+    ai_role: 'Friendly Native English Mentor (Alex)',
+    user_role: 'Curious English Learner',
+    initial_message: "Hey there! I am Alex, your 24/7 AI English coach. We can chat about absolutely anything — your favorite video games, movies, coding, IELTS speaking, or daily life. What's on your mind today?",
+    suggested_replies: [
+      "Tell me a fun joke in English!",
+      "How can I improve my English speaking fast?",
+      "Let's practice for an IELTS Speaking Part 1 topic.",
+      "What are your favorite hobbies and video games?"
+    ]
+  },
   {
     id: 'sc-restaurant',
     title: 'Cozy London Cafe',
@@ -840,22 +1127,6 @@ export const CONVERSATION_SCENARIOS: ConversationScenario[] = [
       "Hi Emma! Yes, I am new here. My name is Jasur, nice to meet you too!",
       "Which classroom is for English class?",
       "What clubs or sports are popular at this school?"
-    ]
-  },
-  {
-    id: 'sc-daily',
-    title: 'Casual Chat with Native Friend',
-    title_uz: 'Do‘stona Kundalik Suhbat',
-    icon: '💬',
-    description: 'Kino, musiqa, o‘yinlar va sevimli mashg‘ulotlar haqida samimiy gaplashish.',
-    level_min: 'A1',
-    ai_role: 'Teen Friend from Oxford (Oliver)',
-    user_role: 'Teen Friend',
-    initial_message: "Hey there! How has your week been? Did you do anything fun over the weekend?",
-    suggested_replies: [
-      "Hey Oliver! My week was great, I played video games and read a cool book.",
-      "I practiced my English on OSON and scored 100 XP!",
-      "Not much, just school and studying. What about you?"
     ]
   }
 ];
