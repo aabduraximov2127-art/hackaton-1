@@ -3,29 +3,45 @@ import {
   Mic, MicOff, Volume2, Sparkles, Award, RotateCcw, 
   CheckCircle2, ArrowRight, Play, Square, Activity, HelpCircle, ChevronRight 
 } from 'lucide-react';
-import { SpeakingAttempt, User } from '../../types';
+import { SpeakingAttempt, User, LanguageCode } from '../../types';
 import { SPEAKING_TOPICS } from '../../data/mockData';
 import { OsonStorageService } from '../../services/storage';
-import { soundFX, speakEnglish, SpeechRecognizer } from '../../services/audio';
+import { soundFX, speakText, SpeechRecognizer } from '../../services/audio';
 import { evaluateSpeech, EvaluationResult } from '../../services/speakingEvaluator';
 import { fireConfetti } from '../common/ConfettiTrigger';
 
 interface SpeakingStudioProps {
   currentUser: User;
+  activeLanguage?: LanguageCode;
   initialTopicTitle?: string;
   onBack?: () => void;
 }
 
 export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
   currentUser,
+  activeLanguage = 'fr',
   initialTopicTitle,
   onBack
 }) => {
+  // Filter topics by language or fallback
+  const availableTopics = SPEAKING_TOPICS.filter(
+    t => t.language_code === activeLanguage || (!t.language_code && activeLanguage === 'en')
+  );
+  const matchedInitial = SPEAKING_TOPICS.find(t => t.title === initialTopicTitle);
+
   const [selectedTopicId, setSelectedTopicId] = useState<string>(
-    SPEAKING_TOPICS.find(t => t.title === initialTopicTitle)?.id || SPEAKING_TOPICS[0].id
+    matchedInitial?.id || (availableTopics[0]?.id || SPEAKING_TOPICS[0].id)
   );
 
-  const selectedTopic = SPEAKING_TOPICS.find(t => t.id === selectedTopicId) || SPEAKING_TOPICS[0];
+  // Sync topic when language changes
+  useEffect(() => {
+    const valid = SPEAKING_TOPICS.find(t => t.language_code === activeLanguage);
+    if (valid) {
+      setSelectedTopicId(valid.id);
+    }
+  }, [activeLanguage]);
+
+  const selectedTopic = SPEAKING_TOPICS.find(t => t.id === selectedTopicId) || availableTopics[0] || SPEAKING_TOPICS[0];
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordTimer, setRecordTimer] = useState(0);
@@ -39,7 +55,8 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
   const timerIntervalRef = useRef<any>(null);
 
   useEffect(() => {
-    // Initialize speech recognizer
+    // Initialize speech recognizer with topic language
+    const langTag = selectedTopic.language_code === 'fr' ? 'fr-FR' : (selectedTopic.language_code === 'ru' ? 'ru-RU' : 'en-US');
     recognizerRef.current = new SpeechRecognizer(
       (result) => {
         if (result.isFinal) {
@@ -51,7 +68,8 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
       },
       (error) => {
         console.warn('Speech error:', error);
-      }
+      },
+      langTag
     );
 
     return () => {
@@ -243,8 +261,8 @@ export const SpeakingStudio: React.FC<SpeakingStudioProps> = ({
                 <p className="text-xs text-slate-300 mt-0.5 line-clamp-2">"{selectedTopic.sample_text}"</p>
               </div>
               <button
-                onClick={() => speakEnglish(selectedTopic.sample_text)}
-                className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition"
+                onClick={() => speakText(selectedTopic.sample_text, selectedTopic.language_code || 'fr')}
+                className="px-3.5 py-2 rounded-xl bg-[#ff6b4a] text-[#170d08] text-xs font-bold flex items-center gap-1.5 shrink-0 transition cursor-pointer"
               >
                 <Volume2 className="w-4 h-4" /> Namunani eshitish
               </button>

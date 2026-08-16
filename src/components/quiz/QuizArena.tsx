@@ -6,13 +6,21 @@ import { Quiz, LevelCode, LanguageCode } from '../../types';
 import { OsonStorageService } from '../../services/storage';
 
 interface QuizArenaProps {
+  activeLanguage?: LanguageCode;
   onStartQuiz: (quizId: string) => void;
 }
 
-export const QuizArena: React.FC<QuizArenaProps> = ({ onStartQuiz }) => {
+export const QuizArena: React.FC<QuizArenaProps> = ({ activeLanguage = 'fr', onStartQuiz }) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('ALL');
-  const [selectedLang, setSelectedLang] = useState<string>('ALL');
+  const [selectedLang, setSelectedLang] = useState<string>(activeLanguage);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Update when parent language changes
+  React.useEffect(() => {
+    if (activeLanguage) {
+      setSelectedLang(activeLanguage);
+    }
+  }, [activeLanguage]);
 
   const quizzes = OsonStorageService.getQuizzes();
   const levels = OsonStorageService.getLevels();

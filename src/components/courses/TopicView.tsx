@@ -23,8 +23,8 @@ export const TopicView: React.FC<TopicViewProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'vocab' | 'grammar' | 'listening' | 'quiz' | 'speaking'>('vocab');
   
-  const words = OsonStorageService.getWords(topic.level_code, topic.id).length > 0
-    ? OsonStorageService.getWords(topic.level_code, topic.id)
+  const words = OsonStorageService.getWords(topic.level_code, topic.language_code).length > 0
+    ? OsonStorageService.getWords(topic.level_code, topic.language_code)
     : OsonStorageService.getWords(topic.level_code);
 
   const lessons = OsonStorageService.getLessons(topic.id);

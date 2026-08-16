@@ -41,10 +41,13 @@ export const App: React.FC = () => {
   });
 
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [activeLanguage, setActiveLanguage] = useState<LanguageCode>('en');
+  const [activeLanguage, setActiveLanguage] = useState<LanguageCode>(() => {
+    OsonStorageService.init();
+    return OsonStorageService.getActiveLanguage();
+  });
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [activeQuizId, setActiveQuizId] = useState<string>('quiz-a1-1');
+  const [activeQuizId, setActiveQuizId] = useState<string>('quiz-fr-1');
   const [speakingTopicTitle, setSpeakingTopicTitle] = useState<string | undefined>(undefined);
 
   // Modals state
@@ -68,6 +71,7 @@ export const App: React.FC = () => {
 
   const handleSelectLanguage = (lang: LanguageCode) => {
     setActiveLanguage(lang);
+    OsonStorageService.setActiveLanguage(lang);
     soundFX.playXP();
   };
 
@@ -131,6 +135,7 @@ export const App: React.FC = () => {
           {currentUser && activeTab === 'dashboard' && (
             <DashboardHome
               currentUser={currentUser}
+              activeLanguage={activeLanguage}
               onSelectTab={handleSelectTab}
               onOpenLevelTest={(lvl) => setLevelTestCode(lvl as LevelCode)}
               onOpenXPModal={() => setIsXPOpen(true)}
@@ -141,6 +146,7 @@ export const App: React.FC = () => {
           {/* COURSES CATALOG */}
           {currentUser && activeTab === 'courses' && (
             <CourseCatalog
+              activeLanguage={activeLanguage}
               onSelectCourse={(c) => {
                 setSelectedCourse(c);
                 setActiveTab('course-detail');
@@ -151,6 +157,7 @@ export const App: React.FC = () => {
           {/* QUIZZES ARENA */}
           {currentUser && activeTab === 'quizzes' && (
             <QuizArena
+              activeLanguage={activeLanguage}
               onStartQuiz={(qId) => {
                 setActiveQuizId(qId);
                 setActiveTab('quiz-player');
@@ -205,6 +212,7 @@ export const App: React.FC = () => {
           {currentUser && activeTab === 'speaking' && (
             <SpeakingStudio
               currentUser={currentUser}
+              activeLanguage={activeLanguage}
               initialTopicTitle={speakingTopicTitle}
               onBack={() => setActiveTab('dashboard')}
             />
@@ -212,12 +220,17 @@ export const App: React.FC = () => {
 
           {/* AI TUTOR CHAT */}
           {currentUser && activeTab === 'ai-tutor' && (
-            <AITutorChat currentUser={currentUser} />
+            <AITutorChat 
+              currentUser={currentUser} 
+              activeLanguage={activeLanguage}
+            />
           )}
 
           {/* VOCABULARY & FLASHCARDS */}
           {currentUser && activeTab === 'vocabulary' && (
-            <FlashcardDeck />
+            <FlashcardDeck 
+              activeLanguage={activeLanguage}
+            />
           )}
 
           {/* LEADERBOARD */}

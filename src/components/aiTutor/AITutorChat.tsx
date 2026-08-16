@@ -3,19 +3,33 @@ import {
   Bot, Send, Volume2, Sparkles, Mic, MicOff, RotateCcw, 
   Lightbulb, CheckCircle2, User as UserIcon, MessageSquare, ArrowRight 
 } from 'lucide-react';
-import { ConversationScenario, ConversationMessage, User } from '../../types';
+import { ConversationScenario, ConversationMessage, User, LanguageCode } from '../../types';
 import { CONVERSATION_SCENARIOS } from '../../data/mockData';
 import { OsonStorageService } from '../../services/storage';
 import { generateAITutorResponse } from '../../services/aiTutor';
-import { soundFX, speakEnglish, SpeechRecognizer } from '../../services/audio';
+import { soundFX, speakText, SpeechRecognizer } from '../../services/audio';
 import { fireConfetti } from '../common/ConfettiTrigger';
 
 interface AITutorChatProps {
   currentUser: User;
+  activeLanguage?: LanguageCode;
 }
 
-export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser }) => {
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(CONVERSATION_SCENARIOS[0].id);
+export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser, activeLanguage = 'fr' }) => {
+  // Pick default scenario based on language
+  const getDefaultScenarioId = (lang: string) => {
+    if (lang === 'fr') return 'sc-fr-chat';
+    if (lang === 'ru') return 'sc-ru-chat';
+    return 'sc-freechat';
+  };
+
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(getDefaultScenarioId(activeLanguage));
+
+  // Sync scenario when parent language changes
+  useEffect(() => {
+    setSelectedScenarioId(getDefaultScenarioId(activeLanguage));
+  }, [activeLanguage]);
+
   const scenario = CONVERSATION_SCENARIOS.find(s => s.id === selectedScenarioId) || CONVERSATION_SCENARIOS[0];
 
   const conversationId = `convo-${currentUser.id}-${scenario.id}`;
@@ -31,36 +45,39 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser }) => {
 
   // Load existing or initialize conversation
   useEffect(() => {
-    const existing = OsonStorageService.getConversationMessages(conversationId);
+    const existing = OsonStorageService.getConversations(currentUser.id, scenario.id);
     if (existing.length > 0) {
       setMessages(existing);
     } else {
       // Seed initial AI greeting
       const initialAiMsg: ConversationMessage = {
         id: 'msg-init-' + Date.now(),
-        conversation_id: conversationId,
+        scenario_id: scenario.id,
+        user_id: currentUser.id,
         sender: 'ai',
         message: scenario.initial_message,
         timestamp: new Date().toISOString()
       };
-      OsonStorageService.saveConversationMessage(conversationId, initialAiMsg);
       setMessages([initialAiMsg]);
     }
-  }, [selectedScenarioId]);
+  }, [selectedScenarioId, activeLanguage]);
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   useEffect(() => {
+    const langTag = activeLanguage === 'fr' ? 'fr-FR' : (activeLanguage === 'ru' ? 'ru-RU' : 'en-US');
     recognizerRef.current = new SpeechRecognizer(
       (res) => {
         if (res.transcript) {
           setInputText(res.transcript);
         }
-      }
+      },
+      undefined,
+      langTag
     );
-  }, []);
+  }, [activeLanguage]);
 
   const handleSendMessage = (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
@@ -77,7 +94,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser }) => {
       message: text,
       timestamp: new Date().toISOString()
     };
-    OsonStorageService.saveConversationMessage(conversationId, userMsg);
+    OsonStorageService.addConversationMessage(userMsg);
     setMessages(prev => [...prev, userMsg]);
 
     // AI typing & response
@@ -87,14 +104,15 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser }) => {
       
       const aiMsg: ConversationMessage = {
         id: 'msg-ai-' + Date.now(),
-        conversation_id: conversationId,
+        scenario_id: scenario.id,
+        user_id: currentUser.id,
         sender: 'ai',
         message: aiReply.message,
         correction: aiReply.correction,
         timestamp: new Date().toISOString()
       };
 
-      OsonStorageService.saveConversationMessage(conversationId, aiMsg);
+      OsonStorageService.addConversationMessage(aiMsg);
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);
 
@@ -102,11 +120,11 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser }) => {
         setActiveCorrection(aiReply.correction);
       }
 
-      // Play audio TTS for AI message
-      speakEnglish(aiReply.message);
+      // Play audio TTS for AI message in active language
+      speakText(aiReply.message, activeLanguage);
 
       // Award conversational XP
-      OsonStorageService.addXP(currentUser.id, 15, 'ai_conversation', `AI Tutor suhbati: ${scenario.title}`);
+      OsonStorageService.awardXP(currentUser.id, 15, 'speaking', `AI Do‘stimiz bilan muloqot: ${scenario.title}`);
     }, 1000);
   };
 
@@ -213,8 +231,8 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({ currentUser }) => {
                 {/* Speaker button on AI responses */}
                 {isAi && (
                   <button
-                    onClick={() => speakEnglish(msg.message)}
-                    className="flex items-center gap-1 text-[11px] font-bold text-purple-400 hover:text-purple-300 transition"
+                    onClick={() => speakText(msg.message, activeLanguage)}
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#ff6b4a] hover:text-[#ff6b4a]/80 transition cursor-pointer"
                   >
                     <Volume2 className="w-3.5 h-3.5" /> Talaffuzni tinglash
                   </button>

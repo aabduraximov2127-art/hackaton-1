@@ -190,7 +190,9 @@ export interface ConversationScenario {
 
 export interface ConversationMessage {
   id: string;
-  conversation_id: string;
+  conversation_id?: string;
+  scenario_id?: string;
+  user_id?: string;
   sender: 'user' | 'ai';
   message: string;
   correction?: string;
@@ -214,6 +216,7 @@ export interface XPTransaction {
   source: XPSource;
   amount: number;
   description: string;
+  reason?: string;
   created_at: string;
 }
 
@@ -239,11 +242,13 @@ export interface UserAchievement {
 }
 
 export interface StreakData {
-  user_id: string;
+  user_id?: string;
   current_streak: number;
   longest_streak: number;
-  last_activity_date: string;
-  weekly_activity: { [dayIndex: number]: boolean }; // 0: Mon, 6: Sun
+  last_activity_date?: string;
+  last_active_date?: string;
+  weekly_activity?: { [dayIndex: number]: boolean }; // 0: Mon, 6: Sun
+  active_days_this_month?: number[];
 }
 
 export interface LocationItem {

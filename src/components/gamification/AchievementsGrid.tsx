@@ -18,11 +18,9 @@ export const AchievementsGrid: React.FC<AchievementsGridProps> = ({ currentUser 
   };
 
   const handleUnlockDemo = (ach: Achievement) => {
-    const success = OsonStorageService.unlockAchievement(currentUser.id, ach.id);
-    if (success) {
-      soundFX.playLevelUp();
-      fireConfetti();
-    }
+    OsonStorageService.unlockAchievement(currentUser.id, ach.id);
+    soundFX.playLevelUp();
+    fireConfetti();
   };
 
   return (

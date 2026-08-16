@@ -8,11 +8,24 @@ import { OsonStorageService } from '../../services/storage';
 import { soundFX, speakText } from '../../services/audio';
 import { fireConfetti } from '../common/ConfettiTrigger';
 
-export const FlashcardDeck: React.FC = () => {
+interface FlashcardDeckProps {
+  activeLanguage?: LanguageCode;
+}
+
+export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ activeLanguage = 'fr' }) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('ALL');
-  const [selectedLang, setSelectedLang] = useState<string>('ALL');
+  const [selectedLang, setSelectedLang] = useState<string>(activeLanguage);
   const [viewMode, setViewMode] = useState<'flashcards' | 'list'>('flashcards');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Sync when parent language changes
+  React.useEffect(() => {
+    if (activeLanguage) {
+      setSelectedLang(activeLanguage);
+      setCurrentIndex(0);
+      setIsFlipped(false);
+    }
+  }, [activeLanguage]);
 
   const allWords = OsonStorageService.getWords();
   const filteredWords = allWords.filter(w => {
@@ -60,39 +73,76 @@ export const FlashcardDeck: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in pb-16 max-w-4xl mx-auto">
+    <div className="space-y-6 animate-fade-in pb-16 max-w-4xl mx-auto">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs font-bold">
-            <BrainCircuit className="w-3.5 h-3.5" />
-            <span>Spaced Repetition (Interval Takrorlash)</span>
+          <div className="eyebrow-pill">
+            <span className="dot" />
+            <span>SPACED REPETITION (SRS LUG‘AT)</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white font-['Outfit']">
-            So‘z Boyligi & Flashcardlar
+          <h1 className="text-2xl sm:text-3xl font-bold text-white font-['Space_Grotesk']">
+            3D So‘z Kartochkalari & Talaffuz
           </h1>
         </div>
 
         {/* Mode Switcher */}
-        <div className="flex p-1 rounded-2xl bg-slate-900 border border-slate-800 self-start sm:self-auto">
+        <div className="flex p-1 rounded-full bg-[#161920] border border-white/10 self-start sm:self-auto">
           <button
             onClick={() => setViewMode('flashcards')}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition ${
-              viewMode === 'flashcards' ? 'bg-teal-600 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
+              viewMode === 'flashcards' ? 'bg-[#ff6b4a] text-[#170d08]' : 'text-[#8f8f96] hover:text-white'
             }`}
           >
             3D Flashcard
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`px-4 py-1.5 rounded-xl text-xs font-bold transition ${
-              viewMode === 'list' ? 'bg-teal-600 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
+              viewMode === 'list' ? 'bg-[#ff6b4a] text-[#170d08]' : 'text-[#8f8f96] hover:text-white'
             }`}
           >
             Lug‘at Ro‘yxati
           </button>
         </div>
+      </div>
+
+      {/* Language filter pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        <span className="text-xs font-bold text-[#8f8f96]">Til:</span>
+        <button
+          onClick={() => { setSelectedLang('fr'); setCurrentIndex(0); }}
+          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
+            selectedLang === 'fr' ? 'bg-[#ff6b4a] text-[#170d08]' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
+          }`}
+        >
+          <span>🇫🇷</span> <span>Français</span>
+        </button>
+        <button
+          onClick={() => { setSelectedLang('en'); setCurrentIndex(0); }}
+          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
+            selectedLang === 'en' ? 'bg-[#ff6b4a] text-[#170d08]' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
+          }`}
+        >
+          <span>🇬🇧</span> <span>English</span>
+        </button>
+        <button
+          onClick={() => { setSelectedLang('ru'); setCurrentIndex(0); }}
+          className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
+            selectedLang === 'ru' ? 'bg-[#ff6b4a] text-[#170d08]' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
+          }`}
+        >
+          <span>🇷🇺</span> <span>Русский</span>
+        </button>
+        <button
+          onClick={() => { setSelectedLang('ALL'); setCurrentIndex(0); }}
+          className={`px-3 py-1 rounded-full text-xs font-bold cursor-pointer ${
+            selectedLang === 'ALL' ? 'bg-white text-black' : 'bg-[#161920] text-[#8f8f96] border border-white/5'
+          }`}
+        >
+          Barchasi ({allWords.length})
+        </button>
       </div>
 
       {/* Filter & Search */}
@@ -106,28 +156,26 @@ export const FlashcardDeck: React.FC = () => {
                 setCurrentIndex(0);
                 setIsFlipped(false);
               }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition cursor-pointer ${
                 selectedLevel === lvl
-                  ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
-                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  ? 'bg-white text-black'
+                  : 'bg-[#161920] text-[#8f8f96] hover:text-white border border-white/5'
               }`}
             >
-              {lvl === 'ALL' ? 'Barcha so‘zlar' : `${lvl} Daraja`}
+              {lvl}
             </button>
           ))}
         </div>
 
+        {/* Search */}
         <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-[#8f8f96] absolute left-3.5 top-3" />
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentIndex(0);
-            }}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="So‘zlarni qidirish..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-4 py-2 rounded-full bg-[#161920] border border-white/10 text-xs text-white placeholder-[#8f8f96] focus:outline-none focus:border-[#ff6b4a]"
           />
         </div>
       </div>

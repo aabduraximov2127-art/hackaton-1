@@ -1,7 +1,7 @@
 import { 
   User, Level, Course, Topic, Lesson, Word, Question, Quiz, QuizAttempt,
   SpeakingAttempt, ConversationMessage, XPTransaction, Achievement, UserAchievement,
-  StreakData, LocationItem, DailyChallenge, EmailVerification, LevelCode, XPSource
+  StreakData, LocationItem, DailyChallenge, EmailVerification, LevelCode, XPSource, LanguageCode
 } from '../types';
 import { 
   INITIAL_LEVELS, INITIAL_COURSES, INITIAL_TOPICS, INITIAL_LESSONS, 
@@ -10,54 +10,61 @@ import {
 } from '../data/mockData';
 
 const KEYS = {
-  USERS: 'oson_users_v3',
-  CURRENT_USER: 'oson_current_user_v3',
-  VERIFICATIONS: 'oson_verifications_v3',
-  LEVELS: 'oson_levels_v3',
-  COURSES: 'oson_courses_v3',
-  TOPICS: 'oson_topics_v3',
-  LESSONS: 'oson_lessons_v3',
-  WORDS: 'oson_words_v3',
-  QUESTIONS: 'oson_questions_v3',
-  QUIZZES: 'oson_quizzes_v3',
-  QUIZ_ATTEMPTS: 'oson_quiz_attempts_v3',
-  SPEAKING_ATTEMPTS: 'oson_speaking_attempts_v3',
-  CONVERSATIONS: 'oson_conversations_v3',
-  XP_TRANSACTIONS: 'oson_xp_transactions_v3',
-  ACHIEVEMENTS: 'oson_achievements_v3',
-  USER_ACHIEVEMENTS: 'oson_user_achievements_v3',
-  STREAKS: 'oson_streaks_v3',
-  LOCATIONS: 'oson_locations_v3',
-  DAILY_CHALLENGES: 'oson_daily_challenges_v3',
-  SRS_PROGRESS: 'oson_srs_progress_v3',
+  ACTIVE_LANG: 'oson_active_lang_v4',
+  USERS: 'oson_users_v4',
+  CURRENT_USER: 'oson_current_user_v4',
+  VERIFICATIONS: 'oson_verifications_v4',
+  LEVELS: 'oson_levels_v4',
+  COURSES: 'oson_courses_v4',
+  TOPICS: 'oson_topics_v4',
+  LESSONS: 'oson_lessons_v4',
+  WORDS: 'oson_words_v4',
+  QUESTIONS: 'oson_questions_v4',
+  QUIZZES: 'oson_quizzes_v4',
+  QUIZ_ATTEMPTS: 'oson_quiz_attempts_v4',
+  SPEAKING_ATTEMPTS: 'oson_speaking_attempts_v4',
+  CONVERSATIONS: 'oson_conversations_v4',
+  XP_TRANSACTIONS: 'oson_xp_transactions_v4',
+  ACHIEVEMENTS: 'oson_achievements_v4',
+  USER_ACHIEVEMENTS: 'oson_user_achievements_v4',
+  STREAKS: 'oson_streaks_v4',
+  LOCATIONS: 'oson_locations_v4',
+  DAILY_CHALLENGES: 'oson_daily_challenges_v4',
+  SRS_PROGRESS: 'oson_srs_progress_v4',
 };
 
 function getStorage<T>(key: string, defaultVal: T): T {
+  if (typeof window === 'undefined') return defaultVal;
   try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultVal;
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : defaultVal;
   } catch (e) {
-    console.error(`Error reading ${key} from storage`, e);
+    console.error(`Error reading ${key} from storage:`, e);
     return defaultVal;
   }
 }
 
 function setStorage<T>(key: string, val: T): void {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(key, JSON.stringify(val));
   } catch (e) {
-    console.error(`Error saving ${key} to storage`, e);
+    console.error(`Error saving ${key} to storage:`, e);
   }
 }
 
 export class OsonStorageService {
-  // Initialize default data if not present
   static init(): void {
+    if (typeof window === 'undefined') return;
+
+    if (!localStorage.getItem(KEYS.ACTIVE_LANG)) {
+      setStorage(KEYS.ACTIVE_LANG, 'fr');
+    }
     if (!localStorage.getItem(KEYS.USERS)) {
       setStorage(KEYS.USERS, INITIAL_USERS);
     }
     if (!localStorage.getItem(KEYS.CURRENT_USER)) {
-      setStorage(KEYS.CURRENT_USER, INITIAL_USERS[0]); // Default to student Jasur
+      setStorage(KEYS.CURRENT_USER, INITIAL_USERS[0]);
     }
     if (!localStorage.getItem(KEYS.LEVELS)) {
       setStorage(KEYS.LEVELS, INITIAL_LEVELS);
@@ -90,7 +97,6 @@ export class OsonStorageService {
       setStorage(KEYS.DAILY_CHALLENGES, INITIAL_DAILY_CHALLENGES);
     }
     if (!localStorage.getItem(KEYS.USER_ACHIEVEMENTS)) {
-      // Seed initial user with First Step unlocked
       const initialUserAch: UserAchievement[] = [
         {
           id: 'ua-1',
@@ -104,160 +110,329 @@ export class OsonStorageService {
     }
   }
 
-  // Auth & Current User
-  static getCurrentUser(): User | null {
-    return getStorage<User | null>(KEYS.CURRENT_USER, null);
+  // Active Language
+  static getActiveLanguage(): LanguageCode {
+    return getStorage<LanguageCode>(KEYS.ACTIVE_LANG, 'fr');
   }
 
-  static setCurrentUser(user: User | null): void {
-    setStorage(KEYS.CURRENT_USER, user);
-    if (user) {
-      this.updateUser(user);
-    }
+  static setActiveLanguage(lang: LanguageCode): void {
+    setStorage(KEYS.ACTIVE_LANG, lang);
   }
 
+  // Users & Auth
   static getAllUsers(): User[] {
     return getStorage<User[]>(KEYS.USERS, INITIAL_USERS);
   }
 
-  static updateUser(updated: User): void {
+  static getCurrentUser(): User | null {
+    return getStorage<User | null>(KEYS.CURRENT_USER, INITIAL_USERS[0]);
+  }
+
+  static setCurrentUser(user: User | null): void {
+    setStorage(KEYS.CURRENT_USER, user);
+  }
+
+  static saveUser(user: User): void {
     const users = this.getAllUsers();
-    const idx = users.findIndex(u => u.id === updated.id);
+    const idx = users.findIndex(u => u.id === user.id);
     if (idx >= 0) {
-      users[idx] = updated;
+      users[idx] = user;
     } else {
-      users.push(updated);
+      users.push(user);
     }
     setStorage(KEYS.USERS, users);
-    
-    // If updating current user, refresh current user state too
-    const cur = this.getCurrentUser();
-    if (cur && cur.id === updated.id) {
-      setStorage(KEYS.CURRENT_USER, updated);
+
+    const curr = this.getCurrentUser();
+    if (curr && curr.id === user.id) {
+      this.setCurrentUser(user);
     }
   }
 
-  static registerUser(userData: Omit<User, 'id' | 'is_verified' | 'is_active' | 'created_at' | 'total_xp' | 'streak'>): { user: User; verificationCode: string } {
-    const users = this.getAllUsers();
-    const newUser: User = {
-      ...userData,
-      id: 'user-' + Date.now(),
-      is_verified: false,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      total_xp: 0,
-      streak: 1,
-      current_level: 'A1',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80'
-    };
+  static updateUser(user: User): User {
+    this.saveUser(user);
+    return user;
+  }
 
-    users.push(newUser);
-    setStorage(KEYS.USERS, users);
-
-    // Generate 6-digit verification code
+  static registerUser(userData: Partial<User> & { first_name: string; last_name: string; email: string }): { user: User; verificationCode: string } {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const verifications = getStorage<EmailVerification[]>(KEYS.VERIFICATIONS, []);
-    verifications.push({
-      email: newUser.email,
+    this.saveVerification({
+      email: userData.email,
       code: code,
-      expires_at: Date.now() + 15 * 60 * 1000, // 15 mins
+      expires_at: Date.now() + 15 * 60 * 1000,
       is_used: false
     });
-    setStorage(KEYS.VERIFICATIONS, verifications);
 
+    const newUser: User = {
+      id: 'user-' + Date.now(),
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      age: userData.age || 14,
+      phone: userData.phone || '',
+      email: userData.email,
+      password: userData.password,
+      role: userData.role || 'USER',
+      is_verified: false,
+      is_active: true,
+      avatar: userData.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
+      current_level: userData.current_level || 'A1',
+      total_xp: 100,
+      streak: 1,
+      created_at: new Date().toISOString()
+    };
+    this.saveUser(newUser);
     return { user: newUser, verificationCode: code };
   }
 
-  static verifyEmailCode(email: string, code: string): boolean {
-    const verifications = getStorage<EmailVerification[]>(KEYS.VERIFICATIONS, []);
-    const record = verifications.find(v => v.email.toLowerCase() === email.toLowerCase() && v.code === code && !v.is_used);
-    
-    if (record) {
-      record.is_used = true;
-      setStorage(KEYS.VERIFICATIONS, verifications);
+  // Verification Codes
+  static getVerifications(): EmailVerification[] {
+    return getStorage<EmailVerification[]>(KEYS.VERIFICATIONS, []);
+  }
 
-      // Mark user as verified
-      const users = this.getAllUsers();
-      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-      if (user) {
-        user.is_verified = true;
-        this.updateUser(user);
-        this.setCurrentUser(user);
-      }
+  static saveVerification(code: EmailVerification): void {
+    const list = this.getVerifications().filter(v => v.email !== code.email);
+    list.push(code);
+    setStorage(KEYS.VERIFICATIONS, list);
+  }
+
+  static getVerification(email: string): EmailVerification | null {
+    const list = this.getVerifications();
+    return list.find(v => v.email === email && !v.is_used && v.expires_at > Date.now()) || null;
+  }
+
+  static verifyEmailCode(email: string, code: string): boolean {
+    const ver = this.getVerification(email);
+    if (ver && ver.code === code) {
+      this.markVerificationUsed(email);
       return true;
     }
     return false;
   }
 
-  static getPendingVerificationCode(email: string): string | null {
-    const verifications = getStorage<EmailVerification[]>(KEYS.VERIFICATIONS, []);
-    const record = verifications.find(v => v.email.toLowerCase() === email.toLowerCase() && !v.is_used);
-    return record ? record.code : null;
+  static markVerificationUsed(email: string): void {
+    const list = this.getVerifications().map(v => v.email === email ? { ...v, is_used: true } : v);
+    setStorage(KEYS.VERIFICATIONS, list);
   }
 
-  // XP & Gamification Engine
-  static addXP(userId: string, amount: number, source: XPSource, description: string): User | null {
-    const users = this.getAllUsers();
-    const user = users.find(u => u.id === userId);
-    if (!user) return null;
+  // Levels
+  static getLevels(): Level[] {
+    return getStorage<Level[]>(KEYS.LEVELS, INITIAL_LEVELS);
+  }
 
-    user.total_xp += amount;
-    this.updateUser(user);
+  // Courses
+  static getCourses(levelCode?: string, langCode?: string): Course[] {
+    const list = getStorage<Course[]>(KEYS.COURSES, INITIAL_COURSES);
+    return list.filter(c => {
+      if (levelCode && levelCode !== 'ALL' && c.level_code !== levelCode) return false;
+      if (langCode && langCode !== 'ALL' && c.language_code && c.language_code !== langCode) return false;
+      return true;
+    });
+  }
 
-    // Record XP Transaction
-    const transactions = getStorage<XPTransaction[]>(KEYS.XP_TRANSACTIONS, []);
-    const newTx: XPTransaction = {
-      id: 'xp-tx-' + Date.now(),
-      user_id: userId,
-      source: source,
-      amount: amount,
-      description: description,
+  static getCourseById(id: string): Course | null {
+    const courses = this.getCourses();
+    return courses.find(c => c.id === id) || null;
+  }
+
+  // Topics
+  static getTopics(courseId?: string, langCode?: string): Topic[] {
+    const list = getStorage<Topic[]>(KEYS.TOPICS, INITIAL_TOPICS);
+    return list.filter(t => {
+      if (courseId && t.course_id !== courseId) return false;
+      if (langCode && langCode !== 'ALL' && t.language_code && t.language_code !== langCode) return false;
+      return true;
+    });
+  }
+
+  static getTopicById(id: string): Topic | null {
+    const topics = this.getTopics();
+    return topics.find(t => t.id === id) || null;
+  }
+
+  // Lessons
+  static getLessons(topicId?: string): Lesson[] {
+    const list = getStorage<Lesson[]>(KEYS.LESSONS, INITIAL_LESSONS);
+    if (!topicId) return list;
+    return list.filter(l => l.topic_id === topicId);
+  }
+
+  // Words & Spaced Repetition (SRS)
+  static getWords(levelCode?: string, langCode?: string): Word[] {
+    const list = getStorage<Word[]>(KEYS.WORDS, INITIAL_WORDS);
+    return list.filter(w => {
+      if (levelCode && levelCode !== 'ALL' && w.level_code !== levelCode) return false;
+      if (langCode && langCode !== 'ALL' && w.language_code && w.language_code !== langCode) return false;
+      return true;
+    });
+  }
+
+  static addWord(word: Word): void {
+    const words = this.getWords();
+    words.unshift(word);
+    setStorage(KEYS.WORDS, words);
+  }
+
+  static saveWord(word: Word): void {
+    const words = this.getWords();
+    const idx = words.findIndex(w => w.id === word.id);
+    if (idx >= 0) words[idx] = word;
+    else words.unshift(word);
+    setStorage(KEYS.WORDS, words);
+  }
+
+  static deleteWord(id: string): void {
+    const words = this.getWords().filter(w => w.id !== id);
+    setStorage(KEYS.WORDS, words);
+  }
+
+  // Quizzes & Questions
+  static getQuizzes(levelCode?: string, langCode?: string): Quiz[] {
+    const list = getStorage<Quiz[]>(KEYS.QUIZZES, INITIAL_QUIZZES);
+    return list.filter(q => {
+      if (levelCode && levelCode !== 'ALL' && q.level_code !== levelCode) return false;
+      if (langCode && langCode !== 'ALL' && q.language_code && q.language_code !== langCode) return false;
+      return true;
+    });
+  }
+
+  static getQuizById(id: string): Quiz | null {
+    const quizzes = getStorage<Quiz[]>(KEYS.QUIZZES, INITIAL_QUIZZES);
+    return quizzes.find(q => q.id === id) || null;
+  }
+
+  static getQuestions(quizId?: string, levelCode?: string, langCode?: string): Question[] {
+    const list = getStorage<Question[]>(KEYS.QUESTIONS, INITIAL_QUESTIONS);
+    return list.filter(q => {
+      if (quizId && q.quiz_id !== quizId) return false;
+      if (levelCode && levelCode !== 'ALL' && q.level_code !== levelCode) return false;
+      if (langCode && langCode !== 'ALL' && q.language_code && q.language_code !== langCode) return false;
+      return true;
+    });
+  }
+
+  static addQuestion(question: Question): void {
+    const questions = this.getQuestions();
+    questions.unshift(question);
+    setStorage(KEYS.QUESTIONS, questions);
+  }
+
+  static saveQuestion(question: Question): void {
+    const questions = this.getQuestions();
+    const idx = questions.findIndex(q => q.id === question.id);
+    if (idx >= 0) questions[idx] = question;
+    else questions.unshift(question);
+    setStorage(KEYS.QUESTIONS, questions);
+  }
+
+  static deleteQuestion(id: string): void {
+    const questions = this.getQuestions().filter(q => q.id !== id);
+    setStorage(KEYS.QUESTIONS, questions);
+  }
+
+  // Quiz Attempts
+  static getQuizAttempts(userId?: string): QuizAttempt[] {
+    const attempts = getStorage<QuizAttempt[]>(KEYS.QUIZ_ATTEMPTS, []);
+    if (!userId) return attempts;
+    return attempts.filter(a => a.user_id === userId);
+  }
+
+  static recordQuizAttempt(attempt: Omit<QuizAttempt, 'id' | 'completed_at'>): QuizAttempt {
+    const attempts = this.getQuizAttempts();
+    const newAttempt: QuizAttempt = {
+      ...attempt,
+      id: 'qa-' + Date.now(),
+      completed_at: new Date().toISOString()
+    };
+    attempts.unshift(newAttempt);
+    setStorage(KEYS.QUIZ_ATTEMPTS, attempts);
+
+    this.awardXP(attempt.user_id, attempt.xp_earned, 'quiz', `Viktorina: ${attempt.quiz_title}`);
+    return newAttempt;
+  }
+
+  static saveQuizAttempt(attempt: Omit<QuizAttempt, 'id' | 'completed_at'>): QuizAttempt {
+    return this.recordQuizAttempt(attempt);
+  }
+
+  // Speaking Attempts
+  static getSpeakingAttempts(userId?: string): SpeakingAttempt[] {
+    const attempts = getStorage<SpeakingAttempt[]>(KEYS.SPEAKING_ATTEMPTS, []);
+    if (!userId) return attempts;
+    return attempts.filter(a => a.user_id === userId);
+  }
+
+  static recordSpeakingAttempt(attempt: Omit<SpeakingAttempt, 'id' | 'created_at'>): SpeakingAttempt {
+    const attempts = this.getSpeakingAttempts();
+    const newAttempt: SpeakingAttempt = {
+      ...attempt,
+      id: 'sa-' + Date.now(),
       created_at: new Date().toISOString()
     };
-    transactions.unshift(newTx);
-    setStorage(KEYS.XP_TRANSACTIONS, transactions.slice(0, 100)); // keep last 100
+    attempts.unshift(newAttempt);
+    setStorage(KEYS.SPEAKING_ATTEMPTS, attempts);
 
-    // Check achievement triggers
-    this.checkAchievements(user);
-
-    return user;
+    this.awardXP(attempt.user_id, attempt.xp_earned, 'speaking', `Speaking: ${attempt.topic_title}`);
+    return newAttempt;
   }
 
-  static getXPTransactions(userId: string): XPTransaction[] {
-    const txs = getStorage<XPTransaction[]>(KEYS.XP_TRANSACTIONS, []);
-    return txs.filter(t => t.user_id === userId);
+  static saveSpeakingAttempt(attempt: Omit<SpeakingAttempt, 'id' | 'created_at'>): SpeakingAttempt {
+    return this.recordSpeakingAttempt(attempt);
   }
 
-  // Daily Streak
-  static getStreakData(userId: string): StreakData {
-    const streaks = getStorage<{ [key: string]: StreakData }>(KEYS.STREAKS, {});
-    if (streaks[userId]) {
-      return streaks[userId];
-    }
-    const defaultStreak: StreakData = {
-      user_id: userId,
-      current_streak: 5,
-      longest_streak: 12,
-      last_activity_date: new Date().toISOString(),
-      weekly_activity: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 6: false }
+  // Conversations
+  static getConversations(userId?: string, scenarioId?: string): ConversationMessage[] {
+    const list = getStorage<ConversationMessage[]>(KEYS.CONVERSATIONS, []);
+    return list.filter(m => {
+      if (userId && m.user_id !== userId) return false;
+      if (scenarioId && m.scenario_id !== scenarioId) return false;
+      return true;
+    });
+  }
+
+  static addConversationMessage(msg: Omit<ConversationMessage, 'id' | 'timestamp'>): ConversationMessage {
+    const list = getStorage<ConversationMessage[]>(KEYS.CONVERSATIONS, []);
+    const newMsg: ConversationMessage = {
+      ...msg,
+      id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      timestamp: new Date().toISOString()
     };
-    streaks[userId] = defaultStreak;
-    setStorage(KEYS.STREAKS, streaks);
-    return defaultStreak;
+    list.push(newMsg);
+    setStorage(KEYS.CONVERSATIONS, list);
+    return newMsg;
   }
 
-  static recordDailyActivity(userId: string): StreakData {
-    const streaks = getStorage<{ [key: string]: StreakData }>(KEYS.STREAKS, {});
-    const streak = this.getStreakData(userId);
-    
-    const today = new Date();
-    const dayOfWeek = (today.getDay() + 6) % 7; // 0 = Mon, 6 = Sun
-    streak.weekly_activity[dayOfWeek] = true;
-    streak.last_activity_date = today.toISOString();
-    
-    streaks[userId] = streak;
-    setStorage(KEYS.STREAKS, streaks);
-    return streak;
+  // Gamification: XP & Ledger
+  static getXPTransactions(userId?: string): XPTransaction[] {
+    const list = getStorage<XPTransaction[]>(KEYS.XP_TRANSACTIONS, []);
+    if (!userId) return list;
+    return list.filter(t => t.user_id === userId);
+  }
+
+  static awardXP(userId: string, amount: number, source: XPSource, reason: string): void {
+    if (amount <= 0) return;
+
+    const list = getStorage<XPTransaction[]>(KEYS.XP_TRANSACTIONS, []);
+    const newTx: XPTransaction = {
+      id: 'xp-' + Date.now(),
+      user_id: userId,
+      amount,
+      source,
+      description: reason,
+      reason,
+      created_at: new Date().toISOString()
+    };
+    list.unshift(newTx);
+    setStorage(KEYS.XP_TRANSACTIONS, list);
+
+    const users = this.getAllUsers();
+    const u = users.find(user => user.id === userId);
+    if (u) {
+      u.total_xp += amount;
+      this.saveUser(u);
+    }
+  }
+
+  static addXP(userId: string, amount: number, source: XPSource, reason: string): void {
+    this.awardXP(userId, amount, source, reason);
   }
 
   // Achievements
@@ -266,180 +441,53 @@ export class OsonStorageService {
   }
 
   static getUserAchievements(userId: string): UserAchievement[] {
-    const userAchs = getStorage<UserAchievement[]>(KEYS.USER_ACHIEVEMENTS, []);
-    return userAchs.filter(ua => ua.user_id === userId);
+    const list = getStorage<UserAchievement[]>(KEYS.USER_ACHIEVEMENTS, []);
+    return list.filter(ua => ua.user_id === userId);
   }
 
-  static unlockAchievement(userId: string, achievementId: string): boolean {
-    const userAchs = getStorage<UserAchievement[]>(KEYS.USER_ACHIEVEMENTS, []);
-    const exists = userAchs.find(ua => ua.user_id === userId && ua.achievement_id === achievementId);
-    if (!exists) {
-      const ach = this.getAchievements().find(a => a.id === achievementId);
-      userAchs.push({
+  static unlockAchievement(userId: string, achievementId: string): void {
+    const list = getStorage<UserAchievement[]>(KEYS.USER_ACHIEVEMENTS, []);
+    const existing = list.find(ua => ua.user_id === userId && ua.achievement_id === achievementId);
+    if (!existing) {
+      const achs = this.getAchievements();
+      const ach = achs.find(a => a.id === achievementId);
+      list.push({
         id: 'ua-' + Date.now(),
         user_id: userId,
         achievement_id: achievementId,
         unlocked_at: new Date().toISOString(),
-        claimed_xp: false
+        claimed_xp: true
       });
-      setStorage(KEYS.USER_ACHIEVEMENTS, userAchs);
-      
+      setStorage(KEYS.USER_ACHIEVEMENTS, list);
+
       if (ach) {
-        this.addXP(userId, ach.xp_reward, 'achievement', `Yutuq ochildi: ${ach.title_uz}`);
+        this.awardXP(userId, ach.xp_reward, 'achievement', `Yutuq ochildi: ${ach.title_uz}`);
       }
-      return true;
-    }
-    return false;
-  }
-
-  static checkAchievements(user: User): void {
-    const speakingAttempts = this.getSpeakingAttempts(user.id);
-    const quizAttempts = this.getQuizAttempts(user.id);
-
-    if (quizAttempts.length >= 1) {
-      this.unlockAchievement(user.id, 'ach-1'); // First Step
-    }
-    if (user.streak >= 7) {
-      this.unlockAchievement(user.id, 'ach-2'); // 7 Day Warrior
-    }
-    if (speakingAttempts.filter(s => s.overall_score >= 80).length >= 5) {
-      this.unlockAchievement(user.id, 'ach-3'); // Confident Speaker
-    }
-    if (quizAttempts.some(q => q.score_percentage === 100 && q.time_spent_seconds < 60)) {
-      this.unlockAchievement(user.id, 'ach-4'); // Speed Master
     }
   }
 
-  // Levels & Course Content
-  static getLevels(): Level[] {
-    return getStorage<Level[]>(KEYS.LEVELS, INITIAL_LEVELS);
-  }
-
-  static getCourses(levelCode?: LevelCode): Course[] {
-    const courses = getStorage<Course[]>(KEYS.COURSES, INITIAL_COURSES);
-    return levelCode ? courses.filter(c => c.level_code === levelCode) : courses;
-  }
-
-  static getTopics(courseId?: string): Topic[] {
-    const topics = getStorage<Topic[]>(KEYS.TOPICS, INITIAL_TOPICS);
-    return courseId ? topics.filter(t => t.course_id === courseId) : topics;
-  }
-
-  static getLessons(topicId?: string): Lesson[] {
-    const lessons = getStorage<Lesson[]>(KEYS.LESSONS, INITIAL_LESSONS);
-    return topicId ? lessons.filter(l => l.topic_id === topicId) : lessons;
-  }
-
-  static getWords(levelCode?: LevelCode, topicId?: string): Word[] {
-    const words = getStorage<Word[]>(KEYS.WORDS, INITIAL_WORDS);
-    return words.filter(w => {
-      if (levelCode && w.level_code !== levelCode) return false;
-      if (topicId && w.topic_id !== topicId) return false;
-      return true;
-    });
-  }
-
-  // Quizzes & Attempts
-  static getQuizzes(levelCode?: LevelCode): Quiz[] {
-    const quizzes = getStorage<Quiz[]>(KEYS.QUIZZES, INITIAL_QUIZZES);
-    return levelCode ? quizzes.filter(q => q.level_code === levelCode) : quizzes;
-  }
-
-  static getQuestions(quizId?: string, levelCode?: LevelCode): Question[] {
-    const questions = getStorage<Question[]>(KEYS.QUESTIONS, INITIAL_QUESTIONS);
-    return questions.filter(q => {
-      if (quizId && q.quiz_id !== quizId) return false;
-      if (levelCode && q.level_code !== levelCode) return false;
-      return true;
-    });
-  }
-
-  static saveQuizAttempt(attempt: Omit<QuizAttempt, 'id' | 'completed_at'>): QuizAttempt {
-    const attempts = getStorage<QuizAttempt[]>(KEYS.QUIZ_ATTEMPTS, []);
-    const fullAttempt: QuizAttempt = {
-      ...attempt,
-      id: 'attempt-' + Date.now(),
-      completed_at: new Date().toISOString()
+  // Streak
+  static getStreakData(userId: string): StreakData {
+    const streaks = getStorage<Record<string, StreakData>>(KEYS.STREAKS, {});
+    if (streaks[userId]) {
+      return streaks[userId];
+    }
+    const defaultData: StreakData = {
+      user_id: userId,
+      current_streak: 5,
+      longest_streak: 14,
+      last_activity_date: new Date().toISOString().split('T')[0],
+      last_active_date: new Date().toISOString().split('T')[0],
+      active_days_this_month: [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 14, 15]
     };
-    attempts.unshift(fullAttempt);
-    setStorage(KEYS.QUIZ_ATTEMPTS, attempts);
-
-    // Award XP
-    if (attempt.xp_earned > 0) {
-      this.addXP(attempt.user_id, attempt.xp_earned, 'quiz', `Quiz topshirildi: ${attempt.quiz_title} (${attempt.score_percentage}%)`);
-    }
-
-    return fullAttempt;
+    streaks[userId] = defaultData;
+    setStorage(KEYS.STREAKS, streaks);
+    return defaultData;
   }
 
-  static getQuizAttempts(userId: string): QuizAttempt[] {
-    const attempts = getStorage<QuizAttempt[]>(KEYS.QUIZ_ATTEMPTS, []);
-    return attempts.filter(a => a.user_id === userId);
-  }
-
-  // Speaking Studio
-  static saveSpeakingAttempt(attempt: Omit<SpeakingAttempt, 'id' | 'created_at'>): SpeakingAttempt {
-    const attempts = getStorage<SpeakingAttempt[]>(KEYS.SPEAKING_ATTEMPTS, []);
-    const fullAttempt: SpeakingAttempt = {
-      ...attempt,
-      id: 'spk-att-' + Date.now(),
-      created_at: new Date().toISOString()
-    };
-    attempts.unshift(fullAttempt);
-    setStorage(KEYS.SPEAKING_ATTEMPTS, attempts);
-
-    if (attempt.xp_earned > 0) {
-      this.addXP(attempt.user_id, attempt.xp_earned, 'speaking', `Speaking challenge: ${attempt.topic_title} (${attempt.overall_score}/100)`);
-    }
-
-    return fullAttempt;
-  }
-
-  static getSpeakingAttempts(userId: string): SpeakingAttempt[] {
-    const attempts = getStorage<SpeakingAttempt[]>(KEYS.SPEAKING_ATTEMPTS, []);
-    return attempts.filter(a => a.user_id === userId);
-  }
-
-  // AI Tutor Conversations
-  static getConversationMessages(conversationId: string): ConversationMessage[] {
-    const messages = getStorage<{ [convoId: string]: ConversationMessage[] }>(KEYS.CONVERSATIONS, {});
-    return messages[conversationId] || [];
-  }
-
-  static saveConversationMessage(conversationId: string, msg: Omit<ConversationMessage, 'id' | 'timestamp'>): ConversationMessage {
-    const conversations = getStorage<{ [convoId: string]: ConversationMessage[] }>(KEYS.CONVERSATIONS, {});
-    if (!conversations[conversationId]) {
-      conversations[conversationId] = [];
-    }
-    const fullMsg: ConversationMessage = {
-      ...msg,
-      id: 'msg-' + Date.now(),
-      timestamp: new Date().toISOString()
-    };
-    conversations[conversationId].push(fullMsg);
-    setStorage(KEYS.CONVERSATIONS, conversations);
-    return fullMsg;
-  }
-
-  // Locations & Map
+  // Locations / Map
   static getLocations(): LocationItem[] {
     return getStorage<LocationItem[]>(KEYS.LOCATIONS, INITIAL_LOCATIONS);
-  }
-
-  static saveLocation(loc: LocationItem): void {
-    const locs = this.getLocations();
-    const idx = locs.findIndex(l => l.id === loc.id);
-    if (idx >= 0) {
-      locs[idx] = loc;
-    } else {
-      locs.push(loc);
-    }
-    setStorage(KEYS.LOCATIONS, locs);
-  }
-
-  static deleteLocation(id: string): void {
-    const locs = this.getLocations().filter(l => l.id !== id);
-    setStorage(KEYS.LOCATIONS, locs);
   }
 
   // Daily Challenges
@@ -462,37 +510,5 @@ export class OsonStorageService {
   static deleteCourse(id: string): void {
     const courses = this.getCourses().filter(c => c.id !== id);
     setStorage(KEYS.COURSES, courses);
-  }
-
-  static saveWord(word: Word): void {
-    const words = this.getWords();
-    const idx = words.findIndex(w => w.id === word.id);
-    if (idx >= 0) {
-      words[idx] = word;
-    } else {
-      words.push(word);
-    }
-    setStorage(KEYS.WORDS, words);
-  }
-
-  static deleteWord(id: string): void {
-    const words = this.getWords().filter(w => w.id !== id);
-    setStorage(KEYS.WORDS, words);
-  }
-
-  static saveQuestion(question: Question): void {
-    const questions = this.getQuestions();
-    const idx = questions.findIndex(q => q.id === question.id);
-    if (idx >= 0) {
-      questions[idx] = question;
-    } else {
-      questions.push(question);
-    }
-    setStorage(KEYS.QUESTIONS, questions);
-  }
-
-  static deleteQuestion(id: string): void {
-    const questions = this.getQuestions().filter(q => q.id !== id);
-    setStorage(KEYS.QUESTIONS, questions);
   }
 }

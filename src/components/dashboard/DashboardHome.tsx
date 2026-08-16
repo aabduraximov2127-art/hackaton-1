@@ -3,12 +3,14 @@ import {
   Flame, Sparkles, BookOpen, Mic, Bot, BrainCircuit, Trophy, 
   MapPin, ArrowRight, CheckCircle2, Play, Star, Award, Zap, Compass 
 } from 'lucide-react';
-import { User, Course, Level, DailyChallenge } from '../../types';
+import { User, Course, Level, DailyChallenge, LanguageCode } from '../../types';
 import { OsonStorageService } from '../../services/storage';
+import { AVAILABLE_LANGUAGES } from '../../data/mockData';
 import { soundFX } from '../../services/audio';
 
 interface DashboardHomeProps {
   currentUser: User;
+  activeLanguage?: LanguageCode;
   onSelectTab: (tab: string, extraData?: unknown) => void;
   onOpenLevelTest: (levelCode: string) => void;
   onOpenXPModal: () => void;
@@ -17,20 +19,23 @@ interface DashboardHomeProps {
 
 export const DashboardHome: React.FC<DashboardHomeProps> = ({
   currentUser,
+  activeLanguage = 'fr',
   onSelectTab,
   onOpenLevelTest,
   onOpenXPModal,
   onOpenStreakModal
 }) => {
   const levels = OsonStorageService.getLevels();
-  const currentCourses = OsonStorageService.getCourses(currentUser.current_level);
-  const allCourses = OsonStorageService.getCourses();
+  const currentCourses = OsonStorageService.getCourses(currentUser.current_level, activeLanguage);
+  const allCourses = OsonStorageService.getCourses(undefined, activeLanguage);
   const streakData = OsonStorageService.getStreakData(currentUser.id);
   const dailyChallenges = OsonStorageService.getDailyChallenges();
   const quizAttempts = OsonStorageService.getQuizAttempts(currentUser.id);
   const speakingAttempts = OsonStorageService.getSpeakingAttempts(currentUser.id);
   const allUsers = OsonStorageService.getAllUsers().sort((a, b) => b.total_xp - a.total_xp);
   const topUsers = allUsers.slice(0, 3);
+
+  const currentLangObj = AVAILABLE_LANGUAGES.find(l => l.code === activeLanguage) || AVAILABLE_LANGUAGES[0];
 
   const daysOfWeek = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'];
   const todayDayIndex = (new Date().getDay() + 6) % 7; // 0: Mon, 6: Sun
@@ -51,10 +56,10 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
             <div className="flex items-center gap-2">
               <span className="eyebrow-pill">
                 <span className="dot" />
-                <span>Bugungi maqsad: 10 daqiqa ingliz tili</span>
+                <span>Bugungi maqsad: 10 daqiqa {currentLangObj.name}</span>
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-[#ff6b4a]/10 text-[#ff6b4a] font-mono text-xs font-bold border border-[#ff6b4a]/20">
-                {currentLevelObj.code} • {currentLevelObj.name}
+                {currentLangObj.flag} {currentLevelObj.code} • {currentLevelObj.name}
               </span>
             </div>
             
