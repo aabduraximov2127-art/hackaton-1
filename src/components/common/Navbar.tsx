@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Flame, Award, BookOpen, Mic, Bot, BrainCircuit, Trophy, MapPin, 
+  Flame, BookOpen, Mic, Bot, BrainCircuit, Trophy, MapPin, 
   User as UserIcon, Shield, Stethoscope, LogOut, Menu, X, Sparkles, MessageCircle 
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
@@ -31,6 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+  const [isLight, setIsLight] = useState(false);
 
   const handleTabClick = (tab: string) => {
     soundFX.playClick();
@@ -38,49 +39,52 @@ export const Navbar: React.FC<NavbarProps> = ({
     setMobileMenuOpen(false);
   };
 
+  const toggleTheme = () => {
+    const next = !isLight;
+    setIsLight(next);
+    document.documentElement.setAttribute('data-theme', next ? 'light' : 'dark');
+  };
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-[#0b0c10]/80 backdrop-blur-xl transition-all">
+      <div className="max-w-[1140px] mx-auto px-4 sm:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-18">
           
-          {/* Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabClick('dashboard')}>
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 transform hover:scale-105 transition">
-              <span className="text-2xl">🚀</span>
+          {/* Logo & Brand matching message.txt */}
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => handleTabClick('dashboard')}>
+            <div className="w-7 h-7 rounded-lg bg-[#ff6b4a] flex items-center justify-center font-bold text-sm text-[#170d08] shadow-md shadow-[#ff6b4a]/20">
+              語
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl sm:text-2xl font-black tracking-tight font-['Outfit'] bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">
-                  OSON
-                </span>
-                <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                  Hackathon 2026
-                </span>
-              </div>
-              <p className="text-[11px] font-medium text-slate-400 hidden sm:block">Learn. Play. Speak.</p>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold font-['Space_Grotesk'] text-[#f1f0ee] tracking-tight">
+                OSON
+              </span>
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full border border-white/10 font-mono text-[10px] text-[#8f8f96]">
+                v2.0
+              </span>
             </div>
           </div>
 
           {/* Desktop Nav Links */}
           {currentUser && (
-            <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800/60">
+            <nav className="hidden lg:flex items-center gap-1 bg-[#111318] p-1 rounded-full border border-white/5">
               <button
                 onClick={() => handleTabClick('dashboard')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'dashboard'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
-                <span>Dashboard</span>
+                Dashboard
               </button>
 
               <button
                 onClick={() => handleTabClick('courses')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'courses' || activeTab === 'course-detail' || activeTab === 'topic-view'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" />
@@ -89,269 +93,239 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => handleTabClick('quizzes')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'quizzes' || activeTab === 'quiz-player'
-                    ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Testlar (Quiz)</span>
+                <span>Testlar</span>
               </button>
 
               <button
                 onClick={() => handleTabClick('speaking')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'speaking'
-                    ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-md shadow-rose-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
-                <Mic className="w-3.5 h-3.5 text-pink-400" />
-                <span>Speaking Studio</span>
+                <Mic className="w-3.5 h-3.5" />
+                <span>Speaking</span>
               </button>
 
               <button
                 onClick={() => handleTabClick('ai-tutor')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'ai-tutor'
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
-                <Bot className="w-3.5 h-3.5 text-purple-400" />
+                <Bot className="w-3.5 h-3.5" />
                 <span>AI Tutor</span>
               </button>
 
               <button
                 onClick={() => handleTabClick('vocabulary')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'vocabulary'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
                 <BrainCircuit className="w-3.5 h-3.5" />
-                <span>So‘zlar (SRS)</span>
+                <span>So‘zlar</span>
               </button>
 
               <button
                 onClick={() => handleTabClick('leaderboard')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'leaderboard'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
-                <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                <Trophy className="w-3.5 h-3.5" />
                 <span>Reyting</span>
               </button>
 
               <button
                 onClick={() => handleTabClick('map')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   activeTab === 'map'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-[#ff6b4a] text-[#170d08] font-bold shadow-md shadow-[#ff6b4a]/20'
+                    : 'text-[#8f8f96] hover:text-[#f1f0ee]'
                 }`}
               >
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <MapPin className="w-3.5 h-3.5" />
                 <span>Xarita</span>
               </button>
             </nav>
           )}
 
-          {/* Right Action Bar */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Header Controls */}
+          <div className="flex items-center gap-2.5">
             
-            {/* Quick Role Switcher for Hackathon Demo */}
-            <div className="relative">
-              <button
-                onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:border-slate-500 transition"
-                title="Hackathon Demo Rolini Tanlash"
-              >
-                {currentUser?.role === 'ADMIN' ? (
-                  <Shield className="w-3.5 h-3.5 text-rose-400" />
-                ) : currentUser?.role === 'DOCTOR' ? (
-                  <Stethoscope className="w-3.5 h-3.5 text-cyan-400" />
-                ) : (
-                  <UserIcon className="w-3.5 h-3.5 text-emerald-400" />
-                )}
-                <span className="hidden md:inline font-bold">
-                  {currentUser?.role || 'Guest'}
-                </span>
-              </button>
-
-              {roleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 py-2 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl z-50 animate-fade-in text-xs">
-                  <div className="px-3 py-1 text-[10px] uppercase font-bold text-slate-500">
-                    Rolni o‘zgartirish (Demo)
-                  </div>
-                  <button
-                    onClick={() => { onSwitchRole('USER'); setRoleDropdownOpen(false); }}
-                    className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-slate-800 ${
-                      currentUser?.role === 'USER' ? 'text-emerald-400 font-bold' : 'text-slate-300'
-                    }`}
-                  >
-                    <UserIcon className="w-4 h-4 text-emerald-400" /> USER (O‘quvchi)
-                  </button>
-                  <button
-                    onClick={() => { onSwitchRole('DOCTOR'); setRoleDropdownOpen(false); }}
-                    className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-slate-800 ${
-                      currentUser?.role === 'DOCTOR' ? 'text-cyan-400 font-bold' : 'text-slate-300'
-                    }`}
-                  >
-                    <Stethoscope className="w-4 h-4 text-cyan-400" /> DOCTOR (Psixolog)
-                  </button>
-                  <button
-                    onClick={() => { onSwitchRole('ADMIN'); setRoleDropdownOpen(false); }}
-                    className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-slate-800 ${
-                      currentUser?.role === 'ADMIN' ? 'text-rose-400 font-bold' : 'text-slate-300'
-                    }`}
-                  >
-                    <Shield className="w-4 h-4 text-rose-400" /> ADMIN (Boshqaruv)
-                  </button>
-                </div>
-              )}
-            </div>
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-xs hover:border-[#ff6b4a] hover:bg-[#ff6b4a]/10 transition cursor-pointer"
+              title="Mavzuni almashtirish (Dark / Light)"
+            >
+              {isLight ? '🌙' : '☀️'}
+            </button>
 
             {currentUser ? (
               <>
-                {/* Streak Badge */}
-                <button
-                  onClick={onOpenStreakModal}
-                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/20 transition cursor-pointer"
-                >
-                  <Flame className="w-4 h-4 fill-amber-400 text-amber-500 animate-pulse" />
-                  <span>{currentUser.streak} kun</span>
-                </button>
+                {/* Gamification Stats (Streak & XP) */}
+                <div className="hidden sm:flex items-center gap-2">
+                  <button
+                    onClick={onOpenStreakModal}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#161920] border border-white/10 hover:border-[#ff6b4a] text-xs font-mono font-bold text-[#ff6b4a] transition cursor-pointer"
+                  >
+                    <Flame className="w-3.5 h-3.5 fill-[#ff6b4a]" />
+                    <span>{currentUser.streak} kun</span>
+                  </button>
 
-                {/* XP Pill */}
-                <button
-                  onClick={onOpenXPModal}
-                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold hover:bg-indigo-500/20 transition cursor-pointer"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>{currentUser.total_xp} XP</span>
-                </button>
+                  <button
+                    onClick={onOpenXPModal}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#161920] border border-white/10 hover:border-amber-500 text-xs font-mono font-bold text-amber-300 transition cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{currentUser.total_xp} XP</span>
+                  </button>
+                </div>
 
-                {/* Level Badge */}
-                <span className="hidden sm:flex items-center justify-center px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-black">
-                  {currentUser.current_level}
-                </span>
+                {/* Role Switcher Pill */}
+                <div className="relative">
+                  <button
+                    onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#161920] text-xs font-bold text-[#f1f0ee] hover:border-[#ff6b4a] transition cursor-pointer"
+                  >
+                    {currentUser.role === 'ADMIN' && <Shield className="w-3.5 h-3.5 text-rose-400" />}
+                    {currentUser.role === 'DOCTOR' && <Stethoscope className="w-3.5 h-3.5 text-teal-400" />}
+                    {currentUser.role === 'USER' && <UserIcon className="w-3.5 h-3.5 text-indigo-400" />}
+                    <span className="hidden md:inline">{currentUser.role}</span>
+                  </button>
 
-                {/* Profile Trigger */}
+                  {roleDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[#161920] border border-white/10 shadow-2xl p-1.5 z-50 animate-fade-in text-xs">
+                      <div className="px-3 py-2 text-[10px] font-mono text-[#8f8f96] uppercase border-b border-white/5">
+                        Rolni tanlash
+                      </div>
+                      <button
+                        onClick={() => { onSwitchRole('USER'); setRoleDropdownOpen(false); }}
+                        className="w-full px-3 py-2 rounded-xl text-left hover:bg-white/5 flex items-center gap-2 text-white font-medium"
+                      >
+                        <UserIcon className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>O‘quvchi (USER)</span>
+                      </button>
+                      <button
+                        onClick={() => { onSwitchRole('DOCTOR'); setRoleDropdownOpen(false); }}
+                        className="w-full px-3 py-2 rounded-xl text-left hover:bg-white/5 flex items-center gap-2 text-teal-300 font-medium"
+                      >
+                        <Stethoscope className="w-3.5 h-3.5 text-teal-400" />
+                        <span>Psixolog (DOCTOR)</span>
+                      </button>
+                      <button
+                        onClick={() => { onSwitchRole('ADMIN'); setRoleDropdownOpen(false); }}
+                        className="w-full px-3 py-2 rounded-xl text-left hover:bg-white/5 flex items-center gap-2 text-rose-300 font-medium"
+                      >
+                        <Shield className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Boshqaruv (ADMIN)</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Profile Avatar / Logout */}
                 <button
                   onClick={() => handleTabClick('profile')}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border-2 border-indigo-500/40 hover:border-indigo-400 transition"
-                  title="Mening Profilim"
+                  className="w-8 h-8 rounded-full border border-white/10 overflow-hidden hover:border-[#ff6b4a] transition cursor-pointer"
                 >
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.first_name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={currentUser.avatar} alt={currentUser.first_name} className="w-full h-full object-cover" />
                 </button>
               </>
             ) : (
-              <button
-                onClick={onOpenAuth}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition"
-              >
-                Kirish / Ro‘yxatdan o‘tish
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onOpenAuth}
+                  className="btn-accent px-4 py-2 text-xs font-bold"
+                >
+                  Kirish
+                </button>
+              </div>
             )}
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+              className="lg:hidden p-2 rounded-xl border border-white/10 text-[#8f8f96] hover:text-white"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden px-4 pt-2 pb-6 bg-slate-950 border-b border-slate-800 space-y-2 animate-fade-in">
+        <div className="lg:hidden border-t border-white/5 bg-[#0b0c10] px-4 py-4 space-y-2 animate-fade-in">
           {currentUser && (
-            <div className="grid grid-cols-2 gap-2 pt-2 pb-4">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 onClick={() => handleTabClick('dashboard')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <span>🏠 Dashboard</span>
+                Dashboard
               </button>
               <button
                 onClick={() => handleTabClick('courses')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <BookOpen className="w-4 h-4 text-indigo-400" /> Kurslar
+                Kurslar
               </button>
               <button
                 onClick={() => handleTabClick('quizzes')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <Sparkles className="w-4 h-4 text-amber-400" /> Testlar (Quiz)
+                Testlar (Quiz)
               </button>
               <button
                 onClick={() => handleTabClick('speaking')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <Mic className="w-4 h-4 text-pink-400" /> Speaking
+                Speaking Studio
               </button>
               <button
                 onClick={() => handleTabClick('ai-tutor')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <Bot className="w-4 h-4 text-purple-400" /> AI Tutor
+                AI Tutor
               </button>
               <button
                 onClick={() => handleTabClick('vocabulary')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <BrainCircuit className="w-4 h-4 text-teal-400" /> So‘zlar
+                So‘zlar (SRS)
               </button>
               <button
                 onClick={() => handleTabClick('leaderboard')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <Trophy className="w-4 h-4 text-amber-400" /> Reyting
+                Reyting
               </button>
               <button
                 onClick={() => handleTabClick('map')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-[#161920] text-left text-white font-medium"
               >
-                <MapPin className="w-4 h-4 text-emerald-400" /> OSON Xarita
-              </button>
-              <button
-                onClick={() => handleTabClick('profile')}
-                className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-left flex items-center gap-2"
-              >
-                <UserIcon className="w-4 h-4 text-blue-400" /> Profil
+                Xarita
               </button>
             </div>
           )}
-
-          <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
-            <button
-              onClick={() => { onOpenContact(); setMobileMenuOpen(false); }}
-              className="flex items-center gap-1.5 text-slate-400 hover:text-white"
-            >
-              <MessageCircle className="w-4 h-4 text-cyan-400" /> Bog‘lanish
-            </button>
-            {currentUser && (
-              <button
-                onClick={() => { onLogout(); setMobileMenuOpen(false); }}
-                className="flex items-center gap-1.5 text-rose-400 hover:text-rose-300"
-              >
-                <LogOut className="w-4 h-4" /> Chiqish
-              </button>
-            )}
-          </div>
         </div>
       )}
     </header>
