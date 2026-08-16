@@ -12,7 +12,7 @@ const TOKEN = '8656464443:AAHiF23hK7uxSFe5lddVembI75omUT86BYc';
 // Initialize Telegram Bot with polling
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-console.log('🤖 OSON Telegram Boti ishga tushirildi...');
+console.log('🤖 OSON Telegram Boti muvaffaqiyatli ishga tushirildi...');
 
 // Simple persistent storage for bot users
 const DB_FILE = path.join(__dirname, 'bot_users.json');
@@ -42,8 +42,8 @@ function getUser(msg) {
   if (!users[chatId]) {
     users[chatId] = {
       id: chatId,
-      first_name: msg.from.first_name || 'O‘quvchi',
-      username: msg.from.username || '',
+      first_name: msg.from?.first_name || 'O‘quvchi',
+      username: msg.from?.username || '',
       level: 'A2',
       xp: 150,
       streak: 3,
@@ -156,7 +156,7 @@ const MAIN_KEYBOARD = {
         { text: '👩‍⚕️ Psixolog / Doctor Maslahati' }
       ],
       [
-        { text: '🚀 Web Ilovaga O‘tish (Platform)' }
+        { text: '🚀 Web Ilovaga O‘tish' }
       ]
     ],
     resize_keyboard: true,
@@ -185,11 +185,12 @@ bot.onText(/\/start/, (msg) => {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: '🚀 Web Platformani Ochish', url: 'http://localhost:5173' }
-        ],
-        [
           { text: '⚡ Tezkor Quiz Boshlash', callback_data: 'start_quiz' },
           { text: '📚 Yangi So‘zlar', callback_data: 'get_words' }
+        ],
+        [
+          { text: '🔥 Mening Profilim', callback_data: 'check_profile' },
+          { text: '🗺️ OSON Filiallari', callback_data: 'get_locations' }
         ]
       ]
     },
@@ -209,8 +210,7 @@ bot.onText(/\/help/, (msg) => {
 • <b>AI Tutor</b> — Botga istalgan inglizcha gap yozsangiz, u xatolaringizni to‘g‘irlab javob qaytaradi!
 • <b>Ovozli xabarlar</b> — Ovoz yuborib speaking mashqini bajaring.
 
-📞 Qo‘llab-quvvatlash: @oson_english_admin
-🌐 Web Platforma: http://localhost:5173`;
+🌐 Web Platforma: <code>http://localhost:5173</code>`;
 
   bot.sendMessage(msg.chat.id, helpText, { parse_mode: 'HTML' });
 });
@@ -226,20 +226,23 @@ bot.on('callback_query', (query) => {
     sendDailyWords(chatId);
   } else if (data === 'check_profile') {
     sendUserProfile(chatId);
+  } else if (data === 'get_locations') {
+    sendLocations(chatId);
   }
 
   bot.answerCallbackQuery(query.id);
 });
 
-// Function to send Quiz Poll
+// Function to send Quiz Poll (using sendPoll with type: 'quiz')
 function sendQuizPoll(chatId) {
   const randomQ = QUIZ_QUESTIONS[Math.floor(Math.random() * QUIZ_QUESTIONS.length)];
   
-  bot.sendQuiz(
+  bot.sendPoll(
     chatId,
     `📝 [OSON Quiz] ${randomQ.question}`,
     randomQ.options,
     {
+      type: 'quiz',
       correct_option_id: randomQ.correct_option_id,
       explanation: randomQ.explanation,
       is_anonymous: false
@@ -302,7 +305,7 @@ function sendUserProfile(chatId) {
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
-        [{ text: '🚀 Web Platformada Profilni Ko‘rish', url: 'http://localhost:5173' }]
+        [{ text: '⚡ Tezkor Quiz Ishlash (+30 XP)', callback_data: 'start_quiz' }]
       ]
     }
   });
@@ -377,13 +380,9 @@ bot.on('message', (msg) => {
     sendDoctorAdvice(chatId);
     return;
   }
-  if (text === '🚀 Web Ilovaga O‘tish (Platform)') {
-    bot.sendMessage(chatId, '🌐 OSON to‘liq web platformasi quyidagi manzilda faol:\nhttp://localhost:5173', {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: '🚀 Web Platformani Ochish', url: 'http://localhost:5173' }]
-        ]
-      }
+  if (text === '🚀 Web Ilovaga O‘tish' || text === '🚀 Web Ilovaga O‘tish (Platform)') {
+    bot.sendMessage(chatId, '🌐 <b>OSON to‘liq web platformasi:</b>\nBrauzerda oching: <code>http://localhost:5173</code>\n\nBarcha 3D Flashcardlar, Speaking Studio va Xarita modullari faol!', {
+      parse_mode: 'HTML'
     });
     return;
   }
@@ -408,7 +407,7 @@ bot.on('message', (msg) => {
 
   // Response generation
   if (clean.includes('salom') || clean.includes('hello') || clean.includes('hi') || clean.includes('hey')) {
-    aiReply = `Hello there, ${msg.from.first_name || 'friend'}! 🌟 I'm your AI English Tutor from OSON. What would you like to practice today? You can tell me about your day, ask a grammar question, or ask for a quiz!`;
+    aiReply = `Hello there, ${msg.from?.first_name || 'friend'}! 🌟 I'm your AI English Tutor from OSON. What would you like to practice today? You can tell me about your day, ask a grammar question, or ask for a quiz!`;
   } else if (clean.includes('joke')) {
     aiReply = `Haha, here is a funny one! 😄\n\nWhy did the teacher wear sunglasses in the English classroom?\n... Because her students were so bright! 🕶️✨\n\nDo you want another joke or shall we practice a grammar topic?`;
   } else if (clean.includes('game') || clean.includes('roblox') || clean.includes('pubg') || clean.includes('cs')) {
@@ -454,7 +453,8 @@ bot.on('voice', (msg) => {
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
-        [{ text: '🚀 Web Platformada To‘liq Tahlilni Ko‘rish', url: 'http://localhost:5173' }]
+        [{ text: '⚡ Tezkor Quiz Boshlash', callback_data: 'start_quiz' }],
+        [{ text: '📚 Yangi So‘zlar', callback_data: 'get_words' }]
       ]
     }
   });
