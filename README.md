@@ -109,8 +109,184 @@ npm run build
    - Mavzu tanlang, mikrofonda inglizcha gapiring -> AI sizga talaffuz, ravonlik va grammatika ballarini darhol hisoblab beradi!
 6. **AI Tutor:**
    - London kafesi stsenariysida ovqat buyurtma qiling, AI javoblarini audio eshiting va maslahatlar oling.
-7. **Reyting & Xarita:**
+  
+
+8. **Reyting & Xarita:**
    - Leaderboardda o‘rningizni ko‘ring va Toshkent/Samarqanddagi OSON filiallarini interaktiv xaritada oching.
+  
+- Authentication
+- Permissions
+- Input validation
+- Rate limiting
+- CORS
+- CSRF
+- Error leakage
+- Sensitive information leakage
+
+---
+
+# 12. SECRET DETECTION
+
+AI quyidagilarni source code ichidan qidiradi:
+
+- API keys
+- Passwords
+- Secret keys
+- Database credentials
+- JWT secrets
+- SMTP passwords
+
+Topilsa:
+
+CRITICAL
+
+.env ishlatilishi kerak.
+
+---
+
+# 13. FRONTEND
+
+Tekshirish:
+
+- TypeScript errors
+- API error handling
+- Loading states
+- Empty states
+- Responsive layout
+- Unauthorized pages
+- Token handling
+- Sensitive data exposure
+
+---
+
+# 14. CODE QUALITY
+
+AI quyidagilarni tekshiradi:
+
+- DRY
+- SOLID
+- Reusable components
+- Clear naming
+- Separation of concerns
+- Duplicate code
+- Large functions
+- Large components
+- Dead code
+
+Faqat LOW/MEDIUM darajadagi muammolar asosiy buildni bloklamaydi.
+
+---
+
+# 15. BLOCKING RULE
+
+Build faqat quyidagi holatlarda BLOCK qilinadi:
+
+- CRITICAL security issue
+- HIGH authentication issue
+- HIGH authorization issue
+- Critical data corruption
+- Main feature completely broken
+
+LOW va oddiy MEDIUM muammolar:
+
+WARNING
+
+sifatida chiqariladi.
+
+---
+
+# 16. FALSE POSITIVEGA MUNOSABAT
+
+AI:
+
+"Menimcha bu xato"
+
+degan holatni avtomatik BLOCK qilmasligi kerak.
+
+Agar evidence yetarli bo‘lmasa:
+
+REVIEW
+
+beriladi.
+
+AI hech qachon muammoni yashirmaydi.
+
+---
+
+# 17. CODE REVIEW PRINCIPLE
+
+AI quyidagi prinsipga amal qiladi:
+
+1. Evidence first
+2. Severity second
+3. Fix suggestion third
+
+AI taxminni fact sifatida ko‘rsatmasligi kerak.
+
+---
+
+# 18. FINAL REPORT
+
+Review oxirida:
+
+Total issues: X
+
+Critical: X
+High: X
+Medium: X
+Low: X
+Review: X
+
+Final status:
+
+PASS
+yoki
+
+WARNING
+yoki
+
+BLOCK
+
+---
+
+# 19. PASS
+
+Agar:
+
+Critical = 0
+High = 0
+
+bo‘lsa:
+
+PASS
+
+Medium va Low mavjud bo‘lishi mumkin.
+
+Ular reportda ko‘rsatiladi.
+
+---
+
+# 20. FINAL PRINCIPLE
+
+OSON AI Code Reviewer:
+
+Xatoni yashirmaydi.
+
+Xatoni ataylab o'tkazib yubormaydi.
+
+Lekin har bir kichik warning sababli loyihani BLOCK ham qilmaydi.
+
+Asosiy prinsip:
+
+REAL BUG → REPORT
+
+CRITICAL BUG → BLOCK
+
+MINOR BUG → WARNING
+
+UNCERTAIN → REVIEW
+
+NO ISSUE → PASS
 
 ---
 
